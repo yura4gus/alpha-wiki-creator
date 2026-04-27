@@ -147,6 +147,8 @@ REVERSE_OF = {
     "consumes": "consumers",
     "consumers": "consumes",
     "implements": "_specs",  # special: writes section
+    "affects": "decisions",
+    "decisions": "affects",
 }
 
 
