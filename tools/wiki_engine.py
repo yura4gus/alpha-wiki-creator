@@ -249,3 +249,49 @@ def _collect_open_questions(pages: list[Page]) -> str:
             for q in (v if isinstance(v, list) else [v]):
                 lines.append(f"- ({p.slug}) {q}")
     return "\n".join(lines) if lines else "_(none)_\n"
+
+
+# CLI entry point
+
+import click
+
+
+@click.group()
+def cli():
+    """wiki-creator deterministic engine."""
+
+
+@cli.command("rebuild-edges")
+@click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
+def cli_rebuild_edges(wiki_dir: Path):
+    edges = rebuild_edges(wiki_dir)
+    click.echo(f"wrote {len(edges)} edges to {wiki_dir / 'graph' / 'edges.jsonl'}")
+
+
+@cli.command("rebuild-context-brief")
+@click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
+def cli_rebuild_context_brief(wiki_dir: Path):
+    out = rebuild_context_brief(wiki_dir)
+    click.echo(f"wrote {out}")
+
+
+@cli.command("rebuild-open-questions")
+@click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
+def cli_rebuild_open_questions(wiki_dir: Path):
+    out = rebuild_open_questions(wiki_dir)
+    click.echo(f"wrote {out}")
+
+
+@cli.command("add-edge")
+@click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
+@click.option("--source", required=True)
+@click.option("--target", required=True)
+@click.option("--relation", required=True)
+@click.option("--bidirectional", is_flag=True)
+def cli_add_edge(wiki_dir: Path, source: str, target: str, relation: str, bidirectional: bool):
+    add_edge(wiki_dir, source, target, relation, bidirectional)
+    click.echo(f"added {relation}: {source} → {target}")
+
+
+if __name__ == "__main__":
+    cli()
