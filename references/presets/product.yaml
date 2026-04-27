@@ -1,0 +1,13 @@
+name: product
+description: Product management preset
+entity_types:
+  - {name: feature, dir: features, frontmatter_required: [title, slug, status, owner]}
+  - {name: persona, dir: personas, frontmatter_required: [title, slug]}
+  - {name: flow, dir: flows, frontmatter_required: [title, slug, persona]}
+  - {name: decision, dir: decisions, frontmatter_required: [title, slug, status, date]}
+  - {name: metric, dir: metrics, frontmatter_required: [title, slug, formula]}
+  - {name: experiment, dir: experiments, frontmatter_required: [title, slug, hypothesis, status]}
+  - {name: competitor, dir: competitors, frontmatter_required: [title, slug, url]}
+cross_ref_rules:
+  - {forward: "flow F: persona: [[persona-P]]", reverse: "personas/P: ## Flows adds F"}
+  - {forward: "feature F: tracks_metric: [[metric-M]]", reverse: "metrics/M: ## Features adds F"}

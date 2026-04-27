@@ -1,0 +1,14 @@
+name: personal
+description: PARA + Zettelkasten preset
+entity_types:
+  - {name: project, dir: projects, frontmatter_required: [title, slug, status, due]}
+  - {name: area, dir: areas, frontmatter_required: [title, slug]}
+  - {name: resource, dir: resources, frontmatter_required: [title, slug, source_url]}
+  - {name: permanent, dir: permanent, frontmatter_required: [title, slug, evergreen]}
+  - {name: fleeting, dir: fleeting, frontmatter_required: [title, slug, captured_at]}
+  - {name: journal, dir: journals, frontmatter_required: [title, slug, date]}
+  - {name: goal, dir: goals, frontmatter_required: [title, slug, horizon]}
+  - {name: archive, dir: archive, frontmatter_required: [title, slug, archived_at]}
+cross_ref_rules:
+  - {forward: "project P: belongs_to: [[area-A]]", reverse: "areas/A: ## Projects adds P"}
+  - {forward: "permanent N: distilled_from: [[fleeting-F]]", reverse: "fleeting/F: ## Distilled into adds N"}

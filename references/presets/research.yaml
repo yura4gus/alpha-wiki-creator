@@ -1,0 +1,16 @@
+name: research
+description: Research preset (papers, claims, experiments) — OmegaWiki-aligned
+entity_types:
+  - {name: paper, dir: papers, frontmatter_required: [title, slug, authors, year, source_url]}
+  - {name: concept, dir: concepts, frontmatter_required: [title, slug, defined_by]}
+  - {name: topic, dir: topics, frontmatter_required: [title, slug]}
+  - {name: person, dir: people, frontmatter_required: [title, slug, affiliation]}
+  - {name: idea, dir: ideas, frontmatter_required: [title, slug, status, originator]}
+  - {name: experiment, dir: experiments, frontmatter_required: [title, slug, hypothesis, status]}
+  - {name: claim, dir: claims, frontmatter_required: [title, slug, supported_by, status]}
+  - {name: foundations, dir: foundations, frontmatter_required: [title, slug]}
+  - {name: summary, dir: summaries, frontmatter_required: [title, slug, period]}
+cross_ref_rules:
+  - {forward: "claim C: supported_by: [[experiment-E]]", reverse: "experiments/E: ## Supports claims adds C"}
+  - {forward: "idea I: extends: [[paper-P]]", reverse: "papers/P: ## Extended by adds I"}
+  - {forward: "experiment E: tests: [[claim-C]]", reverse: "claims/C: ## Tested by adds E"}

@@ -1,0 +1,10 @@
+name: knowledge-base
+description: Minimal universal preset
+entity_types:
+  - {name: entity, dir: entities, frontmatter_required: [title, slug]}
+  - {name: concept, dir: concepts, frontmatter_required: [title, slug]}
+  - {name: decision, dir: decisions, frontmatter_required: [title, slug, status, date]}
+  - {name: source, dir: sources, frontmatter_required: [title, slug, url]}
+  - {name: summary, dir: summaries, frontmatter_required: [title, slug]}
+cross_ref_rules:
+  - {forward: "entity E: derived_from: [[source-S]]", reverse: "sources/S: ## Derived adds E"}
