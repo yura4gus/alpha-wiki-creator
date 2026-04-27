@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "session-start": [
+      {"command": ".claude/hooks/session-start.sh"}
+    ],
+    "pre-tool-use": [
+      {"matcher": "Write|Edit", "command": ".claude/hooks/pre-tool-use.sh", "path_glob": "{{ wiki_dir }}/**"}
+    ],
+    "post-tool-use": [
+      {"matcher": "Write", "command": ".claude/hooks/post-tool-use.sh", "path_glob": "{{ wiki_dir }}/**"}
+    ],
+    "session-end": [
+      {"command": ".claude/hooks/session-end.sh"}
+    ]
+  }
+}
