@@ -188,3 +188,64 @@ def _create_stub(wiki_dir: Path, slug: str) -> None:
     stub_dir.mkdir(parents=True, exist_ok=True)
     stub_path = stub_dir / f"{slug}.md"
     stub_path.write_text(f"---\ntitle: {slug}\nslug: {slug}\nstatus: stub\n---\n# {slug}\nTODO: fill via /wiki-ingest\n")
+
+
+# Context brief and open questions builders
+
+CONTEXT_BRIEF_LIMIT = 8000
+
+
+def rebuild_context_brief(wiki_dir: Path) -> Path:
+    """Build a brief summary of the wiki, including recent log and active pages."""
+    pages = scan_wiki(wiki_dir)
+    active_claims = [p for p in pages if p.frontmatter.get("status") in ("active", "stable", "accepted")]
+    log_path = wiki_dir / "log.md"
+    recent_log = ""
+    if log_path.exists():
+        recent_log = "\n".join(log_path.read_text().splitlines()[-10:])
+    open_q = _collect_open_questions(pages)
+
+    parts = [
+        "# Context brief (auto-generated)\n",
+        f"## Recent log\n{recent_log}\n",
+        f"## Active pages ({len(active_claims)})\n" +
+        "\n".join(f"- [[{p.slug}]] — {p.title}" for p in active_claims[:50]),
+        f"## Open questions\n{open_q}",
+    ]
+    out_text = "\n\n".join(parts)
+    if len(out_text) > CONTEXT_BRIEF_LIMIT:
+        out_text = out_text[:CONTEXT_BRIEF_LIMIT - 100] + "\n\n... (truncated)\n"
+    out_path = wiki_dir / "graph" / "context_brief.md"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(out_text)
+    return out_path
+
+
+def rebuild_open_questions(wiki_dir: Path) -> Path:
+    """Extract all open questions from the wiki and write to a dedicated file."""
+    pages = scan_wiki(wiki_dir)
+    text = "# Open questions (auto-generated)\n\n" + _collect_open_questions(pages)
+    out_path = wiki_dir / "graph" / "open_questions.md"
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(text)
+    return out_path
+
+
+OPEN_Q_SECTION_RE = re.compile(r"^## Open questions\s*\n(.*?)(?=^## |\Z)", re.MULTILINE | re.DOTALL)
+
+
+def _collect_open_questions(pages: list[Page]) -> str:
+    """Extract all open questions from page bodies and frontmatter."""
+    lines: list[str] = []
+    for p in pages:
+        m = OPEN_Q_SECTION_RE.search(p.body)
+        if m:
+            for line in m.group(1).splitlines():
+                line = line.strip()
+                if line.startswith("- ") and len(line) > 2:
+                    lines.append(f"- ({p.slug}) {line[2:]}")
+        if "open_question" in p.frontmatter:
+            v = p.frontmatter["open_question"]
+            for q in (v if isinstance(v, list) else [v]):
+                lines.append(f"- ({p.slug}) {q}")
+    return "\n".join(lines) if lines else "_(none)_\n"
