@@ -1,0 +1,16 @@
+name: layered
+description: Classic 3-tier (presentation / business-logic / data-access)
+applies_to: [software-project]
+top_level_dirs:
+  - presentation
+  - business-logic
+  - data-access
+  - contracts
+  - decisions
+  - modules
+  - people
+  - tasks
+dependency_rules:
+  - {from: "data-access/", forbidden_to: ["presentation/", "business-logic/"]}
+  - {from: "business-logic/", forbidden_to: ["presentation/"]}
+extra_cross_ref_rules: []

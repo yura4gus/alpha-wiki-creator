@@ -1,0 +1,17 @@
+name: ddd
+description: Domain-Driven Design — bounded contexts (combinable with clean or hexagonal)
+applies_to: [software-project]
+combinable_with: [clean, hexagonal]
+top_level_dirs:
+  - bounded-contexts
+  - shared-kernel
+  - context-map.md
+  - contracts
+  - decisions
+  - people
+  - tasks
+sub_structure_per_bc: inherit_outer_overlay
+dependency_rules:
+  - {from: "shared-kernel/", forbidden_to: ["bounded-contexts/"]}
+extra_cross_ref_rules:
+  - {forward: "context-map: A → B", reverse: "bounded-contexts/A: ## Downstream adds B; bounded-contexts/B: ## Upstream adds A"}

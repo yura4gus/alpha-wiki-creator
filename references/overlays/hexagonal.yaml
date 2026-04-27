@@ -1,0 +1,23 @@
+name: hexagonal
+description: Ports & Adapters overlay (replaces software-project's flat layout)
+applies_to: [software-project]
+top_level_dirs:
+  - core/entities
+  - core/value-objects
+  - core/aggregates
+  - core/domain-events
+  - ports/inbound
+  - ports/outbound
+  - adapters/inbound
+  - adapters/outbound
+  - application
+  - contracts
+  - decisions
+  - people
+  - tasks
+dependency_rules:
+  - {from: "core/", forbidden_to: ["adapters/", "application/", "infrastructure/"]}
+  - {from: "ports/", forbidden_to: ["adapters/", "application/"]}
+  - {from: "adapters/inbound/<X>/", required_to: ["ports/inbound/<X>"]}
+  - {from: "adapters/outbound/<X>/", required_to: ["ports/outbound/<X>"]}
+extra_cross_ref_rules: []
