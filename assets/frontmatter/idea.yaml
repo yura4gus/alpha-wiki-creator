@@ -1,0 +1,6 @@
+title: ""
+slug: ""
+status: "active"     # active | tested | failed | shelved
+originator: ""
+extends: []
+failure_reason: ""   # set if status == failed
