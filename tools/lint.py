@@ -128,3 +128,121 @@ def check_duplicate_slugs(wiki_dir: Path) -> list[LintFinding]:
                 fix_available=False,
             ))
     return findings
+
+
+import click
+import fnmatch
+from tools.wiki_engine import add_edge
+
+
+def check_dependency_rules(wiki_dir: Path, rules: list[dict]) -> list[LintFinding]:
+    pages = scan_wiki(wiki_dir)
+    by_slug = {p.slug: p for p in pages}
+    findings: list[LintFinding] = []
+    for src in pages:
+        src_dir = str(Path(src.path).relative_to(wiki_dir).parent) + "/"
+        for link in src.forward_links:
+            target_slug = link.split("|")[0].split("/")[-1]
+            tgt = by_slug.get(target_slug)
+            if tgt is None:
+                continue
+            tgt_dir = str(Path(tgt.path).relative_to(wiki_dir).parent) + "/"
+            for rule in rules:
+                from_pattern = rule["from"]
+                if not src_dir.startswith(from_pattern):
+                    continue
+                for forbidden in rule.get("forbidden_to", []):
+                    if tgt_dir.startswith(forbidden):
+                        findings.append(LintFinding(
+                            check="dependency-rule-violation",
+                            severity=LintSeverity.WARNING,
+                            file=src.path,
+                            line=0,
+                            message=f"dependency rule: {from_pattern} → {forbidden} forbidden ({src.slug} → {tgt.slug})",
+                            fix_available=False,
+                        ))
+    return findings
+
+
+def run_all_checks(wiki_dir: Path, schema: dict, dir_to_type: dict, dependency_rules: list[dict]) -> list[LintFinding]:
+    findings: list[LintFinding] = []
+    findings += check_broken_wikilinks(wiki_dir)
+    findings += check_missing_reverse_links(wiki_dir)
+    findings += check_orphans(wiki_dir)
+    findings += check_required_frontmatter(wiki_dir, schema, dir_to_type)
+    findings += check_duplicate_slugs(wiki_dir)
+    findings += check_dependency_rules(wiki_dir, dependency_rules)
+    return findings
+
+
+def apply_fixes(findings: list[LintFinding], wiki_dir: Path) -> int:
+    """Applies safe fixes; returns count of fixes applied."""
+    fixed = 0
+    for f in findings:
+        if not f.fix_available:
+            continue
+        if f.check == "missing-reverse-link":
+            # Parse: "<tgt-slug>.<reverse> missing reverse for <src-slug>.<key>"
+            try:
+                tgt_part, _, src_part = f.message.replace("missing reverse for ", "").partition(" ")
+                tgt_slug, _, _ = tgt_part.partition(".")
+                src_slug, _, key = src_part.partition(".")
+                add_edge(wiki_dir, source=tgt_slug, target=src_slug,
+                         relation=_lookup_reverse(key), bidirectional=False)
+                fixed += 1
+            except Exception:
+                continue
+    return fixed
+
+
+def _lookup_reverse(key: str) -> str:
+    from tools.wiki_engine import REVERSE_OF
+    return REVERSE_OF.get(key, key)
+
+
+@click.command()
+@click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
+@click.option("--fix", is_flag=True, help="Apply safe fixes in place.")
+@click.option("--suggest", is_flag=True, help="Print suggestions but don't write.")
+@click.option("--dry-run", is_flag=True, help="Run checks, exit nonzero if any errors found.")
+@click.option("--config", type=click.Path(path_type=Path, exists=True),
+              help="Path to wiki-creator config (preset+overlay merged) for schema.")
+def cli(wiki_dir: Path, fix: bool, suggest: bool, dry_run: bool, config: Path | None):
+    schema, dir_to_type, dep_rules = _load_config(config)
+    findings = run_all_checks(wiki_dir, schema, dir_to_type, dep_rules)
+    errors = [f for f in findings if f.severity == LintSeverity.ERROR]
+    warnings = [f for f in findings if f.severity == LintSeverity.WARNING]
+
+    if fix:
+        n = apply_fixes(findings, wiki_dir)
+        click.echo(f"applied {n} fix(es); re-running checks...")
+        findings = run_all_checks(wiki_dir, schema, dir_to_type, dep_rules)
+        errors = [f for f in findings if f.severity == LintSeverity.ERROR]
+        warnings = [f for f in findings if f.severity == LintSeverity.WARNING]
+
+    for f in findings:
+        icon = "ERROR" if f.severity == LintSeverity.ERROR else "WARN"
+        click.echo(f"{icon} [{f.check}] {f.file}: {f.message}")
+        if suggest and f.suggested_fix:
+            click.echo(f"   -> {f.suggested_fix}")
+
+    click.echo(f"\nsummary: {len(errors)} error(s), {len(warnings)} warning(s)")
+    if errors:
+        raise SystemExit(1)
+    if dry_run and warnings:
+        raise SystemExit(2)
+
+
+def _load_config(config_path: Path | None) -> tuple[dict, dict, list]:
+    if config_path is None:
+        return {}, {}, []
+    import yaml
+    cfg = yaml.safe_load(config_path.read_text())
+    schema = {t["name"]: t.get("frontmatter_required", []) for t in cfg.get("entity_types", [])}
+    dir_to_type = {t["dir"].rstrip("/"): t["name"] for t in cfg.get("entity_types", [])}
+    dep_rules = cfg.get("dependency_rules", [])
+    return schema, dir_to_type, dep_rules
+
+
+if __name__ == "__main__":
+    cli()
