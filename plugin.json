@@ -1,0 +1,14 @@
+{
+  "name": "wiki-creator",
+  "version": "0.1.0",
+  "description": "LLM-maintained wiki bootstrap (Karpathy + OmegaWiki inspired)",
+  "skills": [
+    "skills/wiki-init",
+    "skills/wiki-ingest",
+    "skills/wiki-query",
+    "skills/wiki-lint",
+    "skills/wiki-evolve",
+    "skills/wiki-spawn-agent",
+    "skills/wiki-render"
+  ]
+}
