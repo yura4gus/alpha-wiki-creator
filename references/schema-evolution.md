@@ -1,6 +1,6 @@
 # Schema evolution
 
-`/wiki:ingest` may encounter artifacts with no matching slot in the current schema.
+`/alpha-wiki:ingest` may encounter artifacts with no matching slot in the current schema.
 
 ## Modes
 
@@ -15,9 +15,9 @@ For an artifact of class `X` with no slot:
 2. **Sub-folder under existing layer** — e.g. `infrastructure/migrations/` (if hexagonal/clean)
 3. **Section append in related page** — e.g. `## Migrations` on `entities/users.md`
 
-User picks; `/wiki:evolve` runs.
+User picks; `/alpha-wiki:evolve` runs.
 
-## /wiki:evolve actions
+## /alpha-wiki:evolve actions
 
 ```
 1. Update CLAUDE.md
@@ -34,6 +34,6 @@ User picks; `/wiki:evolve` runs.
 
 ## Project-local skill (optional)
 
-`/wiki:evolve <type> --generate-skill` renders `assets/child-skills/ingest-domain.j2`
+`/alpha-wiki:evolve <type> --generate-skill` renders `assets/child-skills/ingest-domain.j2`
 into `target/.claude/skills/wiki-ingest-<type>/SKILL.md`. The child skill is a thin
 wrapper that pre-classifies into this slot. It lives only in the target.

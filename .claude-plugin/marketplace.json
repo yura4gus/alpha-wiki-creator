@@ -10,7 +10,7 @@
   },
   "plugins": [
     {
-      "name": "wiki",
+      "name": "alpha-wiki",
       "version": "0.1.0",
       "description": "Bootstraps an LLM-maintained wiki into any project: 8 skills (init, ingest, query, lint, evolve, status, spawn-agent, render), typed cross-links, schema evolution, Obsidian-compatible.",
       "source": "./",

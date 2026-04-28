@@ -1,5 +1,5 @@
 {
-  "name": "wiki",
+  "name": "alpha-wiki",
   "version": "0.1.0",
   "description": "LLM-maintained wiki bootstrap (Karpathy + OmegaWiki inspired)",
   "author": {

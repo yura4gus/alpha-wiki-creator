@@ -10,7 +10,7 @@ description: Use when the user wants to add a Claude Code subagent that operates
 1. Ask the user for:
    - Agent name (e.g. `wiki-reviewer`, `domain-curator`)
    - Role description (1-2 sentences)
-   - Which wiki skills the agent should use (subset of `/wiki:ingest`, `/wiki:query`, `/wiki:lint`, `/wiki:evolve`)
+   - Which wiki skills the agent should use (subset of `/alpha-wiki:ingest`, `/alpha-wiki:query`, `/alpha-wiki:lint`, `/alpha-wiki:evolve`)
    - Whether to also generate a companion skill (yes/no)
 
 2. Render `.claude/agents/<name>.md` with frontmatter and a body that:

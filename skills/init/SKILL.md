@@ -30,7 +30,7 @@ description: Use this skill whenever the user wants to bootstrap a wiki, knowled
 
 5. **Post-render** — `uv sync`, `tools/lint.py --dry-run`, `wiki_engine.py rebuild-context-brief`, `git add . && git commit -m "wiki bootstrap"`.
 
-6. **First ingest (optional)** — if `raw/` has files, prompt to ingest now via `/wiki:ingest`.
+6. **First ingest (optional)** — if `raw/` has files, prompt to ingest now via `/alpha-wiki:ingest`.
 
 7. **Handoff** — print 3 main commands, Obsidian instructions, session-end hook explainer.
 

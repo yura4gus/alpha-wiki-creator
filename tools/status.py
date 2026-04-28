@@ -68,5 +68,5 @@ def status_report(wiki_dir: Path) -> str:
         parts.extend(f"- [[{slug}]]" for slug in no_date[:20])
         if len(no_date) > 20:
             parts.append(f"_… and {len(no_date) - 20} more_")
-    parts.append(f"\n_Run `/wiki:lint --suggest` for structural gaps._")
+    parts.append(f"\n_Run `/alpha-wiki:lint --suggest` for structural gaps._")
     return "\n".join(parts) + "\n"

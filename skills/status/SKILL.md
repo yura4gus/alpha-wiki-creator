@@ -21,13 +21,13 @@ description: Use when the user wants a wiki health check — recent activity, st
 - **Schema evolution**: every `schema-change` log entry, full history
 - **Stale pages**: pages with `date_updated` more than 30 days old
 - **Pages without `date_updated`**: candidates for a maintenance pass
-- **Lint summary**: brief count of errors + warnings (full detail via `/wiki:lint`)
+- **Lint summary**: brief count of errors + warnings (full detail via `/alpha-wiki:lint`)
 
 ## When to run
 
 - After a long break — see what changed, what's stale
 - Weekly cadence as a self-check
-- Before a `/wiki:rollup` so you know what to highlight
+- Before a `/alpha-wiki:rollup` so you know what to highlight
 - After someone else has been working in the wiki
 
 This skill is read-only. It never mutates the wiki except for the optional saved report.

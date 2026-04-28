@@ -18,7 +18,7 @@ One command:
 
 ```bash
 claude plugins marketplace add yura4gus/alpha-wiki-creator
-claude plugins install wiki
+claude plugins install alpha-wiki
 ```
 
 Requires Python 3.12+ and `uv` (`pipx install uv` if missing).
@@ -26,7 +26,7 @@ Requires Python 3.12+ and `uv` (`pipx install uv` if missing).
 Then in any project:
 
 ```
-/wiki:init
+/alpha-wiki:init
 ```
 
 ## Architecture
@@ -57,14 +57,14 @@ Then in any project:
                                  │
                        ┌─────────┴──────────┐
                        │  wiki plugin       │
-                       │  /wiki:init        │
-                       │  /wiki:ingest      │
-                       │  /wiki:query       │
-                       │  /wiki:lint        │
-                       │  /wiki:evolve      │
-                       │  /wiki:status      │
-                       │  /wiki:spawn-agent │
-                       │  /wiki:render      │
+                       │  /alpha-wiki:init        │
+                       │  /alpha-wiki:ingest      │
+                       │  /alpha-wiki:query       │
+                       │  /alpha-wiki:lint        │
+                       │  /alpha-wiki:evolve      │
+                       │  /alpha-wiki:status      │
+                       │  /alpha-wiki:spawn-agent │
+                       │  /alpha-wiki:render      │
                        └────────────────────┘
 ```
 
@@ -79,36 +79,36 @@ Then in any project:
 - **Obsidian-compatible** — `.obsidian/` config generated, graph view works out of the box
 - **Deterministic engine** — `tools/lint.py` + `tools/wiki_engine.py` are pure Python, no LLM, fully tested
 - **Schema-evolution gate** — every new entity type confirmed before added (or auto-mode if you trust)
-- **CI-ready** — weekly `/wiki:review`, monthly `/wiki:rollup` via headless Claude
+- **CI-ready** — weekly `/alpha-wiki:review`, monthly `/alpha-wiki:rollup` via headless Claude
 
 ## Workflow
 
 ```
-1. /wiki:init           Bootstrap (interview → render → first commit)
-2. /wiki:ingest <path>  Raw artifact (PRD, ADR, OpenAPI spec, …) → wiki page(s)
-3. /wiki:query <q>      Synthesize an answer from wiki pages
-4. /wiki:lint --fix     Apply safe corrections (missing reverses, etc.)
-5. /wiki:status         Health report — staleness, gaps, recent activity
-6. /wiki:evolve <type>  Add a new entity type to the schema
-7. /wiki:spawn-agent    Add a wiki-aware subagent
-8. /wiki:render         Refresh Obsidian config or generate static HTML
+1. /alpha-wiki:init           Bootstrap (interview → render → first commit)
+2. /alpha-wiki:ingest <path>  Raw artifact (PRD, ADR, OpenAPI spec, …) → wiki page(s)
+3. /alpha-wiki:query <q>      Synthesize an answer from wiki pages
+4. /alpha-wiki:lint --fix     Apply safe corrections (missing reverses, etc.)
+5. /alpha-wiki:status         Health report — staleness, gaps, recent activity
+6. /alpha-wiki:evolve <type>  Add a new entity type to the schema
+7. /alpha-wiki:spawn-agent    Add a wiki-aware subagent
+8. /alpha-wiki:render         Refresh Obsidian config or generate static HTML
 ```
 
 The `session-start` hook auto-loads `context_brief.md` so the agent has compressed context for free.
-The `session-end` hook runs lint and appends a log entry. Most users never invoke `/wiki:lint` manually.
+The `session-end` hook runs lint and appends a log entry. Most users never invoke `/alpha-wiki:lint` manually.
 
 ## Skills
 
 | Slash command | Purpose |
 |---|---|
-| `/wiki:init` | Bootstrap wiki + scaffolding into the current project |
-| `/wiki:ingest` | raw → wiki page(s); triggers schema-evolve if no slot fits |
-| `/wiki:query` | Ask the wiki; synthesize from index + relevant pages |
-| `/wiki:lint` | Structural validation (broken links, missing reverses, orphans, dependency rules) |
-| `/wiki:status` | Health report — recent activity, stale pages, gaps, schema-evolution log |
-| `/wiki:evolve` | Add a new entity type to the schema |
-| `/wiki:spawn-agent` | Generate a wiki-aware subagent |
-| `/wiki:render` | Refresh Obsidian config or render static HTML |
+| `/alpha-wiki:init` | Bootstrap wiki + scaffolding into the current project |
+| `/alpha-wiki:ingest` | raw → wiki page(s); triggers schema-evolve if no slot fits |
+| `/alpha-wiki:query` | Ask the wiki; synthesize from index + relevant pages |
+| `/alpha-wiki:lint` | Structural validation (broken links, missing reverses, orphans, dependency rules) |
+| `/alpha-wiki:status` | Health report — recent activity, stale pages, gaps, schema-evolution log |
+| `/alpha-wiki:evolve` | Add a new entity type to the schema |
+| `/alpha-wiki:spawn-agent` | Generate a wiki-aware subagent |
+| `/alpha-wiki:render` | Refresh Obsidian config or render static HTML |
 
 ## Design
 

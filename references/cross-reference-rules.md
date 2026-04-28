@@ -28,7 +28,7 @@ slug: <link-target>
 status: stub
 ---
 # <inferred-title>
-TODO: fill via /wiki:ingest
+TODO: fill via /alpha-wiki:ingest
 ```
 
 And appends `log.md`:

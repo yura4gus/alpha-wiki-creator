@@ -62,8 +62,8 @@ def _render_context(config: InterviewConfig, merged: dict) -> dict:
         "date": _date.today().isoformat(),
         "entity_types": merged.get("entity_types", []),
         "cross_ref_rules": merged.get("cross_ref_rules", []),
-        "skills": ["/wiki:init", "/wiki:ingest", "/wiki:query", "/wiki:lint",
-                   "/wiki:evolve", "/wiki:spawn-agent", "/wiki:render", "/wiki:status"],
+        "skills": ["/alpha-wiki:init", "/alpha-wiki:ingest", "/alpha-wiki:query", "/alpha-wiki:lint",
+                   "/alpha-wiki:evolve", "/alpha-wiki:spawn-agent", "/alpha-wiki:render", "/alpha-wiki:status"],
         "schema_evolve_mode": config.schema_evolve_mode,
         "ci": config.ci,
     }
@@ -112,7 +112,7 @@ def _initialize_wiki_files(target: Path, ctx: dict, upgrade: bool) -> None:
     if not log_path.exists():
         log_path.write_text(env.get_template("log-md.j2").render(**ctx))
     elif upgrade:
-        log_path.write_text(log_path.read_text() + f"\n## [{ctx['date']}] upgrade | re-bootstrapped via /wiki-init\n")
+        log_path.write_text(log_path.read_text() + f"\n## [{ctx['date']}] upgrade | re-bootstrapped via /alpha-wiki:init\n")
 
 
 def _copy_assets(target: Path, config: InterviewConfig) -> None:
