@@ -17,15 +17,5 @@
     "karpathy",
     "omegawiki",
     "obsidian"
-  ],
-  "skills": [
-    "skills/init",
-    "skills/ingest",
-    "skills/query",
-    "skills/lint",
-    "skills/evolve",
-    "skills/spawn-agent",
-    "skills/render",
-    "skills/status"
   ]
 }
