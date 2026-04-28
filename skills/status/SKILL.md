@@ -1,6 +1,6 @@
 ---
 name: status
-description: Use when the user wants a wiki health check — recent activity, stale pages, schema-evolution log, gaps. Triggers include "wiki status", "wiki health", "what's stale in the wiki", "show me the wiki dashboard", "audit the wiki". Auto-invokable; pure read-only operation, no side effects beyond an optional output to `wiki/outputs/status-YYYY-MM-DD.md`.
+description: Wiki health report — recent activity, stale pages, schema-evolution log, gaps, lint summary. Triggers include "wiki status", "wiki health", "what's stale in the wiki", "show me the wiki dashboard", "audit the wiki". Auto-invokable; pure read-only operation, no side effects beyond an optional saved report.
 ---
 
 # wiki:status — wiki health report

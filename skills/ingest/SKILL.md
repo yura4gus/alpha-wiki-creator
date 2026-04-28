@@ -1,6 +1,7 @@
 ---
 name: ingest
-description: Use when the user wants to add new sources (papers, docs, transcripts, OpenAPI specs, ADRs, etc.) into an existing wiki. Triggers include "ingest this", "add to wiki", "process raw/", "import these docs", "feed this into the wiki". Use after `/alpha-wiki:init` has bootstrapped the wiki. Skip for one-off summaries that won't be persisted.
+description: Add new sources (papers, docs, transcripts, OpenAPI specs, ADRs, etc.) into an existing wiki. Triggers include "ingest this", "add to wiki", "process raw/", "import these docs", "feed this into the wiki". Use after `/alpha-wiki:init` has bootstrapped the wiki. Skip for one-off summaries that won't be persisted.
+argument-hint: "<file-paths…>"
 ---
 
 # wiki:ingest — raw artifact → wiki page(s)

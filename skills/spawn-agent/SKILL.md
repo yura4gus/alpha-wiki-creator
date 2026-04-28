@@ -1,6 +1,7 @@
 ---
 name: spawn-agent
-description: Use when the user wants to add a Claude Code subagent that operates on the wiki — e.g. a maintainer, reviewer, or domain-specific agent. Triggers include "add an agent for X", "spawn a wiki agent", "create a subagent that does X with the wiki". Generates `.claude/agents/<name>.md` and optionally a companion skill. Out of scope: writing arbitrary agents unrelated to the wiki.
+description: Add a Claude Code subagent that operates on the wiki — e.g. maintainer, reviewer, or domain-specific agent. Triggers include "add an agent for X", "spawn a wiki agent", "create a subagent that does X with the wiki". Generates `.claude/agents/<name>.md` and optionally a companion skill. Out of scope: writing arbitrary agents unrelated to the wiki.
+argument-hint: "<name> <role>"
 ---
 
 # wiki:spawn-agent — add a wiki-aware subagent

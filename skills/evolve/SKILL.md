@@ -1,6 +1,7 @@
 ---
 name: evolve
-description: Use when the user (or `/alpha-wiki:ingest`) needs to add a new entity type to the wiki schema. Triggers include "add type X to the wiki", "the wiki needs a new category for Y", or auto-invocation when ingest finds a no-match artifact. Pass `--generate-skill` to also produce a project-local skill that pre-classifies into the new slot.
+description: Add a new entity type to the wiki schema (updates CLAUDE.md, creates dir, logs schema-change). Triggers include "add type X to the wiki", "the wiki needs a new category for Y", or auto-invocation when ingest finds a no-match artifact. Pass `--generate-skill` to produce a project-local skill that pre-classifies into the new slot.
+argument-hint: "<type-name> [--generate-skill]"
 ---
 
 # wiki:evolve — add an entity type

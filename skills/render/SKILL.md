@@ -1,6 +1,7 @@
 ---
 name: render
-description: Use when the user wants to refresh or regenerate the visual layer of the wiki — Obsidian config or static HTML. Triggers include "refresh obsidian config", "render wiki to html", "regenerate dashboards", "update vault settings". For initial bootstrap, `/alpha-wiki:init` already creates the Obsidian config; use this skill for refresh or HTML output.
+description: Refresh or regenerate the wiki's visual layer — Obsidian config or static HTML. Triggers include "refresh obsidian config", "render wiki to html", "regenerate dashboards", "update vault settings". For initial bootstrap, `/alpha-wiki:init` already creates the Obsidian config; use this skill for refresh or HTML output.
+argument-hint: "[obsidian | html]"
 ---
 
 # wiki:render — refresh wiki UI artifacts

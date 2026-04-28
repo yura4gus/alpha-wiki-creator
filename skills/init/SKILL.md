@@ -1,6 +1,7 @@
 ---
 name: init
-description: Use this skill whenever the user wants to bootstrap a wiki, knowledge base, or persistent memory layer for an LLM agent or multi-agent system. Triggers include "create a wiki", "set up a knowledge base", "bootstrap project memory", "agent memory layer", "Karpathy LLM wiki", "OmegaWiki style", "Obsidian + Claude Code workflow", "set up CLAUDE.md", "wiki for my project", "memory for agents". Also use when the user describes wanting raw → wiki → schema separation, persistent compounding knowledge instead of RAG, or session-end automation that keeps documentation current. Do NOT use for one-off doc generation, single-file summaries, or static documentation that won't be incrementally maintained.
+description: Bootstrap an LLM-maintained wiki into the current project (Karpathy + OmegaWiki style). Triggers include "create a wiki", "set up a knowledge base", "bootstrap project memory", "agent memory layer", "Karpathy LLM wiki", "OmegaWiki style", "Obsidian + Claude Code workflow", "set up CLAUDE.md", "wiki for my project", "memory for agents". Use for raw → wiki → schema separation, persistent compounding knowledge instead of RAG, session-end automation. Do NOT use for one-off doc generation or static documentation that won't be incrementally maintained.
+argument-hint: "[project-description]"
 ---
 
 # wiki:init — bootstrap an LLM wiki into the current project
