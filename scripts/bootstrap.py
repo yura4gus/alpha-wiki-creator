@@ -25,6 +25,7 @@ def bootstrap(target: Path, config: InterviewConfig, upgrade: bool = False) -> N
     _copy_assets(target, config)
     _copy_tools(target)
     _initialize_graph(target, config)
+    _write_merged_config(target, merged)
 
 
 def _resolve_merged_config(config: InterviewConfig) -> dict:
@@ -152,3 +153,9 @@ def _initialize_graph(target: Path, config: InterviewConfig) -> None:
     (g / "edges.jsonl").write_text("")
     (g / "context_brief.md").write_text("# Context brief\n\n_(empty — will populate after first ingest)_\n")
     (g / "open_questions.md").write_text("# Open questions\n\n_(none yet)_\n")
+
+
+def _write_merged_config(target: Path, merged: dict) -> None:
+    cfg_dir = target / ".wiki-creator"
+    cfg_dir.mkdir(exist_ok=True)
+    (cfg_dir / "config.yaml").write_text(yaml.safe_dump(merged, sort_keys=False))

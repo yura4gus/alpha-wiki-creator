@@ -19,3 +19,18 @@ def test_add_entity_type_updates_claude_md_and_creates_dir(sample_wiki: Path):
     log = (sample_wiki / "wiki" / "log.md").read_text()
     assert "schema-change" in log
     assert "migration" in log
+
+
+def test_add_entity_type_respects_dot_wiki_dir(tmp_path: Path):
+    """When wiki_dir=.wiki, dir + log are under .wiki/, not wiki/."""
+    (tmp_path / "CLAUDE.md").write_text("# Project\n\n## Page Types\n")
+    (tmp_path / ".wiki").mkdir()
+    (tmp_path / ".wiki" / "log.md").write_text("# Log\n")
+    spec = {"name": "migration", "dir": "migrations",
+            "frontmatter_required": ["title", "slug"],
+            "frontmatter_optional": [], "sections_required": []}
+    from scripts.add_entity_type import add_entity_type
+    add_entity_type(tmp_path, spec, trigger="test", wiki_dir=".wiki")
+    assert (tmp_path / ".wiki" / "migrations").is_dir()
+    assert "schema-change" in (tmp_path / ".wiki" / "log.md").read_text()
+    assert not (tmp_path / "wiki").exists()

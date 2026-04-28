@@ -6,7 +6,7 @@ from pathlib import Path
 PAGE_TYPES_HEADER = "## Page Types"
 
 
-def add_entity_type(target: Path, spec: dict, trigger: str = "manual") -> None:
+def add_entity_type(target: Path, spec: dict, trigger: str = "manual", wiki_dir: str = "wiki") -> None:
     """Add a new entity type to CLAUDE.md, create its directory, and log the change.
 
     Args:
@@ -18,6 +18,7 @@ def add_entity_type(target: Path, spec: dict, trigger: str = "manual") -> None:
             - frontmatter_optional: (optional) List of optional frontmatter keys
             - sections_required: (optional) List of required markdown sections
         trigger: Description of what triggered this change (for logging)
+        wiki_dir: Name of the wiki subdirectory (default "wiki", can be ".wiki" etc.)
     """
     claude_path = target / "CLAUDE.md"
     text = claude_path.read_text()
@@ -34,10 +35,10 @@ def add_entity_type(target: Path, spec: dict, trigger: str = "manual") -> None:
 
     claude_path.write_text(text)
 
-    new_dir = target / "wiki" / spec["dir"]
+    new_dir = target / wiki_dir / spec["dir"]
     new_dir.mkdir(parents=True, exist_ok=True)
 
-    log_path = target / "wiki" / "log.md"
+    log_path = target / wiki_dir / "log.md"
     today = _date.today().isoformat()
     log_path.write_text(
         log_path.read_text()
