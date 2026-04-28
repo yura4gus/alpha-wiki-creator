@@ -131,7 +131,6 @@ def check_duplicate_slugs(wiki_dir: Path) -> list[LintFinding]:
 
 
 import click
-import fnmatch
 from tools.wiki_engine import add_edge
 
 

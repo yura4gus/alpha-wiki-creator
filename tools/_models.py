@@ -15,7 +15,7 @@ class LintSeverity(str, Enum):
 class Page:
     slug: str
     title: str
-    path: str  # relative to wiki dir, e.g. "modules/auth.md"
+    path: str  # absolute filesystem path (e.g. "/tmp/sample-wiki/wiki/modules/auth.md")
     frontmatter: dict[str, Any] = field(default_factory=dict)
     body: str = ""
     forward_links: list[str] = field(default_factory=list)
