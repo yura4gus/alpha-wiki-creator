@@ -1,0 +1,25 @@
+name: wiki-rollup
+on:
+  schedule:
+    - cron: '0 9 1 * *'  # 1st of month, 09:00 UTC
+  workflow_dispatch:
+jobs:
+  rollup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install uv && uv sync
+      - run: npm install -g @anthropic/claude-code
+      - name: run /wiki-rollup
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: claude -p "/wiki-rollup month"
+      - name: commit rollup
+        run: |
+          git config user.name "wiki-rollup-bot"
+          git config user.email "wiki-rollup@noreply"
+          git add wiki/rollups/ || true
+          git commit -m "chore: monthly wiki rollup" || echo "no changes"
+          git push

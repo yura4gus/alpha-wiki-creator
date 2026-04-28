@@ -1,0 +1,25 @@
+name: wiki-review
+on:
+  schedule:
+    - cron: '0 9 * * 1'  # Mon 09:00 UTC
+  workflow_dispatch:
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: pip install uv && uv sync
+      - name: install Claude Code
+        run: npm install -g @anthropic/claude-code
+      - name: run /wiki-review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: claude -p "/wiki-review" > review.md
+      - name: post issue
+        uses: peter-evans/create-issue-from-file@v5
+        with:
+          title: "Weekly wiki review (auto)"
+          content-filepath: review.md
+          labels: wiki-review

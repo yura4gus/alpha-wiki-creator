@@ -1,0 +1,38 @@
+# {{ project_name }}
+
+{{ project_description }}
+
+This project uses an LLM-maintained wiki (Karpathy + OmegaWiki style) as persistent
+agent memory. The wiki lives in `{{ wiki_dir }}/`. The runtime contract for agents
+is in `CLAUDE.md`.
+
+## Three commands to know
+
+- `/wiki-ingest <path>` — ingest a raw artifact into the wiki
+- `/wiki-query <question>` — ask the wiki
+- `/wiki-lint --fix` — apply safe corrections
+
+## Layout
+
+- `raw/` — immutable sources (read-only for the agent)
+- `{{ wiki_dir }}/` — LLM-maintained markdown
+- `{{ wiki_dir }}/graph/` — auto-generated context brief, edges, open questions
+- `CLAUDE.md` — runtime contract
+- `tools/` — Python engine (lint, edges, classify)
+
+## Obsidian
+
+The `{{ wiki_dir }}/` directory is an Obsidian vault. Open it in Obsidian to browse
+the graph view. Dataview is enabled.
+
+## Hooks
+
+- **Session start** loads compressed context for the agent.
+- **Session end** runs lint and appends a log entry.
+- **Pre-commit** runs `lint --fix` and blocks on errors.
+{% if ci %}- **CI** runs `wiki-lint` on every push; weekly `wiki-review` posts an issue.
+{% endif %}
+
+## Generated
+
+`{{ date }}` by `wiki-creator` (preset={{ preset }}, overlay={{ overlay }}).

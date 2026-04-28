@@ -1,0 +1,20 @@
+name: clean
+description: Clean Architecture (Uncle Bob)
+applies_to: [software-project]
+top_level_dirs:
+  - domains
+  - use-cases
+  - adapters/controllers
+  - adapters/presenters
+  - adapters/gateways
+  - infrastructure
+  - contracts
+  - decisions
+  - modules
+  - people
+  - tasks
+dependency_rules:
+  - {from: "domains/", forbidden_to: ["adapters/", "infrastructure/", "use-cases/"]}
+  - {from: "use-cases/", forbidden_to: ["adapters/", "infrastructure/"]}
+  - {from: "adapters/", forbidden_to: ["infrastructure/"]}
+extra_cross_ref_rules: []

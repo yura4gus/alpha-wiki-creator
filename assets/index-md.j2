@@ -1,0 +1,12 @@
+---
+project: {{ project_name }}
+generated: {{ date }}
+---
+# Index
+
+{% for type in entity_types %}
+## {{ type.name | title }}
+
+<!-- auto-populated by /wiki-ingest -->
+
+{% endfor %}

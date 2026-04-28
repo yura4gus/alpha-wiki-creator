@@ -1,0 +1,10 @@
+title: ""
+slug: ""
+transport: ""        # rest | graphql | grpc | events | webhooks | rpc | data-models
+service: ""          # [[module-X]]
+consumers: []
+version: ""
+status: "draft"      # draft | beta | stable | deprecated
+source_file: ""
+breaking_changes: []
+date_updated: ""

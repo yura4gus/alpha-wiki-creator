@@ -1,0 +1,7 @@
+title: ""
+slug: ""
+kind: ""             # prd | rfc | api | protocol | runbook | threat-model | test-plan | diagram
+status: "draft"
+implements: []
+version: ""
+date_updated: ""
