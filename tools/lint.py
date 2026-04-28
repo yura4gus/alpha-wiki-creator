@@ -205,7 +205,7 @@ def _lookup_reverse(key: str) -> str:
 @click.option("--suggest", is_flag=True, help="Print suggestions but don't write.")
 @click.option("--dry-run", is_flag=True, help="Run checks, exit nonzero if any errors found.")
 @click.option("--config", type=click.Path(path_type=Path, exists=True),
-              help="Path to wiki-creator config (preset+overlay merged) for schema.")
+              help="Path to alpha-wiki config (preset+overlay merged) for schema.")
 def cli(wiki_dir: Path, fix: bool, suggest: bool, dry_run: bool, config: Path | None):
     schema, dir_to_type, dep_rules = _load_config(config)
     findings = run_all_checks(wiki_dir, schema, dir_to_type, dep_rules)

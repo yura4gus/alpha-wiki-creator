@@ -260,7 +260,7 @@ import click
 
 @click.group()
 def cli():
-    """wiki-creator deterministic engine."""
+    """alpha-wiki deterministic engine."""
 
 
 @cli.command("rebuild-edges")

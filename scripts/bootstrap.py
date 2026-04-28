@@ -156,6 +156,6 @@ def _initialize_graph(target: Path, config: InterviewConfig) -> None:
 
 
 def _write_merged_config(target: Path, merged: dict) -> None:
-    cfg_dir = target / ".wiki-creator"
+    cfg_dir = target / ".alpha-wiki"
     cfg_dir.mkdir(exist_ok=True)
     (cfg_dir / "config.yaml").write_text(yaml.safe_dump(merged, sort_keys=False))

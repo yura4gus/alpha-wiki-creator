@@ -15,7 +15,7 @@ and cross-reference rules. `bootstrap.py` reads the chosen preset, merges it wit
 ## Custom
 
 Preset = "custom" triggers interactive entity-type interview in `scripts/interview.py`,
-producing an in-memory preset that gets persisted as `target/.wiki-creator/preset.yaml`.
+producing an in-memory preset that gets persisted as `target/.alpha-wiki/preset.yaml`.
 
 ## Schema
 

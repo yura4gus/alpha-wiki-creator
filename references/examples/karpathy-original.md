@@ -26,5 +26,5 @@ index reads with no surprises. Vector search becomes useful only past ~100 sourc
 
 ## What we keep
 
-All of it. wiki-creator preserves Karpathy's spirit while adding production-grade
+All of it. Alpha-wiki preserves Karpathy's spirit while adding production-grade
 extensions from OmegaWiki (typed entities, edges, bidirectional enforcement).

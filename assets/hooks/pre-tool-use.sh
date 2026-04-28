@@ -8,4 +8,4 @@ case "$TARGET_FILE" in
   "$WIKI_DIR"/graph/*) exit 0 ;;
 esac
 
-uv run python tools/lint.py --wiki-dir "$WIKI_DIR" --config .wiki-creator/config.yaml --dry-run 2>&1 | head -5 || true
+uv run python tools/lint.py --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --dry-run 2>&1 | head -5 || true

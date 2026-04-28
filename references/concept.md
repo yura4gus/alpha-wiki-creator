@@ -23,7 +23,7 @@ Same three layers, but with:
 - Lint with `--fix` / `--suggest` / `--dry-run`
 - GitHub Actions cron (daily-arxiv equivalent in our case: weekly review)
 
-## wiki-creator additions
+## Alpha-wiki additions
 
 - **Three-layer model = mutability contracts**, not folders
 - **Domain presets** (software-project default + 4 alternatives + custom)

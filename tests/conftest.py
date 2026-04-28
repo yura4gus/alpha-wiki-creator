@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for wiki-creator tests."""
+"""Shared pytest fixtures for alpha-wiki tests."""
 from pathlib import Path
 import pytest
 import shutil

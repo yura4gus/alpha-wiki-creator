@@ -23,7 +23,7 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
         assert (tmp_path / "wiki" / d).is_dir(), f"missing: wiki/{d}"
     # Bootstrap log entry:
     assert "bootstrap" in (tmp_path / "wiki" / "log.md").read_text()
-    assert (tmp_path / ".wiki-creator" / "config.yaml").exists()
+    assert (tmp_path / ".alpha-wiki" / "config.yaml").exists()
 
 
 def test_bootstrap_overlay_hexagonal_creates_hex_dirs(tmp_path: Path):

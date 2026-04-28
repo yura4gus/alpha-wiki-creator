@@ -11,7 +11,7 @@ description: Use when the user wants a wiki health check — recent activity, st
 2. Run `uv run python -m tools.status --wiki-dir <wiki_dir>` to generate the report.
    (If module-style invocation isn't wired, run `uv run python -c "from tools.status import status_report; from pathlib import Path; print(status_report(Path('<wiki_dir>')))"`.)
 3. Surface the report to the user.
-4. Run `uv run python tools/lint.py --wiki-dir <wiki_dir> --suggest --config .wiki-creator/config.yaml` and append a brief summary (lint counts) to the user's view.
+4. Run `uv run python tools/lint.py --wiki-dir <wiki_dir> --suggest --config .alpha-wiki/config.yaml` and append a brief summary (lint counts) to the user's view.
 5. Offer to save the report to `<wiki_dir>/outputs/status-YYYY-MM-DD.md` (yes / no).
 
 ## What's included

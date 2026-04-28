@@ -3,7 +3,7 @@ set -euo pipefail
 WIKI_DIR="${WIKI_DIR:-wiki}"
 DATE="$(date -u +%Y-%m-%d)"
 
-REPORT="$(uv run python tools/lint.py --wiki-dir "$WIKI_DIR" --config .wiki-creator/config.yaml --suggest 2>&1 || true)"
+REPORT="$(uv run python tools/lint.py --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --suggest 2>&1 || true)"
 SUGGESTIONS=$(echo "$REPORT" | grep -c "^WARN" || true)
 ERRORS=$(echo "$REPORT" | grep -c "^ERROR" || true)
 
