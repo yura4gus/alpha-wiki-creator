@@ -1,0 +1,35 @@
+{
+  "name": "alpha-wiki",
+  "description": "Alpha-wiki marketplace — LLM-maintained wiki plugin (Karpathy + OmegaWiki inspired)",
+  "owner": {
+    "name": "yura4gus",
+    "url": "https://github.com/yura4gus"
+  },
+  "metadata": {
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "wiki",
+      "version": "0.1.0",
+      "description": "Bootstraps an LLM-maintained wiki into any project: 8 skills (init, ingest, query, lint, evolve, status, spawn-agent, render), typed cross-links, schema evolution, Obsidian-compatible.",
+      "source": "./",
+      "author": {
+        "name": "yura4gus",
+        "url": "https://github.com/yura4gus"
+      },
+      "homepage": "https://github.com/yura4gus/alpha-wiki-creator",
+      "repository": "https://github.com/yura4gus/alpha-wiki-creator",
+      "license": "MIT",
+      "keywords": [
+        "claude-code",
+        "wiki",
+        "knowledge-base",
+        "agent-memory",
+        "karpathy",
+        "omegawiki",
+        "obsidian"
+      ]
+    }
+  ]
+}

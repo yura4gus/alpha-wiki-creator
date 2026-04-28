@@ -1,0 +1,31 @@
+{
+  "name": "wiki",
+  "version": "0.1.0",
+  "description": "LLM-maintained wiki bootstrap (Karpathy + OmegaWiki inspired)",
+  "author": {
+    "name": "yura4gus",
+    "url": "https://github.com/yura4gus"
+  },
+  "homepage": "https://github.com/yura4gus/alpha-wiki-creator",
+  "repository": "https://github.com/yura4gus/alpha-wiki-creator",
+  "license": "MIT",
+  "keywords": [
+    "claude-code",
+    "wiki",
+    "knowledge-base",
+    "agent-memory",
+    "karpathy",
+    "omegawiki",
+    "obsidian"
+  ],
+  "skills": [
+    "skills/init",
+    "skills/ingest",
+    "skills/query",
+    "skills/lint",
+    "skills/evolve",
+    "skills/spawn-agent",
+    "skills/render",
+    "skills/status"
+  ]
+}
