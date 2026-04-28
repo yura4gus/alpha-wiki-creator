@@ -323,6 +323,13 @@ dev = [
     { name = "pytest-snapshot" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-cov" },
+    { name = "pytest-snapshot" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "click", specifier = ">=8.1" },
@@ -333,3 +340,10 @@ requires-dist = [
     { name = "pyyaml", specifier = ">=6.0" },
 ]
 provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "pytest", specifier = ">=8.0" },
+    { name = "pytest-cov", specifier = ">=5.0" },
+    { name = "pytest-snapshot", specifier = ">=0.9" },
+]
