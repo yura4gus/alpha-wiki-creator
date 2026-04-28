@@ -1,9 +1,9 @@
 ---
-name: wiki-ingest
-description: Use when the user wants to add new sources (papers, docs, transcripts, OpenAPI specs, ADRs, etc.) into an existing wiki. Triggers include "ingest this", "add to wiki", "process raw/", "import these docs", "feed this into the wiki". Use after `/wiki-init` has bootstrapped the wiki. Skip for one-off summaries that won't be persisted.
+name: ingest
+description: Use when the user wants to add new sources (papers, docs, transcripts, OpenAPI specs, ADRs, etc.) into an existing wiki. Triggers include "ingest this", "add to wiki", "process raw/", "import these docs", "feed this into the wiki". Use after `/wiki:init` has bootstrapped the wiki. Skip for one-off summaries that won't be persisted.
 ---
 
-# wiki-ingest — raw artifact → wiki page(s)
+# wiki:ingest — raw artifact → wiki page(s)
 
 ## Process
 
@@ -14,7 +14,7 @@ description: Use when the user wants to add new sources (papers, docs, transcrip
    c. If no match:
       - **gated mode** → propose options: (a) new top-level type, (b) sub-folder under existing layer, (c) section append on related page. Wait for user.
       - **auto mode** → pick best default and proceed (write `[schema-change]` log).
-   d. If a new type is needed → invoke `/wiki-evolve <type>`.
+   d. If a new type is needed → invoke `/wiki:evolve <type>`.
    e. Render page from frontmatter template + artifact body. Use the entity type's required sections.
    f. Compute forward links from content; let `wiki_engine.add_edge --bidirectional` write reverse links automatically.
    g. Update `<wiki_dir>/index.md` (auto section for the page type).

@@ -8,9 +8,9 @@ is in `CLAUDE.md`.
 
 ## Three commands to know
 
-- `/wiki-ingest <path>` — ingest a raw artifact into the wiki
-- `/wiki-query <question>` — ask the wiki
-- `/wiki-lint --fix` — apply safe corrections
+- `/wiki:ingest <path>` — ingest a raw artifact into the wiki
+- `/wiki:query <question>` — ask the wiki
+- `/wiki:lint --fix` — apply safe corrections
 
 ## Layout
 
@@ -30,9 +30,9 @@ the graph view. Dataview is enabled.
 - **Session start** loads compressed context for the agent.
 - **Session end** runs lint and appends a log entry.
 - **Pre-commit** runs `lint --fix` and blocks on errors.
-{% if ci %}- **CI** runs `wiki-lint` on every push; weekly `wiki-review` posts an issue.
+{% if ci %}- **CI** runs `wiki:lint` on every push; weekly `wiki:review` posts an issue.
 {% endif %}
 
 ## Generated
 
-`{{ date }}` by `wiki-creator` (preset={{ preset }}, overlay={{ overlay }}).
+`{{ date }}` by `wiki` (preset={{ preset }}, overlay={{ overlay }}).

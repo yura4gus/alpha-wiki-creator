@@ -1,13 +1,13 @@
 ---
-name: wiki-evolve
-description: Use when the user (or `/wiki-ingest`) needs to add a new entity type to the wiki schema. Triggers include "add type X to the wiki", "the wiki needs a new category for Y", or auto-invocation when ingest finds a no-match artifact. Pass `--generate-skill` to also produce a project-local skill that pre-classifies into the new slot.
+name: evolve
+description: Use when the user (or `/wiki:ingest`) needs to add a new entity type to the wiki schema. Triggers include "add type X to the wiki", "the wiki needs a new category for Y", or auto-invocation when ingest finds a no-match artifact. Pass `--generate-skill` to also produce a project-local skill that pre-classifies into the new slot.
 ---
 
-# wiki-evolve — add an entity type
+# wiki:evolve — add an entity type
 
 ## Process
 
-1. Collect type spec interactively (or from `/wiki-ingest` schema-evolve flow):
+1. Collect type spec interactively (or from `/wiki:ingest` schema-evolve flow):
    - `name` (slug-friendly, lowercase, hyphenated)
    - `dir` (relative to wiki/, may include subdirs)
    - `frontmatter_required` (list)
@@ -27,7 +27,7 @@ description: Use when the user (or `/wiki-ingest`) needs to add a new entity typ
    git commit -m "[schema-change] add type: <name>"
    ```
 
-6. If `--generate-skill <trigger-phrase>`: render `assets/child-skills/ingest-domain.j2` into `target/.claude/skills/wiki-ingest-<name>/SKILL.md`.
+6. If `--generate-skill <trigger-phrase>`: render `assets/child-skills/ingest-domain.j2` into `target/.claude/skills/wiki-ingest-<name>/SKILL.md`. (This child skill remains prefixed for domain clarity.)
 
 ## Modes
 

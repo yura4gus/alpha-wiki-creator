@@ -23,4 +23,4 @@ Wiki dir: `wiki/`
 - decision `affects: [[X]]` → X.## Decisions adds decision
 
 ## Skills
-- /wiki-ingest, /wiki-query, /wiki-lint, /wiki-evolve, /wiki-spawn-agent, /wiki-render
+- /wiki:init, /wiki:ingest, /wiki:query, /wiki:lint, /wiki:evolve, /wiki:spawn-agent, /wiki:render, /wiki:status

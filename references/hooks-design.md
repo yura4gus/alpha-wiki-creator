@@ -23,8 +23,8 @@ Wired by `assets/install-hooks.sh` into `.git/hooks/`.
 In `target/.github/workflows/`:
 
 - **wiki-lint.yml** — `uv run python tools/lint.py` on push/PR; fails PR if 🔴.
-- **wiki-review.yml** — weekly cron, headless `claude -p "/wiki-review"` → publishes issue.
-- **wiki-rollup.yml** — monthly cron, headless `claude -p "/wiki-rollup month"` → commits rollup.
+- **wiki-review.yml** — weekly cron, headless `claude -p "/wiki:review"` → publishes issue.
+- **wiki-rollup.yml** — monthly cron, headless `claude -p "/wiki:rollup month"` → commits rollup.
 
 ## Debouncing
 

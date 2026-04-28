@@ -30,6 +30,6 @@ Same three layers, but with:
 - **Architectural overlays** (clean, hexagonal, ddd, layered)
 - **Schema evolution** through ingest (new artifact type → CLAUDE.md mutation)
 - **Session-end automation** (lint + log + context_brief rebuild)
-- **Sibling skill `wiki-spawn-agent`** for adding subagents
+- **Sibling skill `wiki:spawn-agent`** for adding subagents
 
 The full design spec lives at `docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md`.

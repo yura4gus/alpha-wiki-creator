@@ -1,9 +1,9 @@
 ---
-name: wiki-lint
+name: lint
 description: Use when the user wants to verify wiki structural integrity, fix broken links, surface orphans, or check before commit. Triggers include "lint the wiki", "check the wiki", "fix wiki links", "wiki health check". Also auto-invoked by pre-commit hook and CI. Use the `--fix` flag to apply safe corrections.
 ---
 
-# wiki-lint — wiki structural validation
+# wiki:lint — wiki structural validation
 
 ## Process
 
