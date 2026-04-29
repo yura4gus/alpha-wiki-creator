@@ -1,6 +1,6 @@
 {
-  "name": "alpha-wiki",
-  "description": "Alpha-wiki marketplace — LLM-maintained wiki plugin (Karpathy + OmegaWiki inspired)",
+  "name": "alpha",
+  "description": "Alpha plugin marketplace (alpha-wiki + future tools)",
   "owner": {
     "name": "yura4gus",
     "url": "https://github.com/yura4gus"
