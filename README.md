@@ -1,16 +1,38 @@
-# wiki
+# Alpha-wiki
 
-> LLM-maintained wiki as persistent agent memory — Karpathy + OmegaWiki, in your repo.
+> **Agent memory that compounds — in plain markdown, in your repo.**
 
-A Claude Code plugin that bootstraps a structured, lint-enforced markdown wiki into any project. Agents read, write, and grow it across sessions. Three layers, typed cross-links, no embeddings, no surprises.
+A Claude Code plugin that turns Andrej Karpathy's LLM-Wiki sketch into a production runtime. Agents read, write, and grow a typed, lint-enforced markdown knowledge base across sessions. No embeddings. No vector store. No drift. Just files your team can read, diff, and review.
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![CI](https://github.com/yura4gus/alpha-wiki-creator/actions/workflows/plugin-ci.yml/badge.svg)](https://github.com/yura4gus/alpha-wiki-creator/actions)
 
 ---
 
-## Why
+## Why Alpha-wiki
 
-RAG hides things. Embeddings drift. Plain markdown with `[[wikilinks]]` doesn't. Karpathy's 2025 LLM-Wiki insight: a curated index plus typed cross-references is enough up to ~100 sources — and reads transparently. OmegaWiki extends this with bidirectional enforcement, typed edges, and lint discipline. `wiki` ships both, plus presets, architectural overlays, and schema evolution that grows with the project.
+LLM agents forget. RAG hides what they remember. Embeddings drift silently and obscure why a retrieval landed. **Plain markdown with `[[wikilinks]]` doesn't have these problems** — but raw markdown alone is undisciplined: pages go stale, links rot, structure entropies.
+
+Alpha-wiki gives the wiki a **runtime contract** — typed entities, required frontmatter, bidirectional links the lint enforces, automated hooks that load compressed context at session start and run lint at session end. The result: **agent memory that compounds week-over-week instead of decaying.**
+
+Use it for engineering projects (decisions, modules, contracts, ADRs), research (papers, claims, experiments), product (features, personas, flows), or as a personal knowledge base. Five domain presets plus four architectural overlays (clean / hexagonal / DDD / layered) ship out of the box, and the schema **evolves through ingest** — new entity types are proposed, not preempted.
+
+## What's different from Karpathy's LLM-Wiki
+
+Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) sketched the idea in ~80 lines: three layers (raw / wiki / CLAUDE.md), three operations (ingest / query / lint), two service files (index.md / log.md). It is a beautiful sketch. Alpha-wiki is the production extension.
+
+| Karpathy's gist (sketch) | Alpha-wiki (runtime) |
+|---|---|
+| 3 untyped layers | Same 3 layers, made explicit as **mutability contracts** + 5 domain presets + 4 architectural overlays |
+| 3 operations (ingest, query, lint) | **8 skills + 8 slash commands** — ingest, query, lint, evolve, status, spawn-agent, render, init |
+| No frontmatter rules | **Required frontmatter per entity type**, lint-blocked on violations |
+| Manual cross-links | **Bidirectional enforcement** — every forward link gets a reverse, written automatically by the engine |
+| No automation | **Three-layer hooks** — session-start loads `context_brief.md`, post-tool-use rebuilds the graph, session-end runs lint and appends a log entry, pre-commit blocks 🔴 errors, weekly CI review |
+| Static index.md | **Auto-generated graph layer** — `edges.jsonl`, `context_brief.md` (≤8000 chars, loaded into every session for free), `open_questions.md` |
+| Bring your own UI | **Obsidian-first** — `.obsidian/` config ships with semantic color groups (🔴 services, 🟢 modules, ⚫ docs, 🟠 contracts) so the graph view reads like a system diagram |
+| One-shot setup | **Schema evolution** — `/alpha-wiki:evolve` adds new entity types through ingest, gates them by default, logs every schema change |
+| You write the subagents | **Subagent slot** — `/alpha-wiki:spawn-agent` generates wiki-aware Claude Code subagents that honor the mutability matrix |
+
+In one line: **Karpathy gave the idea, Alpha-wiki gives the runtime.**
 
 ## Install
 
