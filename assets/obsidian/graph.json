@@ -6,11 +6,32 @@
   "hideUnresolved": false,
   "showOrphans": true,
   "collapse-color-groups": false,
-  "colorGroups": [],
+  "colorGroups": [
+    {
+      "query": "path:modules/ OR path:bounded-contexts/ OR path:adapters/inbound/ OR path:application/",
+      "color": { "a": 1, "rgb": 15289155 }
+    },
+    {
+      "query": "path:components/ OR path:core/ OR path:ports/ OR path:domains/ OR path:use-cases/",
+      "color": { "a": 1, "rgb": 5025616 }
+    },
+    {
+      "query": "path:decisions/ OR path:specs/ OR path:concepts/ OR path:apis/ OR path:entities/ OR path:papers/ OR path:summaries/ OR path:topics/ OR path:claims/ OR path:experiments/ OR path:ideas/ OR path:foundations/ OR path:features/ OR path:flows/ OR path:metrics/ OR path:personas/ OR path:competitors/ OR path:projects/ OR path:areas/ OR path:resources/ OR path:permanent/ OR path:fleeting/ OR path:journals/ OR path:goals/ OR path:archive/ OR path:sources/",
+      "color": { "a": 1, "rgb": 4475735 }
+    },
+    {
+      "query": "path:contracts/",
+      "color": { "a": 1, "rgb": 16744192 }
+    },
+    {
+      "query": "path:people/ OR path:tasks/",
+      "color": { "a": 1, "rgb": 11119017 }
+    }
+  ],
   "collapse-display": false,
   "showArrow": true,
   "textFadeMultiplier": 0,
-  "nodeSizeMultiplier": 1,
+  "nodeSizeMultiplier": 1.2,
   "lineSizeMultiplier": 1,
   "collapse-forces": false,
   "centerStrength": 0.5,

@@ -110,6 +110,22 @@ The `session-end` hook runs lint and appends a log entry. Most users never invok
 | `/alpha-wiki:spawn-agent` | Generate a wiki-aware subagent |
 | `/alpha-wiki:render` | Refresh Obsidian config or render static HTML |
 
+## Reading the Obsidian graph
+
+The bootstrap ships a default `.obsidian/graph.json` with **color groups** so the graph view tells a story at a glance:
+
+| Color | Meaning |
+|---|---|
+| 🔴 Red | Service / repo / top-level architectural unit (`modules/`, `bounded-contexts/`, `application/`) |
+| 🟢 Green | Module / sub-component within a service (`components/`, `core/`, `ports/`, `domains/`, `use-cases/`) |
+| ⚫ Dark grey | Document — decisions, specs, concepts, APIs, papers, claims, summaries, etc. |
+| 🟠 Orange | Contract — REST/GraphQL/gRPC/events at service boundaries (`contracts/`) |
+| ⚪ Light grey | People / tasks — meta layer |
+
+A red node with many grey edges = a service that has accumulated decisions and specs. A green cluster around a red node = a service with multiple modules. An orange node bridging two reds = a contract owned by one, consumed by the other. Isolated red node = service with no docs (lint flags this as a maintenance gap).
+
+Customize: edit `.obsidian/graph.json` → `colorGroups` array. Full legend at `.obsidian/COLOR-LEGEND.md` after bootstrap.
+
 ## Design
 
 Full spec: [`docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md`](docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md)
