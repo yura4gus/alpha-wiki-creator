@@ -314,7 +314,7 @@ Same set as already shipped, with extensions where Phase 1a hardens.
 | Hook | When | Action |
 |---|---|---|
 | session-start | Session start | `cat wiki/graph/context_brief.md` |
-| post-tool-use | After write to `wiki/` | `tools/wiki_engine.py rebuild-context-brief` |
+| post-tool-use | After write to `wiki/` | `tools/wiki_engine.py rebuild-edges`, `rebuild-context-brief`, `rebuild-open-questions` |
 | session-end | Session end | `lint --suggest`; append `log.md` entry; surface stale pages |
 | pre-commit | Before git commit | `lint --fix --pre-commit` (block 🔴) |
 | CI: `wiki-lint.yml` | On push / PR | Full lint, fail if 🔴 |

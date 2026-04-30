@@ -39,3 +39,26 @@ def test_custom_wiki_dir_is_rendered_into_hooks_and_workflows(tmp_path: Path):
     rollup_workflow = (tmp_path / ".github" / "workflows" / "wiki-rollup.yml").read_text()
     assert "git add .wiki/rollups/ || true" in rollup_workflow
     assert "git add wiki/rollups/" not in rollup_workflow
+
+
+def test_post_tool_hook_rebuilds_full_graph(tmp_path: Path):
+    cfg = InterviewConfig(
+        project_name="legacy",
+        project_description="d",
+        wiki_dir=".wiki",
+        preset="software-project",
+        overlay="none",
+        custom_entity_types=None,
+        i18n_languages=["en"],
+        hooks="session",
+        ci=False,
+        schema_evolve_mode="gated",
+    )
+
+    bootstrap(target=tmp_path, config=cfg)
+
+    hook = (tmp_path / ".claude" / "hooks" / "post-tool-use.sh").read_text()
+    assert 'WIKI_DIR="${WIKI_DIR:-.wiki}"' in hook
+    assert "rebuild-edges --wiki-dir \"$WIKI_DIR\"" in hook
+    assert "rebuild-context-brief --wiki-dir \"$WIKI_DIR\"" in hook
+    assert "rebuild-open-questions --wiki-dir \"$WIKI_DIR\"" in hook

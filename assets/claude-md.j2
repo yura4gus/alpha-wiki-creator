@@ -70,7 +70,7 @@ Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stu
 
 - **session-start** loads `{{ wiki_dir }}/graph/context_brief.md` into agent context.
 - **pre-tool-use** validates frontmatter and reverse-link on writes to `{{ wiki_dir }}/`.
-- **post-tool-use** debounces (5s) `wiki_engine.py rebuild-context-brief`.
+- **post-tool-use** debounces (5s) full graph rebuild: `edges.jsonl`, `context_brief.md`, `open_questions.md`.
 - **session-end** runs `lint --suggest`, appends a session-end log entry, and prints a summary.
 
 ## Schema-evolve mode
