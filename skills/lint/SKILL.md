@@ -1,30 +1,87 @@
 ---
 name: lint
-description: Verify wiki structural integrity — broken links, missing reverses, orphans, dependency rules, frontmatter. Triggers include "lint the wiki", "check the wiki", "fix wiki links", "wiki health check". Auto-invoked by pre-commit hook and CI. Use `--fix` for safe auto-corrections.
+description: "Validate and repair wiki structure: frontmatter, broken wikilinks, missing reverse links, orphan pages, duplicate slugs, dependency rules, and graph hygiene. Use before commits, after ingest/evolve, when the graph looks wrong, or when pages become hard to find."
 argument-hint: "[--fix | --suggest | --dry-run]"
 ---
 
-# wiki:lint — wiki structural validation
+# wiki:lint - structural validation
 
-## Process
+## Mission
 
-1. Determine flags: `--fix` (apply safe fixes), `--suggest` (print suggestions), `--dry-run` (report-only, exit nonzero on errors).
-2. Run: `uv run python tools/lint.py --wiki-dir <wiki_dir> [--fix|--suggest|--dry-run] --config <merged-config-path>`.
-3. Surface findings to user, grouped by severity:
-   - 🔴 errors (blocking): broken links, missing required frontmatter, duplicate slugs
-   - 🟡 warnings: missing reverse links (auto-fixable), orphans, dependency rule violations, contract migration notes missing
-4. If `--fix` was used, summarize what was auto-corrected.
-5. Suggest manual follow-ups for non-auto-fixable items.
+Keep the wiki trustworthy as a graph. Lint is the guardrail that prevents markdown memory from decaying into loose notes.
 
-## Lint check inventory
+## Name Contract
 
-See `references/cross-reference-rules.md` and `tools/lint.py` source for exact check definitions.
+`lint` means "check structural integrity". It does not do semantic review, product judgment, or team process review. Use `/alpha-wiki:review` for a higher-level report.
+
+## Severity Model
+
+- Error: blocks CI/commit. Examples: broken wikilink, missing required frontmatter, duplicate slug.
+- Warning: should be fixed or reviewed. Examples: missing reverse link, orphan page, dependency rule violation.
+- Suggestion: useful cleanup that should not block. Examples: stale page, missing owner, weak title, poor graph placement.
+
+## Modes
+
+- `--dry-run`: report only; nonzero on errors.
+- `--suggest`: report plus suggested manual fixes.
+- `--fix`: apply deterministic safe fixes, then re-run checks.
+- CI/pre-commit mode: fail on errors; allow warnings unless strict mode is explicitly requested.
+
+## Workflow
+
+1. Detect wiki dir and config:
+   - `--wiki-dir <wiki_dir>`
+   - `--config .alpha-wiki/config.yaml`
+2. Run all deterministic checks.
+3. Group findings by severity and check name.
+4. If `--fix`:
+   - Apply only safe deterministic fixes.
+   - Rebuild graph files.
+   - Re-run lint.
+5. Summarize:
+   - Counts by severity.
+   - Files changed by auto-fix.
+   - Manual next actions.
+
+## Checks
 
 | Check | Severity | Auto-fix |
 |---|---|---|
-| broken-wikilink | 🔴 | no |
-| missing-reverse-link | 🟡 | yes |
-| orphan | 🟡 | no |
-| missing-frontmatter-field | 🔴 | no |
-| duplicate-slug | 🔴 | no |
-| dependency-rule-violation | 🟡 | no |
+| `broken-wikilink` | Error | No |
+| `missing-frontmatter-field` | Error | No |
+| `duplicate-slug` | Error | No |
+| `missing-reverse-link` | Warning | Yes |
+| `orphan` | Warning | No |
+| `dependency-rule-violation` | Warning | No |
+
+## Graph And Color Diagnostics
+
+If the Obsidian graph looks wrong, lint should guide the user:
+
+- Isolated red service/module: missing decisions/specs/contracts links.
+- Orange contract without owner/consumers: contract page incomplete.
+- Green module with only grey links: missing parent service/module.
+- Dark grey document with no inbound links: likely orphan or unindexed output.
+- People/tasks cluster disconnected from work pages: missing ownership links.
+
+## Safe Fix Rules
+
+- Add reverse links only when the reverse relation is defined.
+- Do not create semantic content automatically.
+- Do not delete pages.
+- Do not change status values without user confirmation.
+- Rebuild `edges.jsonl`, `context_brief.md`, and `open_questions.md` after fixes.
+
+## Done Criteria
+
+- Errors are zero.
+- Warnings are either fixed or explained.
+- Graph artifacts are current.
+- User receives concrete next actions, not just raw output.
+
+## References
+
+- `tools/lint.py`
+- `tools/wiki_engine.py`
+- `references/cross-reference-rules.md`
+- `assets/obsidian/COLOR-LEGEND.md`

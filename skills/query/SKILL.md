@@ -1,29 +1,82 @@
 ---
 name: query
-description: Ask the wiki — synthesize answers from index + relevant pages. Triggers include "ask the wiki", "what does the wiki say about X", "summarize what we know about X", "find pages about X", "what decisions were made about X". Use after at least one `/alpha-wiki:ingest` has populated the wiki.
+description: "Answer questions from the wiki using explicit markdown evidence. Use when the user asks what the project knows, why a decision was made, what changed, what is stale, or where related pages are. Do not use as generic web search or as a substitute for ingesting durable new material."
 argument-hint: "<question>"
 ---
 
-# wiki:query — ask the wiki
+# wiki:query - ask the wiki
 
-## Process
+## Mission
 
-1. Read `<wiki_dir>/graph/context_brief.md` (loaded by session-start hook anyway).
-2. Read `<wiki_dir>/index.md` to find candidate pages.
-3. Identify 3-7 pages most relevant to the question. Read them.
-4. Synthesize an answer that:
-   a. Cites pages by `[[slug]]`.
-   b. Distinguishes between settled facts (status: stable/accepted) and open questions.
-   c. Flags contradictions if any.
-5. Offer to save the answer to `<wiki_dir>/outputs/<slug>.md` (a fresh page) or as a section in an existing summary page.
-6. Append `<wiki_dir>/log.md`: `## [date] query | <question excerpt> | answered from <N> pages`.
+Synthesize answers from maintained wiki memory with citations, uncertainty labels, and follow-up actions. Query should make the wiki more useful without pretending it knows more than the files say.
 
-## When to save
+## Name Contract
 
-- One-off conversational answer → don't save.
-- Synthesis the user will reference later → save under `outputs/`.
-- Update to an existing finding → suggest editing the existing page via `/alpha-wiki:ingest` or manual edit (then `/alpha-wiki:lint`).
+`query` means "read and synthesize existing wiki memory". If the answer requires new source material, say what must be ingested. If the answer should become reusable knowledge, offer to save it as an output or update a page.
+
+## Retrieval Discipline
+
+1. Start with `<wiki_dir>/graph/context_brief.md`.
+2. Read `<wiki_dir>/index.md`.
+3. Use explicit filenames, slugs, wikilinks, and frontmatter. Avoid embedding-style guesses.
+4. Select 3-7 relevant pages for normal questions; expand only when the topic crosses domains.
+5. Prefer accepted/stable pages over draft/stub pages, but mention stale or draft status when it matters.
+
+## Answer Format
+
+Use this structure unless the user asked for something smaller:
+
+- Short answer.
+- Evidence: cite pages as `[[slug]]` and include file paths when precision matters.
+- Truth status:
+  - `accepted`: explicitly recorded and current.
+  - `assumption`: plausible but not decided.
+  - `risk`: recorded risk or unresolved tradeoff.
+  - `open`: explicit open question or missing page.
+  - `stale`: page date/status suggests caution.
+- Related pages.
+- Suggested next action: ingest, lint, evolve, review, or no action.
+
+## Workflow
+
+1. Detect wiki dir from `CLAUDE.md` or default to `wiki/`.
+2. Read `context_brief.md` and `index.md`.
+3. Search candidate pages by slug, title, directory, and frontmatter.
+4. Read candidate pages deeply enough to avoid shallow summary.
+5. Check for contradictions:
+   - Conflicting statuses.
+   - Pages using `contradicts`, `supersedes`, `superseded_by`.
+   - Same concept described differently in decisions/specs.
+6. Answer with citations and truth status.
+7. If the answer is reusable, offer one of:
+   - Save to `<wiki_dir>/outputs/<slug>.md`.
+   - Update an existing page via `/alpha-wiki:ingest`.
+   - Create an open question entry.
+8. Append log entry only when the query materially changes wiki state or writes an output.
+
+## Graph Hygiene
+
+- Do not create new pages during query unless the user explicitly asks to save the synthesis.
+- If saving an output, link it to source pages so it is not an orphan.
+- If the answer reveals a missing page, suggest ingest/evolve instead of inventing memory.
+
+## Teaching Behavior
+
+When the wiki is thin, explain how to make the next query better:
+
+- "Ingest the PRD first."
+- "Add owner/status/date_updated to this page."
+- "This should be a contract page so it becomes orange in Obsidian."
+- "This service is isolated in the graph; link it to decisions/specs."
+
+## Done Criteria
+
+- Answer is grounded in pages read.
+- Uncertainty is explicit.
+- Stale/open/conflicting material is not hidden.
+- User knows whether to ingest, lint, evolve, or leave the wiki unchanged.
 
 ## References
 
-- `references/concept.md` — Karpathy's claim that index.md is sufficient up to ~100 sources
+- `references/concept.md`
+- `references/cross-reference-rules.md`

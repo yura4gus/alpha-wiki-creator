@@ -29,20 +29,21 @@ Goal: zero P0 unknowns before Phase 1 starts.
 | T0.3 | Approve ADRs 001–006 (already drafted in `design/adr/`). | `design/adr/ADR-001..006.md` | Each ADR marked Status: Accepted by user. | User approval. | N/A. | None | done (drafted Etap 2) |
 | T0.4 | Marketplace topology decision. | `design/adr/ADR-005-marketplace-topology-deferred.md` | Recorded as deferred to Phase 5. | None — closed by ADR. | N/A. | None | done |
 | T0.5 | spawn-agent boundary lock. | `design/adr/ADR-006-spawn-agent-boundary.md` | Frozen pre-Phase 1a per ADR-006. | None — closed by ADR. | N/A. | None | done |
+| T0.6 | Skill content audit: revisit all 10 backed Alpha-Wiki skills by name and body, strengthening operational logic, teaching behavior, graph discipline, Obsidian color semantics, and Karpathy LLM-Wiki principles before Phase 1a implementation work. | `skills/*/SKILL.md` | All 10 backed skill bodies rewritten as richer operational manuals with mission, boundaries, workflow, graph/color discipline, safety gates, and done criteria. | User reviews skill bodies. | Existing test suite remains green. | T0.1, T0.2 | done |
 
-Phase 0 gate: T0.1 and T0.2 closed. T0.3 user-approved. → Phase 1a starts.
+Phase 0 gate: T0.1 through T0.6 closed. → Phase 1a starts.
 
 ---
 
 ## Phase 1a — Alpha-Wiki hardening (in-place)
 
-Goal: 8 existing skills upgraded to deep operational manuals; 3 new skills added; 0–2 contingent skills resolved per T0.2.
+Goal: 10 backed skills upgraded to deep operational manuals; 3 new skills added.
 
 Repo: `yura4gus/alpha-wiki-creator` (in place, no rename).
 
-### Phase 1a.1 — Skill audit pass on existing 8
+### Phase 1a.1 — Skill audit pass on backed 10
 
-Each task follows the same shape: bring SKILL.md to 15-dimension standard from `design/00-architecture.md` §5.2; reformulate trigger description to trigger conditions only; add pressure tests.
+Each task follows the same shape: build on the Phase 0 skill-content audit, bring SKILL.md to full 15-dimension standard from `design/00-architecture.md` §5.2, reformulate trigger description to trigger conditions only, and add pressure tests.
 
 | ID | Objective | Files | Acceptance | Gate | Tests | Depends |
 |---|---|---|---|---|---|---|

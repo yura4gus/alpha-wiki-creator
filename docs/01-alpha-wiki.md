@@ -34,7 +34,7 @@ What it does not provide:
 alpha-wiki-creator/
 ├── .claude-plugin/plugin.json
 ├── README.md
-├── skills/                          # 11 confirmed + 0–2 contingent (see §3)
+├── skills/                          # 10 backed now + 3 planned Phase 1a skills (see §3)
 ├── commands/                        # /alpha-wiki:* slash commands
 ├── tools/
 │   ├── lint.py                      # Pure-Python deterministic lint

@@ -1,32 +1,83 @@
 ---
 name: spawn-agent
-description: Add a Claude Code subagent that operates on the wiki — e.g. maintainer, reviewer, or domain-specific agent. Triggers include "add an agent for X", "spawn a wiki agent", "create a subagent that does X with the wiki". Generates `.claude/agents/<name>.md` and optionally a companion skill. Out of scope: writing arbitrary agents unrelated to the wiki.
+description: "Create a wiki-aware Claude Code subagent that reads context, respects the mutability matrix, and operates on Alpha-Wiki content. Use for recurring wiki roles such as curator, reviewer, domain maintainer, importer, or documentation gardener. Do not use for AgentOps team-role bootstrap or arbitrary non-wiki agents."
 argument-hint: "<name> <role>"
 ---
 
-# wiki:spawn-agent — add a wiki-aware subagent
+# wiki:spawn-agent - create wiki-aware helper
 
-## Process
+## Mission
 
-1. Ask the user for:
-   - Agent name (e.g. `wiki-reviewer`, `domain-curator`)
-   - Role description (1-2 sentences)
-   - Which wiki skills the agent should use (subset of `/alpha-wiki:ingest`, `/alpha-wiki:query`, `/alpha-wiki:lint`, `/alpha-wiki:evolve`)
-   - Whether to also generate a companion skill (yes/no)
+Generate a focused subagent that improves wiki maintenance without diluting ownership boundaries. The agent must understand Alpha-Wiki rules before it touches files.
 
-2. Render `.claude/agents/<name>.md` with frontmatter and a body that:
-   - States the role
-   - Lists allowed tools (typically `Read`, `Edit`, `Bash`)
-   - Lists which wiki skills to invoke
-   - Notes that it MUST read `<wiki_dir>/graph/context_brief.md` at start
+## Name Contract
 
-3. (Optional) If companion skill requested, render `.claude/skills/<name>/SKILL.md` with a description and process steps tailored to the role.
+`spawn-agent` means "create a wiki-aware helper". It is not AgentOps `agent-skills-bootstrap`, not a team hierarchy creator, and not a replacement for project-specific engineering agents.
 
-4. Append `<wiki_dir>/log.md`: `## [date] spawn-agent | <name> | role: <role>`.
+## Boundary From ADR-006
 
-5. Commit and print activation instructions to the user.
+- Alpha-Wiki owns wiki awareness and mutability discipline.
+- AgentOps owns team roles, hierarchy, handoffs, CTO review, and operating model.
+- This skill may create generic wiki helpers.
+- It must not encode CTO, Domain, Security, QA, Release, or other AgentOps team-role logic.
 
-## Constraints
+## Workflow
 
-- The agent operates within the wiki — it does not bypass `pre-tool-use` validation.
-- The agent MUST honor the mutability matrix in CLAUDE.md.
+1. Ask for:
+   - Agent name.
+   - One-sentence role.
+   - Wiki scope: read-only, curator, ingest helper, lint fixer, reviewer, domain maintainer.
+   - Allowed Alpha-Wiki skills.
+   - Whether to generate companion skill.
+
+2. Validate scope:
+   - Reject non-wiki agents.
+   - Reject AgentOps team bootstrap requests and point to AgentOps.
+   - Keep permissions minimal.
+
+3. Generate `.claude/agents/<name>.md`:
+   - Role.
+   - Required first read: `<wiki_dir>/graph/context_brief.md`.
+   - Required files: `CLAUDE.md`, relevant index pages.
+   - Allowed tools.
+   - Mutability matrix.
+   - Required graph rebuild/lint after edits.
+   - Obsidian color semantics if the agent can move/create pages.
+
+4. Optional companion skill:
+   - Generate `.claude/skills/<name>/SKILL.md`.
+   - Keep it project-local.
+   - Include triggers and explicit boundaries.
+
+5. Log:
+   - `## [YYYY-MM-DD] spawn-agent | <name> | role: <role>`
+
+6. Verify:
+   - Agent file exists.
+   - No AgentOps team-role names are introduced.
+   - Instructions include context read and lint/graph rebuild discipline.
+
+## Agent Instruction Requirements
+
+Every spawned wiki agent must know:
+
+- `raw/` is read-only source evidence.
+- `<wiki_dir>/graph/` is generated.
+- `CLAUDE.md` is schema/contract.
+- Frontmatter is not optional.
+- Cross-links need reverses.
+- Contracts are orange boundary nodes.
+- Service/module nodes should not stay isolated.
+
+## Done Criteria
+
+- Agent is useful for a recurring wiki maintenance job.
+- Scope is narrow enough to trust.
+- No AgentOps coupling.
+- Wiki graph discipline is explicit.
+
+## References
+
+- `docs/ADR-006-spawn-agent-boundary.md`
+- `references/cross-reference-rules.md`
+- `assets/obsidian/COLOR-LEGEND.md`

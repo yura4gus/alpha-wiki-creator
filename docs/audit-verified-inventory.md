@@ -12,6 +12,7 @@ Phase 0 audit is complete.
 - `T0.3` ADR approval: already closed; ADR-001..006 are marked `Status: Accepted`.
 - `T0.4` marketplace topology: closed by ADR-005.
 - `T0.5` spawn-agent boundary: closed by ADR-006.
+- `T0.6` skill content audit: closed; all 10 backed skill bodies were expanded into richer operational manuals.
 
 Phase 1a can start with confirmed repo facts, not assumptions.
 
@@ -26,7 +27,7 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | Commands | 10 present | One command file per existing skill under `commands/`. |
 | Deterministic tools | 8 Python modules | `_env.py`, `_models.py`, `classify.py`, `lint.py`, `status.py`, `wiki_engine.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 33 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, lint, classify, status, review, rollup, wiki engine, and templates. |
+| Tests | 34 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -34,14 +35,16 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 
 | Skill | File | Status | Phase 1a action |
 |---|---|---|---|
-| `init` | `skills/init/SKILL.md` | Present, operational-manual-lite | Harden to 15-dimension standard; add safe existing-repo behavior. |
-| `ingest` | `skills/ingest/SKILL.md` | Present as workflow instructions | Back with deterministic ingest pipeline and pressure tests. |
-| `query` | `skills/query/SKILL.md` | Present as agent workflow | Add citation policy, truth-status taxonomy, contradiction surfacing. |
-| `lint` | `skills/lint/SKILL.md` | Present and backed by `tools/lint.py` | Expand severity/check model to target spec. |
-| `evolve` | `skills/evolve/SKILL.md` | Present and backed by `scripts/add_entity_type.py` | Add migration planning for existing pages. |
-| `status` | `skills/status/SKILL.md` | Present and backed by `tools/status.py` | Add health score and suggested-next-actions logic. |
-| `spawn-agent` | `skills/spawn-agent/SKILL.md` | Present as workflow instructions | Enforce ADR-006 boundary with tests. |
-| `render` | `skills/render/SKILL.md` | Present, HTML documented as future | Add/refuse modes explicitly; implement later HTML/Mermaid if kept in Phase 1a. |
+| `init` | `skills/init/SKILL.md` | Expanded operational manual | Full 15-dimension pressure testing remains Phase 1a. |
+| `ingest` | `skills/ingest/SKILL.md` | Expanded operational manual | Back with deterministic ingest pipeline and pressure tests. |
+| `query` | `skills/query/SKILL.md` | Expanded operational manual | Add deterministic search/citation tooling and pressure tests. |
+| `lint` | `skills/lint/SKILL.md` | Expanded operational manual backed by `tools/lint.py` | Expand severity/check model to target spec. |
+| `evolve` | `skills/evolve/SKILL.md` | Expanded operational manual backed by `scripts/add_entity_type.py` | Add migration planning implementation for existing pages. |
+| `status` | `skills/status/SKILL.md` | Expanded operational manual backed by `tools/status.py` | Add health score and suggested-next-actions implementation. |
+| `spawn-agent` | `skills/spawn-agent/SKILL.md` | Expanded operational manual with ADR-006 boundary | Add boundary pressure tests. |
+| `render` | `skills/render/SKILL.md` | Expanded operational manual; export modes documented as gated | Implement HTML/Mermaid/DOT backends if kept in Phase 1a. |
+| `review` | `skills/review/SKILL.md` | Expanded operational manual backed by `tools/review.py` | Full 15-dimension hardening remains Phase 1a. |
+| `rollup` | `skills/rollup/SKILL.md` | Expanded operational manual backed by `tools/rollup.py` | Full 15-dimension hardening remains Phase 1a. |
 
 Missing Phase 1a skills:
 
@@ -93,13 +96,14 @@ Confirmed missing deterministic tools from Phase 1a target:
 
 ## Tests Inventory
 
-Verified test files: 33.
+Verified test files: 34.
 
 Coverage areas:
 
 - Bootstrap rendering and idempotency.
 - Existing-codebase wiki-dir autodetect.
 - Hook mode selection and runtime asset wiki-dir rendering.
+- Skill frontmatter and operational-manual section guards.
 - Greenfield software/research bootstrap paths.
 - Upgrade preserving wiki pages.
 - Lint checks and CLI.

@@ -1,39 +1,80 @@
 ---
 name: render
-description: Refresh or regenerate the wiki's visual layer — Obsidian config or static HTML. Triggers include "refresh obsidian config", "render wiki to html", "regenerate dashboards", "update vault settings". For initial bootstrap, `/alpha-wiki:init` already creates the Obsidian config; use this skill for refresh or HTML output.
-argument-hint: "[obsidian | html]"
+description: "Refresh the wiki presentation layer: Obsidian graph settings now, and static HTML/Mermaid/DOT exports when those backends are implemented. Use when colors, graph filters, vault settings, or generated visual artifacts are stale. Do not use to change wiki content."
+argument-hint: "[obsidian | html | mermaid | dot]"
 ---
 
-# wiki:render — refresh wiki UI artifacts
+# wiki:render - visual and export layer
+
+## Mission
+
+Make the wiki inspectable. Render translates maintained markdown and graph artifacts into visual tools without becoming the source of truth.
+
+## Name Contract
+
+`render` means "refresh derived presentation". It must not author facts, rewrite pages, or change schema. Source of truth remains markdown/frontmatter plus generated graph artifacts.
 
 ## Modes
 
 ### `obsidian`
 
-- Reads current preset+overlay config.
-- Refreshes `.obsidian/graph.json` colors and filters to match the current page-type set.
-- Ensures `community-plugins.json` enables Dataview.
-- Idempotent — re-run safe.
+Refresh `.obsidian/` configuration:
+
+- `graph.json`
+- `community-plugins.json`
+- `hotkeys.json`
+- `workspace.json`
+- `COLOR-LEGEND.md`
 
 ### `html`
 
-- Renders a static site to `dist/wiki/`:
-  - `index.html` from `<wiki_dir>/index.md`
-  - One HTML page per markdown file
-  - Graph view via D3 (read from `graph/edges.jsonl`)
-- Uses `markdown` Python library with `wikilinks` extension.
-- Suitable for GitHub Pages.
+Static HTML export target. If backend is not implemented, refuse clearly and point to the planned tool.
 
-## Process
+### `mermaid`
 
-1. Determine mode: `--mode obsidian` (default) | `--mode html`
-2. For `obsidian`:
-   - Re-render `.obsidian/graph.json` from current config.
-   - Update `.obsidian/community-plugins.json` if needed.
-3. For `html`:
-   - `uv run python tools/render_html.py --wiki-dir <wiki_dir> --out dist/wiki/`
-   - Print path to `dist/wiki/index.html`.
+Graph diagram export target. Useful for PRs/docs snapshots. If backend is not implemented, refuse clearly.
 
-## Notes
+### `dot`
 
-`tools/render_html.py` is added at v0.2 — initial release ships `obsidian` mode only. The `html` mode is documented here for forward compatibility but the skill should refuse `--mode html` and point to `references/concept.md` until v0.2 lands.
+Graphviz export target. Useful for dense graph inspection. If backend is not implemented, refuse clearly.
+
+## Obsidian Color Semantics
+
+Use path-based color groups:
+
+- Red: services, repos, top-level architectural units.
+- Green: modules, components, core/domain/ports/use-cases.
+- Orange: contracts at boundaries.
+- Dark grey: documents, decisions, specs, claims, papers, concepts, features, flows, metrics.
+- Light grey: people and tasks.
+
+If graph colors look wrong, do not hack colors first. Check whether the page is in the wrong directory/type.
+
+## Workflow
+
+1. Detect wiki dir and config.
+2. Rebuild graph artifacts first:
+   - `rebuild-edges`
+   - `rebuild-context-brief`
+   - `rebuild-open-questions`
+3. For `obsidian`:
+   - Copy/render Obsidian assets.
+   - Ensure color groups match current directory semantics.
+   - Preserve user-local customizations when possible; report conflicts.
+4. For export modes:
+   - Verify backend exists.
+   - Refuse unsupported modes with a precise message, not a silent no-op.
+5. Run `/alpha-wiki:lint --suggest` if graph data changed.
+
+## Done Criteria
+
+- Obsidian opens with meaningful color groups.
+- Graph files are current.
+- Unsupported modes fail explicitly.
+- User knows whether color problems come from rendering or schema/page placement.
+
+## References
+
+- `assets/obsidian/COLOR-LEGEND.md`
+- `assets/obsidian/graph.json`
+- `tools/wiki_engine.py`

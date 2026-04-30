@@ -1,37 +1,103 @@
 ---
 name: ingest
-description: Add new sources (papers, docs, transcripts, OpenAPI specs, ADRs, etc.) into an existing wiki. Triggers include "ingest this", "add to wiki", "process raw/", "import these docs", "feed this into the wiki". Use after `/alpha-wiki:init` has bootstrapped the wiki. Skip for one-off summaries that won't be persisted.
-argument-hint: "<file-paths…>"
+description: "Convert durable source material into maintained wiki pages with provenance, frontmatter, links, and graph updates. Use for PRDs, ADRs, specs, transcripts, research notes, OpenAPI files, decisions, meeting notes, and any source the project should remember. Do not use for one-off answers or unsupported content that should remain conversational."
+argument-hint: "<file-paths...>"
 ---
 
-# wiki:ingest — raw artifact → wiki page(s)
+# wiki:ingest - source to wiki memory
 
-## Process
+## Mission
 
-1. Validate target paths exist (under `raw/` or absolute paths).
-2. For each path:
-   a. Run `tools/classify.py` to determine artifact kind.
-   b. Match to existing slot in `CLAUDE.md` page types.
-   c. If no match:
-      - **gated mode** → propose options: (a) new top-level type, (b) sub-folder under existing layer, (c) section append on related page. Wait for user.
-      - **auto mode** → pick best default and proceed (write `[schema-change]` log).
-   d. If a new type is needed → invoke `/alpha-wiki:evolve <type>`.
-   e. Render page from frontmatter template + artifact body. Use the entity type's required sections.
-   f. Compute forward links from content; let `wiki_engine.add_edge --bidirectional` write reverse links automatically.
-   g. Update `<wiki_dir>/index.md` (auto section for the page type).
-   h. Append to `<wiki_dir>/log.md`: `## [date] ingest | <path> → <slot>`.
-3. After all ingests:
-   a. `uv run python tools/wiki_engine.py rebuild-edges --wiki-dir <wiki_dir>`
-   b. `uv run python tools/wiki_engine.py rebuild-context-brief --wiki-dir <wiki_dir>`
-   c. `uv run python tools/wiki_engine.py rebuild-open-questions --wiki-dir <wiki_dir>`
-4. Run `tools/lint.py --suggest` and surface findings to user.
+Turn raw evidence into durable, typed markdown memory. Ingest is the main growth mechanism of Alpha-Wiki: every useful source should become one or more pages that future agents can read, cite, link, lint, and evolve.
 
-## Stub creation
+## Name Contract
 
-If a forward link target doesn't exist yet, `pre-tool-use` creates a stub with `status: stub` and a TODO. The stub is logged. Don't block the ingest on this — a follow-up ingest can fill the stub.
+`ingest` means "persist source knowledge". It is not "summarize and forget". If the result will not be linked, queried, reviewed, or maintained, answer conversationally instead.
+
+## Operating Principles
+
+- Preserve provenance. The page must say where the knowledge came from.
+- Keep raw source immutable. Copy or reference source files under `raw/`; do not rewrite source evidence.
+- Use the existing schema first. Evolve only when no existing entity type can hold the source cleanly.
+- Prefer one coherent page over many tiny pages, but split when different entities need independent lifecycle.
+- Every new page needs frontmatter, stable slug, status, and cross-links.
+- Links are maintenance obligations: if a page links forward, lint must be able to verify reverse links or report a clear fix.
+
+## Classification Discipline
+
+1. Identify artifact type: decision, spec, module, contract, claim, paper, task, feature, flow, persona, source, etc.
+2. Match artifact to preset/overlay directories.
+3. If multiple slots fit, choose the one with the strongest lifecycle owner.
+4. If no slot fits, propose:
+   - New entity type via `/alpha-wiki:evolve`.
+   - Section append to an existing page.
+   - `source` or `resource` page if the source is reference material rather than a domain entity.
+5. In `gated` mode, ask before schema evolution.
+
+## Workflow
+
+1. Validate inputs:
+   - Paths exist or URLs are fetchable by the current environment.
+   - Source is not inside `<wiki_dir>/graph/`.
+   - Source is not an auto-generated output being recursively ingested.
+
+2. Read the current wiki operating context:
+   - `CLAUDE.md`
+   - `<wiki_dir>/index.md`
+   - `<wiki_dir>/graph/context_brief.md`
+   - `.alpha-wiki/config.yaml`
+
+3. For each source:
+   - Classify with deterministic tooling when available.
+   - Read enough surrounding wiki pages to avoid duplicates.
+   - Extract durable facts, decisions, open questions, risks, contracts, dependencies, dates, owners, and claims.
+   - Keep uncertain statements marked as `assumption`, `risk`, or `open`.
+
+4. Write or update pages:
+   - Required frontmatter first.
+   - Body sections according to entity type.
+   - Provenance section with raw path, source date if known, and ingest date.
+   - Wikilinks for related modules, decisions, contracts, claims, people, tasks, and sources.
+   - Status: `draft`, `active`, `accepted`, `stable`, `deprecated`, or `stub` as appropriate.
+
+5. Maintain the graph:
+   - Run `rebuild-edges`.
+   - Run `rebuild-context-brief`.
+   - Run `rebuild-open-questions`.
+   - Run `/alpha-wiki:lint --suggest`.
+
+6. Update service files:
+   - Add discoverable entries to `<wiki_dir>/index.md` if the current index process requires it.
+   - Append `<wiki_dir>/log.md`: `## [YYYY-MM-DD] ingest | <source> | <pages>`.
+
+## Graph And Obsidian Discipline
+
+- Red nodes should represent top-level services/modules or architectural units.
+- Green nodes should represent sub-components, core/domain/ports/use-cases, or internal modules.
+- Orange nodes should be boundary contracts and must link to owners/consumers.
+- Dark grey nodes should be documents: decisions, specs, claims, papers, concepts, features, flows, metrics.
+- Light grey nodes should be people/tasks.
+- If a page appears in the wrong color cluster, the directory/type choice is probably wrong. Fix the slot before ingesting more content.
+
+## Quality Bar
+
+- A future agent can answer "where did this fact come from?"
+- A future agent can find the page from `index.md` or `context_brief.md`.
+- The page has enough links to sit in the graph, but not so many that everything links to everything.
+- Open questions are explicit.
+- Contradictions are surfaced, not smoothed over.
+
+## Failure Modes
+
+- Duplicate page: merge or update the existing page instead of creating a sibling.
+- Unknown schema: route to `/alpha-wiki:evolve`.
+- Oversized source: ingest in sections and log partial progress.
+- Ambiguous truth: write as assumption/risk/open question with provenance.
+- Broken graph: stop and run `/alpha-wiki:lint --fix` before continuing.
 
 ## References
 
-- `references/classifier.md` — artifact taxonomy
-- `references/schema-evolution.md` — evolve flow
-- `references/cross-reference-rules.md` — bidirectional canon
+- `references/classifier.md`
+- `references/schema-evolution.md`
+- `references/cross-reference-rules.md`
+- `references/concept.md`
