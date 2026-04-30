@@ -148,10 +148,32 @@ A red node with many grey edges = a service that has accumulated decisions and s
 
 Customize: edit `.obsidian/graph.json` → `colorGroups` array. Full legend at `.obsidian/COLOR-LEGEND.md` after bootstrap.
 
-## Design
+## Documentation
 
-Full spec: [`docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md`](docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md)
-Implementation plan: [`docs/superpowers/plans/2026-04-28-wiki-creator-implementation.md`](docs/superpowers/plans/2026-04-28-wiki-creator-implementation.md)
+Current architecture set:
+
+- [`docs/00-architecture.md`](docs/00-architecture.md) — ecosystem boundaries and plugin topology
+- [`docs/01-alpha-wiki.md`](docs/01-alpha-wiki.md) — Alpha-Wiki product specification
+- [`docs/02-agentops.md`](docs/02-agentops.md) — AgentOps product specification
+- [`docs/03-superpowers-adapter.md`](docs/03-superpowers-adapter.md) — optional Superpowers integration contract
+- [`docs/04-state-backend-contract.md`](docs/04-state-backend-contract.md) — state backend abstraction
+- [`docs/roadmap-execution.md`](docs/roadmap-execution.md) — execution roadmap
+- [`docs/implementation-plan-2026-04-30.md`](docs/implementation-plan-2026-04-30.md) — implementation plan for the current repo
+
+Decision records:
+
+- [`docs/ADR-001-alpha-wiki-agentops-boundary.md`](docs/ADR-001-alpha-wiki-agentops-boundary.md)
+- [`docs/ADR-002-superpowers-adapter-not-fork.md`](docs/ADR-002-superpowers-adapter-not-fork.md)
+- [`docs/ADR-003-no-embeddings-mvp.md`](docs/ADR-003-no-embeddings-mvp.md)
+- [`docs/ADR-004-state-backend-abstraction.md`](docs/ADR-004-state-backend-abstraction.md)
+- [`docs/ADR-005-marketplace-topology-deferred.md`](docs/ADR-005-marketplace-topology-deferred.md)
+- [`docs/ADR-006-spawn-agent-boundary.md`](docs/ADR-006-spawn-agent-boundary.md)
+
+Original design materials:
+
+- [`docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md`](docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md)
+- [`docs/superpowers/plans/2026-04-28-wiki-creator-implementation.md`](docs/superpowers/plans/2026-04-28-wiki-creator-implementation.md)
+
 References:
 - Karpathy's LLM Wiki gist — https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f
 - OmegaWiki — https://github.com/skyllwt/OmegaWiki
