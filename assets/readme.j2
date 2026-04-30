@@ -30,9 +30,9 @@ the graph view. Dataview is enabled.
 - **Session start** loads compressed context for the agent.
 - **Session end** runs lint and appends a log entry.
 - **Pre-commit** runs `lint --fix` and blocks on errors.
-{% if ci %}- **CI** runs `wiki:lint` on every push; weekly `wiki:review` posts an issue.
+{% if ci %}- **CI** runs `/alpha-wiki:lint` on every push; weekly `/alpha-wiki:review` posts an issue; monthly `/alpha-wiki:rollup` writes a rollup.
 {% endif %}
 
 ## Generated
 
-`{{ date }}` by `wiki` (preset={{ preset }}, overlay={{ overlay }}).
+`{{ date }}` by `alpha-wiki` (preset={{ preset }}, overlay={{ overlay }}).

@@ -12,9 +12,9 @@
 ## 2) Цели реализации (MVP)
 
 ### Цель A — закрыть Phase 1a (harden alpha-wiki-creator)
-1. Привести 8 существующих skills к 15-мерному operational-manual стандарту.
+1. Привести 10 существующих/backed skills к 15-мерному operational-manual стандарту.
 2. Добавить 3 новых skills: `contracts-check`, `claims-check`, `daily-maintenance`.
-3. Разрешить статус `review`/`rollup` (подтвердить существование и доработать или реализовать).
+3. Довести `review`/`rollup` от минимального backed состояния до полного 15-мерного стандарта.
 4. Закрыть выявленные в аудите критичные P1/P2 дефекты bootstrap/hooks/CI.
 
 ### Цель B — подготовить почву под Phase 1b (AgentOps repo)
@@ -42,6 +42,10 @@
 5. **Post-tool hook должен пересобирать весь граф**
    - Не только `context_brief`, но и `edges.jsonl`, `open_questions.md`.
 
+6. **`review`/`rollup` должны быть backed, а не только CI-шаблонами**
+   - Реализованы `skills/review`, `skills/rollup`, `commands/review.md`, `commands/rollup.md`, `tools/review.py`, `tools/rollup.py`.
+   - Generated CI переведён на `/alpha-wiki:review` и `/alpha-wiki:rollup month --write`.
+
 ## P1 — функциональное закрытие Phase 1a
 
 6. Добавить/доработать deterministic tools:
@@ -49,10 +53,10 @@
    - `tools/wiki_search.py`, `tools/status_report.py`, `tools/contracts_check.py`, `tools/claims_check.py`.
 
 7. Привести skill-доки к 15 измерениям:
-   - `init`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`.
+   - `init`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`.
 
-8. Закрыть contingent skills:
-   - `review`, `rollup` — decision + реализация/хардненинг.
+8. Довести backed `review`/`rollup` до полного hardening:
+   - pressure-тесты, 15-dimension standard, расширенная семантическая проверка.
 
 9. Покрыть pressure-тестами по roadmap (минимум +26 новых сценариев к текущему набору).
 
@@ -78,8 +82,8 @@
 ## Спринт 2 (7–10 дней): функциональное расширение Phase 1a
 
 - Шаг 4: внедрить новые tools (claims/contracts/status/search/ingest pipeline).
-- Шаг 5: довести 8+3 skills до целевого стандарта.
-- Шаг 6: закрыть `review`/`rollup` + новые pressure-тесты.
+- Шаг 5: довести 10+3 skills до целевого стандарта.
+- Шаг 6: расширить `review`/`rollup` pressure-тестами и 15-dimension hardening.
 - Шаг 7: release prep + smoke test.
 
 **Definition of Done спринта 2:**
@@ -102,7 +106,6 @@
 
 1. Создать epic: `phase-1a-hardening`.
 2. Завести 5 P0 issue (по каждому найденному дефекту).
-3. Завести 8 issue на хардненинг skills + 3 issue на новые skills.
-4. Завести issue на `review/rollup decision`.
+3. Завести 10 issue на хардненинг skills + 3 issue на новые skills.
+4. Завести issue на `review/rollup hardening`.
 5. Зафиксировать target release: `v0.x+1` после прохождения smoke.
-

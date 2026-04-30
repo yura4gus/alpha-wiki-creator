@@ -39,7 +39,7 @@ Source: <https://github.com/skyllwt/OmegaWiki>
 | Schema evolution log | Alpha-Wiki `evolve` skill |
 | Auto-generated `context_brief.md` for agent consumption | Alpha-Wiki session-start hook |
 | Anti-repetition memory (failed ideas with `failure_reason`) | New: `wiki/lessons/` entity type, added during Phase 1a hardening |
-| Research review / rebuttal workflows | Folded into wiki-level review (status TBD per inspection T0.2) |
+| Research review / rebuttal workflows | Folded into backed wiki-level `review`; deeper semantic review remains Phase 1a/P1 hardening |
 
 ### 2.2 Rejected patterns
 

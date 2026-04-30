@@ -50,9 +50,9 @@ alpha-wiki-creator/
 
 ## 3. Skill inventory
 
-### 3.1 Confirmed skills (11)
+### 3.1 Confirmed / target skills (13)
 
-8 hardened from existing implementation, 3 net-new.
+10 backed user-facing/operational skills exist in this repo; 3 additional checks/maintenance skills remain new Phase 1a work.
 
 | # | Skill | Status | Tier |
 |---|---|---|---|
@@ -64,16 +64,18 @@ alpha-wiki-creator/
 | 6 | `evolve` | Existing — hardened | User-facing |
 | 7 | `spawn-agent` | Existing — hardened (boundary frozen per ADR-006) | User-facing |
 | 8 | `render` | Existing — hardened | Operational |
-| 9 | `contracts-check` | New | Automated |
-| 10 | `claims-check` | New | Automated |
-| 11 | `daily-maintenance` | New | Automated |
+| 9 | `review` | Backed minimal implementation; hardening remains P1 | User-facing / CI |
+| 10 | `rollup` | Backed minimal implementation; hardening remains P1 | User-facing / CI |
+| 11 | `contracts-check` | New | Automated |
+| 12 | `claims-check` | New | Automated |
+| 13 | `daily-maintenance` | New | Automated |
 
-### 3.2 Contingent skills (0–2)
+### 3.2 Previously contingent skills
 
 | Skill | Decision basis |
 |---|---|
-| `review` | README mentions weekly `/alpha-wiki:review`. Status (full skill / commands-only / CI-only / planned) unknown until repository inspection. No new implementation until verified. |
-| `rollup` | README mentions monthly `/alpha-wiki:rollup`. Same status. No new implementation until verified. |
+| `review` | Resolved in Phase 1a P0: backed by `skills/review/SKILL.md`, `commands/review.md`, and `tools/review.py`. Full 15-dimension hardening remains P1. |
+| `rollup` | Resolved in Phase 1a P0: backed by `skills/rollup/SKILL.md`, `commands/rollup.md`, and `tools/rollup.py`. Full 15-dimension hardening remains P1. |
 
 ### 3.3 Rejected proposals
 
@@ -86,7 +88,7 @@ alpha-wiki-creator/
 | `source-audit` | Deferred to Phase 6 |
 | `context-brief` | Hook-driven, no user invocation needed |
 | `graph-rebuild` | Hook-driven; flag on `lint` if explicit invocation needed |
-| `weekly-maintenance` | Folded into `review` (when status confirmed) |
+| `weekly-maintenance` | Folded into `review` |
 | `import-github-repo` | Deferred to Phase 6 |
 | `import-docs` | `ingest` accepts paths/URLs already |
 | `import-transcript` | Same — folded into `ingest` |

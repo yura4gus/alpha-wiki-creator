@@ -18,7 +18,7 @@ def test_claude_md_renders():
              "frontmatter_required": ["title", "slug", "status"],
              "sections_required": ["Provides", "Consumes"]}],
         cross_ref_rules=[{"forward": "module A: depends_on B", "reverse": "B.dependents adds A"}],
-        skills=["/wiki-init", "/wiki-ingest", "/wiki-query", "/wiki-lint"],
+        skills=["/alpha-wiki:init", "/alpha-wiki:ingest", "/alpha-wiki:query", "/alpha-wiki:lint"],
     )
     assert "Demo" in out
     assert "hexagonal" in out
@@ -35,3 +35,19 @@ def test_log_md_renders_first_entry():
     out = _env().get_template("log-md.j2").render(date="2026-04-28", preset="software-project", overlay="hexagonal")
     assert "[2026-04-28]" in out
     assert "bootstrap" in out
+
+def test_generated_readme_uses_alpha_wiki_ci_commands():
+    out = _env().get_template("readme.j2").render(
+        project_name="Demo",
+        project_description="A demo wiki",
+        wiki_dir=".wiki",
+        date="2026-04-30",
+        preset="software-project",
+        overlay="none",
+        ci=True,
+    )
+    assert "/alpha-wiki:lint" in out
+    assert "/alpha-wiki:review" in out
+    assert "/alpha-wiki:rollup" in out
+    assert "`wiki:review`" not in out
+    assert "/wiki-review" not in out
