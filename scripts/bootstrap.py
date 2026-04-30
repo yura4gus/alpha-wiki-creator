@@ -21,6 +21,16 @@ PROTECTED_TOP_LEVEL_FILES = {
     ".gitignore",
     ".env.example",
 }
+SESSION_HOOKS = {
+    "session-start.sh",
+    "session-end.sh",
+    "pre-tool-use.sh",
+    "post-tool-use.sh",
+}
+GIT_HOOKS = {
+    "pre-commit.sh",
+    "install-hooks.sh",
+}
 
 
 @dataclass(frozen=True)
@@ -197,13 +207,17 @@ def _copy_assets(target: Path, config: InterviewConfig) -> None:
         obsidian.mkdir(exist_ok=True)
         for f in (ASSETS / "obsidian").iterdir():
             shutil.copy(f, obsidian / f.name)
-    if config.hooks in ("all", "session", "git"):
+    hook_files = _hook_files_for_mode(config.hooks)
+    if hook_files:
         hooks_dir = target / ".claude" / "hooks"
         hooks_dir.mkdir(parents=True, exist_ok=True)
         for f in (ASSETS / "hooks").iterdir():
+            if f.name not in hook_files:
+                continue
             dest = hooks_dir / f.name
             dest.write_text(_render_runtime_asset(f.read_text(), config))
             dest.chmod(0o755)
+    if _uses_session_hooks(config.hooks):
         env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
         (target / ".claude" / "settings.local.json").write_text(
             env.get_template("settings-local.j2").render(wiki_dir=config.wiki_dir))
@@ -222,6 +236,20 @@ def _copy_tools(target: Path) -> None:
     for f in TOOLS.iterdir():
         if f.is_file() and f.suffix == ".py":
             shutil.copy(f, tools_dst / f.name)
+
+
+def _hook_files_for_mode(mode: str) -> set[str]:
+    if mode == "all":
+        return SESSION_HOOKS | GIT_HOOKS
+    if mode == "session":
+        return set(SESSION_HOOKS)
+    if mode == "git":
+        return set(GIT_HOOKS)
+    return set()
+
+
+def _uses_session_hooks(mode: str) -> bool:
+    return mode in ("all", "session")
 
 
 def _render_runtime_asset(text: str, config: InterviewConfig) -> str:

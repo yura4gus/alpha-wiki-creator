@@ -153,7 +153,7 @@ P0:
 1. Add safe bootstrap mode for existing repos; prevent silent overwrites. Done: protected top-level files are preserved, dry-run reports conflicts, and `.alpha-wiki/bootstrap-report.md` records protected skips.
 2. Propagate and honor `wiki_dir` across hooks and generated workflows. Done: generated hook scripts default to the configured wiki dir, `.claude/settings.local.json` uses the configured `path_glob`, and generated CI workflows use the configured wiki dir in lint/rollup paths.
 3. Make upgrade graph initialization non-destructive. Done: upgrade mode preserves existing `edges.jsonl`, `context_brief.md`, and `open_questions.md`.
-4. Honor hook selection mode (`session`, `git`, `all`, `none`).
+4. Honor hook selection mode (`session`, `git`, `all`, `none`). Done: `session` installs only Claude session/tool hooks plus settings, `git` installs only git hook helpers, `all` installs both, and `none` installs no hooks/settings.
 5. Rebuild the full graph after wiki writes: edges, context brief, open questions.
 6. Resolve `review` / `rollup` mismatch: either implement backed skills/commands or remove generated workflows from default CI path.
 
