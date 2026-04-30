@@ -150,9 +150,9 @@ This resolves `T0.2`: `review` and `rollup` are not full skills and are not comm
 
 P0:
 
-1. Add safe bootstrap mode for existing repos; prevent silent overwrites.
+1. Add safe bootstrap mode for existing repos; prevent silent overwrites. Done: protected top-level files are preserved, dry-run reports conflicts, and `.alpha-wiki/bootstrap-report.md` records protected skips.
 2. Propagate and honor `wiki_dir` across hooks and generated workflows.
-3. Make upgrade graph initialization non-destructive.
+3. Make upgrade graph initialization non-destructive. Done: upgrade mode preserves existing `edges.jsonl`, `context_brief.md`, and `open_questions.md`.
 4. Honor hook selection mode (`session`, `git`, `all`, `none`).
 5. Rebuild the full graph after wiki writes: edges, context brief, open questions.
 6. Resolve `review` / `rollup` mismatch: either implement backed skills/commands or remove generated workflows from default CI path.

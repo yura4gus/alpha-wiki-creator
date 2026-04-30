@@ -1,6 +1,7 @@
 """Render pipeline: InterviewConfig → target file tree."""
 from __future__ import annotations
 import shutil
+from dataclasses import dataclass, field
 from datetime import date as _date
 from pathlib import Path
 import yaml
@@ -13,19 +14,88 @@ PRESETS = PLUGIN_ROOT / "references" / "presets"
 OVERLAYS = PLUGIN_ROOT / "references" / "overlays"
 TOOLS = PLUGIN_ROOT / "tools"
 
+PROTECTED_TOP_LEVEL_FILES = {
+    "CLAUDE.md",
+    "README.md",
+    "pyproject.toml",
+    ".gitignore",
+    ".env.example",
+}
 
-def bootstrap(target: Path, config: InterviewConfig, upgrade: bool = False) -> None:
-    target.mkdir(parents=True, exist_ok=True)
+
+@dataclass(frozen=True)
+class BootstrapConflict:
+    path: str
+    reason: str
+
+
+@dataclass
+class BootstrapReport:
+    dry_run: bool = False
+    planned: list[str] = field(default_factory=list)
+    written: list[str] = field(default_factory=list)
+    skipped: list[BootstrapConflict] = field(default_factory=list)
+
+    @property
+    def has_conflicts(self) -> bool:
+        return bool(self.skipped)
+
+    def to_markdown(self) -> str:
+        lines = [
+            "# Alpha-Wiki bootstrap report",
+            "",
+            f"- dry_run: {str(self.dry_run).lower()}",
+            f"- planned writes: {len(self.planned)}",
+            f"- completed writes: {len(self.written)}",
+            f"- protected skips: {len(self.skipped)}",
+            "",
+        ]
+        if self.skipped:
+            lines.extend(["## Protected skips", ""])
+            for conflict in self.skipped:
+                lines.append(f"- `{conflict.path}`: {conflict.reason}")
+            lines.append("")
+        if self.planned:
+            lines.extend(["## Planned writes", ""])
+            for path in self.planned:
+                lines.append(f"- `{path}`")
+            lines.append("")
+        if self.written:
+            lines.extend(["## Completed writes", ""])
+            for path in self.written:
+                lines.append(f"- `{path}`")
+            lines.append("")
+        return "\n".join(lines)
+
+
+def bootstrap(
+    target: Path,
+    config: InterviewConfig,
+    upgrade: bool = False,
+    dry_run: bool = False,
+    safe_existing: bool = True,
+) -> BootstrapReport:
     merged = _resolve_merged_config(config)
     ctx = _render_context(config, merged)
+    report = BootstrapReport(dry_run=dry_run)
 
-    _render_top_level_files(target, ctx, upgrade=upgrade)
+    if dry_run:
+        _render_top_level_files(target, ctx, upgrade=upgrade, report=report, dry_run=True, safe_existing=safe_existing)
+        _plan_path(report, target / config.wiki_dir)
+        _plan_path(report, target / "raw")
+        _plan_path(report, target / ".alpha-wiki" / "config.yaml")
+        return report
+
+    target.mkdir(parents=True, exist_ok=True)
+    _render_top_level_files(target, ctx, upgrade=upgrade, report=report, dry_run=False, safe_existing=safe_existing)
     _create_wiki_dirs(target, config, merged)
     _initialize_wiki_files(target, ctx, upgrade=upgrade)
     _copy_assets(target, config)
     _copy_tools(target)
-    _initialize_graph(target, config)
+    _initialize_graph(target, config, upgrade=upgrade)
     _write_merged_config(target, merged)
+    _write_bootstrap_report(target, report)
+    return report
 
 
 def _resolve_merged_config(config: InterviewConfig) -> dict:
@@ -69,7 +139,14 @@ def _render_context(config: InterviewConfig, merged: dict) -> dict:
     }
 
 
-def _render_top_level_files(target: Path, ctx: dict, upgrade: bool) -> None:
+def _render_top_level_files(
+    target: Path,
+    ctx: dict,
+    upgrade: bool,
+    report: BootstrapReport,
+    dry_run: bool,
+    safe_existing: bool,
+) -> None:
     env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
     files = [
         ("claude-md.j2", "CLAUDE.md"),
@@ -79,10 +156,9 @@ def _render_top_level_files(target: Path, ctx: dict, upgrade: bool) -> None:
     ]
     for tmpl_name, out_name in files:
         out_path = target / out_name
-        if out_path.exists() and upgrade and out_name in ("README.md",):
-            continue  # Don't overwrite user-edited README
-        out_path.write_text(env.get_template(tmpl_name).render(**ctx))
-    shutil.copy(ASSETS / "env.example", target / ".env.example")
+        content = env.get_template(tmpl_name).render(**ctx)
+        _write_protected_text(out_path, content, report, dry_run, safe_existing, upgrade)
+    _copy_protected_file(ASSETS / "env.example", target / ".env.example", report, dry_run, safe_existing, upgrade)
 
 
 def _create_wiki_dirs(target: Path, config: InterviewConfig, merged: dict) -> None:
@@ -148,14 +224,83 @@ def _copy_tools(target: Path) -> None:
             shutil.copy(f, tools_dst / f.name)
 
 
-def _initialize_graph(target: Path, config: InterviewConfig) -> None:
+def _initialize_graph(target: Path, config: InterviewConfig, upgrade: bool) -> None:
     g = target / config.wiki_dir / "graph"
-    (g / "edges.jsonl").write_text("")
-    (g / "context_brief.md").write_text("# Context brief\n\n_(empty — will populate after first ingest)_\n")
-    (g / "open_questions.md").write_text("# Open questions\n\n_(none yet)_\n")
+    _write_graph_seed(g / "edges.jsonl", "", upgrade)
+    _write_graph_seed(g / "context_brief.md", "# Context brief\n\n_(empty — will populate after first ingest)_\n", upgrade)
+    _write_graph_seed(g / "open_questions.md", "# Open questions\n\n_(none yet)_\n", upgrade)
 
 
 def _write_merged_config(target: Path, merged: dict) -> None:
     cfg_dir = target / ".alpha-wiki"
     cfg_dir.mkdir(exist_ok=True)
     (cfg_dir / "config.yaml").write_text(yaml.safe_dump(merged, sort_keys=False))
+
+
+def _write_protected_text(
+    path: Path,
+    content: str,
+    report: BootstrapReport,
+    dry_run: bool,
+    safe_existing: bool,
+    upgrade: bool,
+) -> None:
+    _plan_path(report, path)
+    if path.exists():
+        if path.read_text() == content:
+            return
+        if _should_protect_existing(path, safe_existing, upgrade):
+            report.skipped.append(BootstrapConflict(str(path), "existing protected file was preserved"))
+            return
+    if dry_run:
+        return
+    path.write_text(content)
+    report.written.append(str(path))
+
+
+def _copy_protected_file(
+    src: Path,
+    dest: Path,
+    report: BootstrapReport,
+    dry_run: bool,
+    safe_existing: bool,
+    upgrade: bool,
+) -> None:
+    _plan_path(report, dest)
+    content = src.read_text()
+    if dest.exists():
+        if dest.read_text() == content:
+            return
+        if _should_protect_existing(dest, safe_existing, upgrade):
+            report.skipped.append(BootstrapConflict(str(dest), "existing protected file was preserved"))
+            return
+    if dry_run:
+        return
+    shutil.copy(src, dest)
+    report.written.append(str(dest))
+
+
+def _should_protect_existing(path: Path, safe_existing: bool, upgrade: bool) -> bool:
+    if path.name not in PROTECTED_TOP_LEVEL_FILES:
+        return False
+    return safe_existing or upgrade
+
+
+def _write_graph_seed(path: Path, content: str, upgrade: bool) -> None:
+    if upgrade and path.exists():
+        return
+    path.write_text(content)
+
+
+def _write_bootstrap_report(target: Path, report: BootstrapReport) -> None:
+    if not report.has_conflicts:
+        return
+    cfg_dir = target / ".alpha-wiki"
+    cfg_dir.mkdir(exist_ok=True)
+    (cfg_dir / "bootstrap-report.md").write_text(report.to_markdown())
+
+
+def _plan_path(report: BootstrapReport, path: Path) -> None:
+    value = str(path)
+    if value not in report.planned:
+        report.planned.append(value)

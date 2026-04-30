@@ -27,17 +27,19 @@ argument-hint: "[project-description]"
 
 3. **Propose plan** — show resolved tree + key decisions; require user confirmation before any writes.
 
-4. **Render** — invoke `uv run python -m scripts.bootstrap` (calls `scripts.bootstrap.bootstrap(target, config)`).
+4. **Safe-existing check** — if protected project files already exist (`CLAUDE.md`, `README.md`, `pyproject.toml`, `.gitignore`, `.env.example`), run bootstrap dry-run first and show the conflict report. Do not overwrite these files silently.
 
-5. **Post-render** — `uv sync`, `tools/lint.py --dry-run`, `wiki_engine.py rebuild-context-brief`, `git add . && git commit -m "wiki bootstrap"`.
+5. **Render** — invoke `uv run python -m scripts.bootstrap` (calls `scripts.bootstrap.bootstrap(target, config)`). Existing protected files are preserved by default and conflicts are recorded in `.alpha-wiki/bootstrap-report.md`.
 
-6. **First ingest (optional)** — if `raw/` has files, prompt to ingest now via `/alpha-wiki:ingest`.
+6. **Post-render** — `uv sync`, `tools/lint.py --dry-run`, `wiki_engine.py rebuild-context-brief`, `git add . && git commit -m "wiki bootstrap"`.
 
-7. **Handoff** — print 3 main commands, Obsidian instructions, session-end hook explainer.
+7. **First ingest (optional)** — if `raw/` has files, prompt to ingest now via `/alpha-wiki:ingest`.
+
+8. **Handoff** — print 3 main commands, Obsidian instructions, session-end hook explainer.
 
 ## Idempotency
 
-If `CLAUDE.md` already exists, enter upgrade mode: diff requested config vs existing, never overwrite wiki pages, only touch schema/scaffolding with confirmation.
+If `CLAUDE.md` already exists, enter upgrade mode: diff requested config vs existing, never overwrite wiki pages, never reset graph artifacts, and only touch schema/scaffolding with confirmation.
 
 ## References
 
