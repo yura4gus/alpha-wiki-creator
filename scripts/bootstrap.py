@@ -143,7 +143,8 @@ def _render_context(config: InterviewConfig, merged: dict) -> dict:
         "entity_types": merged.get("entity_types", []),
         "cross_ref_rules": merged.get("cross_ref_rules", []),
         "skills": ["/alpha-wiki:init", "/alpha-wiki:ingest", "/alpha-wiki:query", "/alpha-wiki:lint",
-                   "/alpha-wiki:evolve", "/alpha-wiki:spawn-agent", "/alpha-wiki:render", "/alpha-wiki:status"],
+                   "/alpha-wiki:evolve", "/alpha-wiki:spawn-agent", "/alpha-wiki:render", "/alpha-wiki:status",
+                   "/alpha-wiki:review", "/alpha-wiki:rollup"],
         "schema_evolve_mode": config.schema_evolve_mode,
         "ci": config.ci,
     }

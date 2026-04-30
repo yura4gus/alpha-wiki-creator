@@ -13,10 +13,10 @@ jobs:
       - run: pip install uv && uv sync
       - name: install Claude Code
         run: npm install -g @anthropic/claude-code
-      - name: run /wiki-review
+      - name: run /alpha-wiki:review
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: claude -p "/wiki-review" > review.md
+        run: claude -p "/alpha-wiki:review" > review.md
       - name: post issue
         uses: peter-evans/create-issue-from-file@v5
         with:

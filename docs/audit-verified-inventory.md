@@ -22,11 +22,11 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | Root package | Present | `pyproject.toml`, `uv.lock`, `README.md`, `LICENSE`. Package name is `alpha-wiki`, version `0.1.0`. |
 | Plugin metadata | Present | `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Marketplace lists one plugin: `alpha-wiki`. |
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
-| Skills | 8 present | `init`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`. |
-| Commands | 8 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 6 Python modules | `_env.py`, `_models.py`, `classify.py`, `lint.py`, `status.py`, `wiki_engine.py`. |
+| Skills | 10 present | `init`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
+| Commands | 10 present | One command file per existing skill under `commands/`. |
+| Deterministic tools | 8 Python modules | `_env.py`, `_models.py`, `classify.py`, `lint.py`, `status.py`, `wiki_engine.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 29 test files | Unit + integration coverage exists for bootstrap, lint, classify, status, wiki engine, and templates. |
+| Tests | 33 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, lint, classify, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -48,8 +48,6 @@ Missing Phase 1a skills:
 - `contracts-check`
 - `claims-check`
 - `daily-maintenance`
-- `review`
-- `rollup`
 
 ## Commands Inventory
 
@@ -63,8 +61,8 @@ Missing Phase 1a skills:
 | `/alpha-wiki:status` | `commands/status.md` | `status` | Present. |
 | `/alpha-wiki:spawn-agent` | `commands/spawn-agent.md` | `spawn-agent` | Present. |
 | `/alpha-wiki:render` | `commands/render.md` | `render` | Present. |
-| `/alpha-wiki:review` | none | none | Not implemented as command or skill. |
-| `/alpha-wiki:rollup` | none | none | Not implemented as command or skill. |
+| `/alpha-wiki:review` | `commands/review.md` | `review` | Implemented with `tools/review.py`. |
+| `/alpha-wiki:rollup` | `commands/rollup.md` | `rollup` | Implemented with `tools/rollup.py`. |
 
 ## Tools Inventory
 
@@ -73,6 +71,8 @@ Missing Phase 1a skills:
 | `tools/wiki_engine.py` | Markdown/frontmatter parsing, wikilink extraction, edge rebuild, context brief rebuild, open questions rebuild, `add-edge` CLI. |
 | `tools/lint.py` | Broken wikilinks, missing reverse links, orphans, required frontmatter, duplicate slugs, dependency rules, safe missing-reverse fixes. |
 | `tools/status.py` | Basic wiki status report. |
+| `tools/review.py` | Wiki-level structural review: status snapshot, lint findings, suggested next actions. |
+| `tools/rollup.py` | Weekly/monthly activity rollup generation and optional write to `wiki/rollups/`. |
 | `tools/classify.py` | Deterministic artifact classification plus LLM fallback stub. |
 | `tools/_models.py` | `Page`, `Edge`, `LintFinding`, `LintSeverity`. |
 | `tools/_env.py` | Minimal dotenv loading. |
@@ -93,18 +93,20 @@ Confirmed missing deterministic tools from Phase 1a target:
 
 ## Tests Inventory
 
-Verified test files: 29.
+Verified test files: 33.
 
 Coverage areas:
 
 - Bootstrap rendering and idempotency.
 - Existing-codebase wiki-dir autodetect.
+- Hook mode selection and runtime asset wiki-dir rendering.
 - Greenfield software/research bootstrap paths.
 - Upgrade preserving wiki pages.
 - Lint checks and CLI.
 - Wiki engine parsing, edges, context brief, open questions, CLI.
 - Classifier and LLM fallback stub.
 - Status report.
+- Review and rollup backend tools.
 - Template rendering.
 - Entity-type addition.
 
@@ -128,8 +130,8 @@ Missing Phase 1a pressure-test suites:
 | Finding | Evidence | Phase 1a implication |
 |---|---|---|
 | Repo CI only runs tests | `.github/workflows/plugin-ci.yml` | Generated target-project workflows are not tested as live repo workflows. |
-| Target CI templates include lint/review/rollup | `assets/workflows/wiki-lint.yml`, `wiki-review.yml`, `wiki-rollup.yml` | Templates exist, but review/rollup commands are not backed by skills. |
-| Generated review/rollup templates use old namespace | `claude -p "/wiki-review"` and `claude -p "/wiki-rollup month"` | Must align with `/alpha-wiki:*` or intentionally document old alias support. |
+| Target CI templates include lint/review/rollup | `assets/workflows/wiki-lint.yml`, `wiki-review.yml`, `wiki-rollup.yml` | Templates exist and are now backed by skills/commands/tools. |
+| Generated review/rollup templates use alpha namespace | `claude -p "/alpha-wiki:review"` and `claude -p "/alpha-wiki:rollup month --write"` | Old `/wiki-*` namespace mismatch resolved. |
 | `wiki-lint.yml` hardcodes `wiki` | `uv run python tools/lint.py --wiki-dir wiki --dry-run` | Does not honor custom `wiki_dir`, including `.wiki`. |
 | Hook mode selection is not honored | `scripts/bootstrap.py` copies all `assets/hooks/*` when hooks is `all`, `session`, or `git` | Must split session hooks from git hooks. |
 | Hooks default to `wiki` | Hook scripts use `WIKI_DIR="${WIKI_DIR:-wiki}"` | `settings-local.j2` uses `path_glob` but does not set `WIKI_DIR`; custom `wiki_dir` can drift. |
@@ -141,10 +143,10 @@ Missing Phase 1a pressure-test suites:
 
 | Capability | Full skill? | Command? | CI template? | Status | Decision |
 |---|---:|---:|---:|---|---|
-| `/alpha-wiki:review` | No | No | Partial old-template only | CI-template-only, not runnable as current alpha-wiki command | Implement `skills/review/SKILL.md` and `commands/review.md` in Phase 1a, or remove/disable generated workflow until backed. |
-| `/alpha-wiki:rollup` | No | No | Partial old-template only | CI-template-only, not runnable as current alpha-wiki command | Implement `skills/rollup/SKILL.md` and `commands/rollup.md` in Phase 1a, or remove/disable generated workflow until backed. |
+| `/alpha-wiki:review` | Yes | Yes | Yes | Backed minimal implementation | Full 15-dimension hardening remains P1. |
+| `/alpha-wiki:rollup` | Yes | Yes | Yes | Backed minimal implementation | Full 15-dimension hardening remains P1. |
 
-This resolves `T0.2`: `review` and `rollup` are not full skills and are not commands. They exist only as generated CI templates using the older `/wiki-*` namespace.
+This resolves `T0.2`: `review` and `rollup` were CI-template-only old-namespace artifacts during audit; they are now backed by skills, commands, and deterministic tools.
 
 ## Phase 1a Entry Backlog
 
@@ -155,7 +157,7 @@ P0:
 3. Make upgrade graph initialization non-destructive. Done: upgrade mode preserves existing `edges.jsonl`, `context_brief.md`, and `open_questions.md`.
 4. Honor hook selection mode (`session`, `git`, `all`, `none`). Done: `session` installs only Claude session/tool hooks plus settings, `git` installs only git hook helpers, `all` installs both, and `none` installs no hooks/settings.
 5. Rebuild the full graph after wiki writes: edges, context brief, open questions. Done: `post-tool-use.sh` now runs `rebuild-edges`, `rebuild-context-brief`, and `rebuild-open-questions` together.
-6. Resolve `review` / `rollup` mismatch: either implement backed skills/commands or remove generated workflows from default CI path.
+6. Resolve `review` / `rollup` mismatch: either implement backed skills/commands or remove generated workflows from default CI path. Done: backed `review` and `rollup` skills/commands/tools exist, and generated workflows now call `/alpha-wiki:review` and `/alpha-wiki:rollup month --write`.
 
 P1:
 

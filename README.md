@@ -23,7 +23,7 @@ Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11
 | Karpathy's gist (sketch) | Alpha-wiki (runtime) |
 |---|---|
 | 3 untyped layers | Same 3 layers, made explicit as **mutability contracts** + 5 domain presets + 4 architectural overlays |
-| 3 operations (ingest, query, lint) | **8 skills + 8 slash commands** — ingest, query, lint, evolve, status, spawn-agent, render, init |
+| 3 operations (ingest, query, lint) | **10 skills + 10 slash commands** — ingest, query, lint, evolve, status, spawn-agent, render, init, review, rollup |
 | No frontmatter rules | **Required frontmatter per entity type**, lint-blocked on violations |
 | Manual cross-links | **Bidirectional enforcement** — every forward link gets a reverse, written automatically by the engine |
 | No automation | **Three-layer hooks** — session-start loads `context_brief.md`, post-tool-use rebuilds the graph, session-end runs lint and appends a log entry, pre-commit blocks 🔴 errors, weekly CI review |
@@ -87,6 +87,8 @@ Then in any project:
                        │  /alpha-wiki:status      │
                        │  /alpha-wiki:spawn-agent │
                        │  /alpha-wiki:render      │
+                       │  /alpha-wiki:review      │
+                       │  /alpha-wiki:rollup      │
                        └────────────────────┘
 ```
 
@@ -114,6 +116,8 @@ Then in any project:
 6. /alpha-wiki:evolve <type>  Add a new entity type to the schema
 7. /alpha-wiki:spawn-agent    Add a wiki-aware subagent
 8. /alpha-wiki:render         Refresh Obsidian config or generate static HTML
+9. /alpha-wiki:review         Weekly structural review — status + lint + next actions
+10. /alpha-wiki:rollup        Weekly/monthly activity summary
 ```
 
 The `session-start` hook auto-loads `context_brief.md` so the agent has compressed context for free.
@@ -131,6 +135,8 @@ The `session-end` hook runs lint and appends a log entry. Most users never invok
 | `/alpha-wiki:evolve` | Add a new entity type to the schema |
 | `/alpha-wiki:spawn-agent` | Generate a wiki-aware subagent |
 | `/alpha-wiki:render` | Refresh Obsidian config or render static HTML |
+| `/alpha-wiki:review` | Wiki-level structural review — status snapshot, lint findings, next actions |
+| `/alpha-wiki:rollup` | Weekly/monthly wiki activity rollup |
 
 ## Reading the Obsidian graph
 

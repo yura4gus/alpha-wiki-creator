@@ -12,10 +12,10 @@ jobs:
         with: {python-version: '3.12'}
       - run: pip install uv && uv sync
       - run: npm install -g @anthropic/claude-code
-      - name: run /wiki-rollup
+      - name: run /alpha-wiki:rollup
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: claude -p "/wiki-rollup month"
+        run: claude -p "/alpha-wiki:rollup month --write"
       - name: commit rollup
         run: |
           git config user.name "wiki-rollup-bot"

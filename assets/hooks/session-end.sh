@@ -12,4 +12,4 @@ echo "## [$DATE] session-end | suggestions=$SUGGESTIONS errors=$ERRORS" >> "$WIK
 uv run python tools/wiki_engine.py rebuild-context-brief --wiki-dir "$WIKI_DIR" >/dev/null
 
 echo "Session ended. Lint: $ERRORS error(s), $SUGGESTIONS suggestion(s)."
-echo "Run: /wiki-lint --fix or /wiki-review"
+echo "Run: /alpha-wiki:lint --fix or /alpha-wiki:review"

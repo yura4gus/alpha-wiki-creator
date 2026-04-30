@@ -25,7 +25,7 @@ Goal: zero P0 unknowns before Phase 1 starts.
 | ID | Objective | Files | Acceptance | Gate | Tests | Depends | Status |
 |---|---|---|---|---|---|---|---|
 | T0.1 | Inspect `alpha-wiki-creator` repo: enumerate `skills/`, `commands/`, `tools/`, `tests/`, `scripts/`, `references/`, `.claude-plugin/`, `.github/workflows/`. Produce verified inventory document. | `audit-verified-inventory.md` | Verified inventory recorded in `docs/audit-verified-inventory.md`. | User reviews verified inventory. | N/A (inspection only). | None | done |
-| T0.2 | Verify whether `/alpha-wiki:review` and `/alpha-wiki:rollup` are full skills, commands-only, CI-only, or planned-only. | `audit-verified-inventory.md` | Both are CI-template-only old-namespace artifacts; no full skill or command exists. Decision recorded. | User reviews. | N/A. | T0.1 | done |
+| T0.2 | Verify whether `/alpha-wiki:review` and `/alpha-wiki:rollup` are full skills, commands-only, CI-only, or planned-only. | `audit-verified-inventory.md` | Initial audit found CI-template-only old-namespace artifacts; Phase 1a P0 now backs both with skills, commands, and deterministic tools. | User reviews. | N/A. | T0.1 | done |
 | T0.3 | Approve ADRs 001–006 (already drafted in `design/adr/`). | `design/adr/ADR-001..006.md` | Each ADR marked Status: Accepted by user. | User approval. | N/A. | None | done (drafted Etap 2) |
 | T0.4 | Marketplace topology decision. | `design/adr/ADR-005-marketplace-topology-deferred.md` | Recorded as deferred to Phase 5. | None — closed by ADR. | N/A. | None | done |
 | T0.5 | spawn-agent boundary lock. | `design/adr/ADR-006-spawn-agent-boundary.md` | Frozen pre-Phase 1a per ADR-006. | None — closed by ADR. | N/A. | None | done |
@@ -67,8 +67,8 @@ Each task follows the same shape: bring SKILL.md to 15-dimension standard from `
 
 | ID | Objective | Files | Acceptance | Gate | Tests | Depends |
 |---|---|---|---|---|---|---|
-| T1a.12 | Resolve `review` status. If exists: harden to 15-dimension standard. If absent: write SKILL.md from scratch covering wiki-level review (stale, link rot, schema drift, gaps). | `skills/review/SKILL.md` | 15 dimensions; clearly distinguished from AgentOps `cto-review` (team-level). | User skim. | `tests/skills/test_review.py` (3 scenarios). | T0.2 |
-| T1a.13 | Resolve `rollup` status. Same treatment. | `skills/rollup/SKILL.md` | 15 dimensions; idempotent monthly summarization. | User skim. | `tests/skills/test_rollup.py` (2 scenarios). | T0.2 |
+| T1a.12 | Resolve `review` status. If exists: harden to 15-dimension standard. If absent: write SKILL.md from scratch covering wiki-level review (stale, link rot, schema drift, gaps). | `skills/review/SKILL.md`, `commands/review.md`, `tools/review.py` | Backed minimal implementation exists; full 15-dimension hardening remains P1. Clearly distinguished from AgentOps `cto-review`. | User skim. | `tests/unit/test_review_rollup.py`. | T0.2 |
+| T1a.13 | Resolve `rollup` status. Same treatment. | `skills/rollup/SKILL.md`, `commands/rollup.md`, `tools/rollup.py` | Backed minimal implementation exists; full 15-dimension hardening remains P1. Writes idempotent period rollup. | User skim. | `tests/unit/test_review_rollup.py`. | T0.2 |
 
 ### Phase 1a.4 — Release prep
 
