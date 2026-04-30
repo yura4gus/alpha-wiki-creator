@@ -202,7 +202,7 @@ def _copy_assets(target: Path, config: InterviewConfig) -> None:
         hooks_dir.mkdir(parents=True, exist_ok=True)
         for f in (ASSETS / "hooks").iterdir():
             dest = hooks_dir / f.name
-            shutil.copy(f, dest)
+            dest.write_text(_render_runtime_asset(f.read_text(), config))
             dest.chmod(0o755)
         env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
         (target / ".claude" / "settings.local.json").write_text(
@@ -211,7 +211,7 @@ def _copy_assets(target: Path, config: InterviewConfig) -> None:
         wf_dir = target / ".github" / "workflows"
         wf_dir.mkdir(parents=True, exist_ok=True)
         for f in (ASSETS / "workflows").iterdir():
-            shutil.copy(f, wf_dir / f.name)
+            (wf_dir / f.name).write_text(_render_runtime_asset(f.read_text(), config))
     (target / ".claude" / "agents").mkdir(parents=True, exist_ok=True)
     (target / ".claude" / "skills").mkdir(parents=True, exist_ok=True)
 
@@ -222,6 +222,15 @@ def _copy_tools(target: Path) -> None:
     for f in TOOLS.iterdir():
         if f.is_file() and f.suffix == ".py":
             shutil.copy(f, tools_dst / f.name)
+
+
+def _render_runtime_asset(text: str, config: InterviewConfig) -> str:
+    return (
+        text
+        .replace('WIKI_DIR="${WIKI_DIR:-wiki}"', f'WIKI_DIR="${{WIKI_DIR:-{config.wiki_dir}}}"')
+        .replace("--wiki-dir wiki", f"--wiki-dir {config.wiki_dir}")
+        .replace("git add wiki/rollups/", f"git add {config.wiki_dir}/rollups/")
+    )
 
 
 def _initialize_graph(target: Path, config: InterviewConfig, upgrade: bool) -> None:
