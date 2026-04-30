@@ -12,6 +12,7 @@ This folder contains the current project design package for Alpha-Wiki and the r
 
 ## Execution
 
+- [`audit-verified-inventory.md`](audit-verified-inventory.md) — Phase 0 verified repository inventory and review/rollup decision
 - [`roadmap-execution.md`](roadmap-execution.md) — phase-by-phase execution roadmap
 - [`implementation-plan-2026-04-30.md`](implementation-plan-2026-04-30.md) — implementation plan for the current repository
 

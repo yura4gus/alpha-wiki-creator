@@ -24,8 +24,8 @@ Goal: zero P0 unknowns before Phase 1 starts.
 
 | ID | Objective | Files | Acceptance | Gate | Tests | Depends | Status |
 |---|---|---|---|---|---|---|---|
-| T0.1 | Inspect `alpha-wiki-creator` repo: enumerate `skills/`, `commands/`, `tools/`, `tests/`, `scripts/`, `references/`, `.claude-plugin/`, `.github/workflows/`. Produce verified inventory document. | `audit-verified-inventory.md` (new) | All 🔍 verify marks in `audit-and-roadmap.md` §1 replaced with confirmed facts. | User reviews verified inventory. | N/A (inspection only). | None | ready |
-| T0.2 | Verify whether `/alpha-wiki:review` and `/alpha-wiki:rollup` are full skills, commands-only, CI-only, or planned-only. | Append findings to `audit-verified-inventory.md`. | Status of each is one of: full skill / commands-only / CI-only / not-implemented. Decision recorded. | User reviews. | N/A. | T0.1 | ready |
+| T0.1 | Inspect `alpha-wiki-creator` repo: enumerate `skills/`, `commands/`, `tools/`, `tests/`, `scripts/`, `references/`, `.claude-plugin/`, `.github/workflows/`. Produce verified inventory document. | `audit-verified-inventory.md` | Verified inventory recorded in `docs/audit-verified-inventory.md`. | User reviews verified inventory. | N/A (inspection only). | None | done |
+| T0.2 | Verify whether `/alpha-wiki:review` and `/alpha-wiki:rollup` are full skills, commands-only, CI-only, or planned-only. | `audit-verified-inventory.md` | Both are CI-template-only old-namespace artifacts; no full skill or command exists. Decision recorded. | User reviews. | N/A. | T0.1 | done |
 | T0.3 | Approve ADRs 001–006 (already drafted in `design/adr/`). | `design/adr/ADR-001..006.md` | Each ADR marked Status: Accepted by user. | User approval. | N/A. | None | done (drafted Etap 2) |
 | T0.4 | Marketplace topology decision. | `design/adr/ADR-005-marketplace-topology-deferred.md` | Recorded as deferred to Phase 5. | None — closed by ADR. | N/A. | None | done |
 | T0.5 | spawn-agent boundary lock. | `design/adr/ADR-006-spawn-agent-boundary.md` | Frozen pre-Phase 1a per ADR-006. | None — closed by ADR. | N/A. | None | done |
