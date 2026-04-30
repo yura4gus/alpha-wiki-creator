@@ -30,8 +30,9 @@ Goal: zero P0 unknowns before Phase 1 starts.
 | T0.4 | Marketplace topology decision. | `design/adr/ADR-005-marketplace-topology-deferred.md` | Recorded as deferred to Phase 5. | None — closed by ADR. | N/A. | None | done |
 | T0.5 | spawn-agent boundary lock. | `design/adr/ADR-006-spawn-agent-boundary.md` | Frozen pre-Phase 1a per ADR-006. | None — closed by ADR. | N/A. | None | done |
 | T0.6 | Skill content audit: revisit all 10 backed Alpha-Wiki skills by name and body, strengthening operational logic, teaching behavior, graph discipline, Obsidian color semantics, and Karpathy LLM-Wiki principles before Phase 1a implementation work. | `skills/*/SKILL.md` | All 10 backed skill bodies rewritten as richer operational manuals with mission, boundaries, workflow, graph/color discipline, safety gates, and done criteria. | User reviews skill bodies. | Existing test suite remains green. | T0.1, T0.2 | done |
+| T0.7 | Human-readable command and graph/status clarity pass: make slash command descriptions understandable, lock Obsidian graph colors to repo/service/module/feature/document/contract semantics, and require a cross-cutting Gap Check in status. | `commands/*.md`, `skills/status/SKILL.md`, `skills/render/SKILL.md`, `assets/obsidian/*`, `tools/status.py`, `README.md` | Commands retain stable machine names but expose human meanings; Obsidian colors match red repos/services, green modules/domains, blue features/flows, black docs, orange contracts; status output always includes `Gap Check`. | User reviews command wording and graph legend. | Unit tests cover status gap output and Obsidian color contract. | T0.6 | done |
 
-Phase 0 gate: T0.1 through T0.6 closed. → Phase 1a starts.
+Phase 0 gate: T0.1 through T0.7 closed. → Phase 1a starts.
 
 ---
 

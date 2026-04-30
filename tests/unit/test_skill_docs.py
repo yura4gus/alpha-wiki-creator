@@ -32,3 +32,9 @@ def test_skill_docs_preserve_wiki_discipline_language():
     corpus = "\n".join(path.read_text() for path in _skill_files())
     for term in ["Karpathy", "Obsidian", "graph", "frontmatter", "wikilinks", "CLAUDE.md"]:
         assert term in corpus
+
+
+def test_commands_explain_human_meaning():
+    for path in sorted((ROOT / "commands").glob("*.md")):
+        text = path.read_text()
+        assert "Human meaning:" in text, f"{path} should explain the command in user language"

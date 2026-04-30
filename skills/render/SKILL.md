@@ -42,13 +42,26 @@ Graphviz export target. Useful for dense graph inspection. If backend is not imp
 
 Use path-based color groups:
 
-- Red: services, repos, top-level architectural units.
-- Green: modules, components, core/domain/ports/use-cases.
-- Orange: contracts at boundaries.
-- Dark grey: documents, decisions, specs, claims, papers, concepts, features, flows, metrics.
+- Red: repos, services, systems, bounded contexts, top-level architectural units.
+- Green: modules, domains, components, core, ports, adapters, infrastructure.
+- Blue: features, functions, user-facing flows, use-cases, application layer.
+- Black: documents, decisions, specs, claims, papers, concepts, metrics, evidence pages.
+- Orange: contracts at service boundaries.
 - Light grey: people and tasks.
 
 If graph colors look wrong, do not hack colors first. Check whether the page is in the wrong directory/type.
+
+## Graph Reading Contract
+
+The rendered graph should be understandable without reading page bodies:
+
+- Red nodes are the architecture boundary map. A multi-repo project should show each repo/service as a red node.
+- Green nodes cluster under red nodes and represent the modules/domains/components that make the service real.
+- Blue nodes explain what the system does for users: features, functions, flows, use-cases.
+- Black nodes are evidence and thinking: docs, decisions, specs, claims, papers, ideas.
+- Orange nodes are contracts crossing boundaries. An orange node should usually touch at least one red owner and one consumer.
+
+If a black document floats alone, the problem is usually missing links. If a module appears black, the problem is usually schema/directory placement. If a service appears green, the repo/service boundary is not explicit enough yet.
 
 ## Workflow
 

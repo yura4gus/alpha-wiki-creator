@@ -1,9 +1,9 @@
 ---
-description: "Ask the wiki — synthesize an answer from index + relevant pages"
+description: "Ask / Find in wiki — answer a human question from cited wiki pages"
 argument-hint: "<question>"
 ---
 
-Invoke the `query` skill from the `alpha-wiki` plugin to answer the following question from the wiki:
+Invoke the `query` skill from the `alpha-wiki` plugin. Human meaning: ask the maintained wiki, not the open web, and answer only from cited pages.
 
 $ARGUMENTS
 

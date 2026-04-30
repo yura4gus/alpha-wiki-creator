@@ -1,9 +1,9 @@
 ---
-description: "Add a new entity type to the wiki schema (updates CLAUDE.md, creates dir, logs schema-change)"
+description: "Add wiki type — evolve schema, directory, frontmatter, and rules"
 argument-hint: "<type-name> [--generate-skill]"
 ---
 
-Invoke the `evolve` skill from the `alpha-wiki` plugin to add a new entity type to the wiki schema.
+Invoke the `evolve` skill from the `alpha-wiki` plugin. Human meaning: teach the wiki a new kind of page when existing types do not fit.
 
 Arguments: $ARGUMENTS
 

@@ -1,9 +1,9 @@
 ---
-description: "Bootstrap an LLM-maintained wiki into the current project (Karpathy + OmegaWiki style)"
+description: "Start wiki memory — bootstrap Alpha-Wiki into this project"
 argument-hint: "[project-description]"
 ---
 
-Invoke the `init` skill from the `alpha-wiki` plugin to bootstrap a wiki into the current project.
+Invoke the `init` skill from the `alpha-wiki` plugin. Human meaning: start durable project memory here.
 
 Project description (optional, free text from the user): $ARGUMENTS
 

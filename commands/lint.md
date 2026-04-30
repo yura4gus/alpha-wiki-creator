@@ -1,9 +1,9 @@
 ---
-description: "Verify wiki structural integrity — broken links, missing reverses, orphans, dependency rules"
+description: "Check / Fix wiki structure — links, frontmatter, reverses, orphans, dependency rules"
 argument-hint: "[--fix | --suggest | --dry-run]"
 ---
 
-Invoke the `lint` skill from the `alpha-wiki` plugin.
+Invoke the `lint` skill from the `alpha-wiki` plugin. Human meaning: check whether the wiki graph is structurally sound; with `--fix`, apply deterministic safe repairs.
 
 Flags from the user (if any): $ARGUMENTS
 

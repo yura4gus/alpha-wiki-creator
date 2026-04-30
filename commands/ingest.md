@@ -1,9 +1,9 @@
 ---
-description: "Add raw sources (PRDs, ADRs, OpenAPI specs, transcripts, etc.) into the wiki"
+description: "Import sources — turn PRDs, ADRs, specs, transcripts into wiki pages"
 argument-hint: "<file-paths…>"
 ---
 
-Invoke the `ingest` skill from the `alpha-wiki` plugin to ingest the following raw artifacts into the wiki:
+Invoke the `ingest` skill from the `alpha-wiki` plugin. Human meaning: import raw evidence into maintained wiki pages:
 
 $ARGUMENTS
 

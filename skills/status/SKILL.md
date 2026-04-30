@@ -11,7 +11,7 @@ Give the user a fast, honest picture of wiki health. Status should teach what ne
 
 ## Name Contract
 
-`status` means "observe and summarize current health". It is read-only except when the user explicitly asks to save a report under `outputs/`.
+`status` means "observe and summarize current health". It does not edit source wiki pages. It may refresh generated graph artifacts (`edges.jsonl`, `context_brief.md`, `open_questions.md`) before reporting so health is measured from current pages, not stale derived files.
 
 ## Workflow
 
@@ -26,7 +26,8 @@ Give the user a fast, honest picture of wiki health. Status should teach what ne
    - All pages via `tools/wiki_engine.py`.
 
 3. Generate report:
-   - Stats: pages, edges, open questions, log entries.
+   - Status Summary: pages, edges, open questions, log entries, gap count.
+   - Gap Check: cross-cutting holes that block wiki usefulness.
    - Recent activity.
    - Schema evolution events.
    - Stale pages.
@@ -46,6 +47,33 @@ Give the user a fast, honest picture of wiki health. Status should teach what ne
 - Noisy wiki: many outputs or sources with no inbound links.
 - Miscolored graph: likely directory/type mismatch; run `/alpha-wiki:render` or revisit schema.
 
+## Required Status Format
+
+Use one stable format so every session can compare status over time:
+
+1. `Status Summary`
+   - Pages.
+   - Edges.
+   - Open questions.
+   - Recent log entries.
+   - Gap check count.
+2. `Gap Check`
+   - Content gap: no durable pages yet.
+   - Graph gap: pages exist but typed edges are absent.
+   - Process gap: no auditable log entries.
+   - Decision gap: open questions have no owner or next action.
+   - Freshness gap: pages are stale.
+   - Metadata gap: pages miss `date_updated`.
+   - Coverage gap: no decisions/specs/contracts/features/claims/papers.
+3. `Recent activity`
+4. `Schema evolution`
+5. `Stale pages`
+6. `Pages without date_updated`
+7. `Lint summary`
+8. `Suggested next actions`
+
+The Gap Check is cross-cutting. It should tell the user where the wiki is structurally blind, even when individual lint checks pass.
+
 ## Suggested Actions
 
 Status should recommend concrete next steps:
@@ -61,7 +89,8 @@ Status should recommend concrete next steps:
 
 - Report is clear enough for a user to decide next action.
 - It distinguishes facts from recommendations.
-- It does not mutate the wiki unless the user explicitly asks to save.
+- It does not mutate source pages unless the user explicitly asks to save.
+- It always includes `Gap Check`.
 
 ## References
 

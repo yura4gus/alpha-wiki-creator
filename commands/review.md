@@ -1,9 +1,9 @@
 ---
-description: "Run a wiki-level structural review - status snapshot, lint findings, next actions"
+description: "Audit wiki structure — status snapshot, lint findings, next actions"
 argument-hint: "[--out <path>]"
 ---
 
-Invoke the `review` skill from the `alpha-wiki` plugin.
+Invoke the `review` skill from the `alpha-wiki` plugin. Human meaning: run the scheduled trust check before sharing or merging wiki changes.
 
 Arguments: $ARGUMENTS
 

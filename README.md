@@ -28,7 +28,7 @@ Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11
 | Manual cross-links | **Bidirectional enforcement** — every forward link gets a reverse, written automatically by the engine |
 | No automation | **Three-layer hooks** — session-start loads `context_brief.md`, post-tool-use rebuilds the graph, session-end runs lint and appends a log entry, pre-commit blocks 🔴 errors, weekly CI review |
 | Static index.md | **Auto-generated graph layer** — `edges.jsonl`, `context_brief.md` (≤8000 chars, loaded into every session for free), `open_questions.md` |
-| Bring your own UI | **Obsidian-first** — `.obsidian/` config ships with semantic color groups (🔴 services, 🟢 modules, ⚫ docs, 🟠 contracts) so the graph view reads like a system diagram |
+| Bring your own UI | **Obsidian-first** — `.obsidian/` config ships with semantic color groups (🔴 repos/services, 🟢 modules/domains, 🔵 features/flows, ⚫ docs, 🟠 contracts) so the graph view reads like a system diagram |
 | One-shot setup | **Schema evolution** — `/alpha-wiki:evolve` adds new entity types through ingest, gates them by default, logs every schema change |
 | You write the subagents | **Subagent slot** — `/alpha-wiki:spawn-agent` generates wiki-aware Claude Code subagents that honor the mutability matrix |
 
@@ -110,9 +110,9 @@ Then in any project:
 ```
 1. /alpha-wiki:init           Bootstrap (interview → render → first commit)
 2. /alpha-wiki:ingest <path>  Raw artifact (PRD, ADR, OpenAPI spec, …) → wiki page(s)
-3. /alpha-wiki:query <q>      Synthesize an answer from wiki pages
-4. /alpha-wiki:lint --fix     Apply safe corrections (missing reverses, etc.)
-5. /alpha-wiki:status         Health report — staleness, gaps, recent activity
+3. /alpha-wiki:query <q>      Ask/find in the wiki with cited evidence
+4. /alpha-wiki:lint --fix     Check/fix structure (links, reverses, frontmatter)
+5. /alpha-wiki:status         Health + mandatory Gap Check
 6. /alpha-wiki:evolve <type>  Add a new entity type to the schema
 7. /alpha-wiki:spawn-agent    Add a wiki-aware subagent
 8. /alpha-wiki:render         Refresh Obsidian config or generate static HTML
@@ -129,9 +129,9 @@ The `session-end` hook runs lint and appends a log entry. Most users never invok
 |---|---|
 | `/alpha-wiki:init` | Bootstrap wiki + scaffolding into the current project |
 | `/alpha-wiki:ingest` | raw → wiki page(s); triggers schema-evolve if no slot fits |
-| `/alpha-wiki:query` | Ask the wiki; synthesize from index + relevant pages |
-| `/alpha-wiki:lint` | Structural validation (broken links, missing reverses, orphans, dependency rules) |
-| `/alpha-wiki:status` | Health report — recent activity, stale pages, gaps, schema-evolution log |
+| `/alpha-wiki:query` | Ask/find in the wiki; synthesize from index + relevant cited pages |
+| `/alpha-wiki:lint` | Check/fix wiki structure: links, reverses, orphans, frontmatter, dependency rules |
+| `/alpha-wiki:status` | Health + Gap Check — recent activity, stale pages, structural blind spots, schema-evolution log |
 | `/alpha-wiki:evolve` | Add a new entity type to the schema |
 | `/alpha-wiki:spawn-agent` | Generate a wiki-aware subagent |
 | `/alpha-wiki:render` | Refresh Obsidian config or render static HTML |
@@ -144,13 +144,14 @@ The bootstrap ships a default `.obsidian/graph.json` with **color groups** so th
 
 | Color | Meaning |
 |---|---|
-| 🔴 Red | Service / repo / top-level architectural unit (`modules/`, `bounded-contexts/`, `application/`) |
-| 🟢 Green | Module / sub-component within a service (`components/`, `core/`, `ports/`, `domains/`, `use-cases/`) |
-| ⚫ Dark grey | Document — decisions, specs, concepts, APIs, papers, claims, summaries, etc. |
+| 🔴 Red | Repo / service / top-level architectural unit (`services/`, `repos/`, `bounded-contexts/`, `applications/`) |
+| 🟢 Green | Module / domain / sub-component within a service (`modules/`, `components/`, `core/`, `ports/`, `domains/`, `adapters/`) |
+| 🔵 Blue | Feature / function / user-facing flow (`features/`, `flows/`, `use-cases/`, `application/`) |
+| ⚫ Black | Document/evidence page — decisions, specs, concepts, APIs, papers, claims, summaries, etc. |
 | 🟠 Orange | Contract — REST/GraphQL/gRPC/events at service boundaries (`contracts/`) |
 | ⚪ Light grey | People / tasks — meta layer |
 
-A red node with many grey edges = a service that has accumulated decisions and specs. A green cluster around a red node = a service with multiple modules. An orange node bridging two reds = a contract owned by one, consumed by the other. Isolated red node = service with no docs (lint flags this as a maintenance gap).
+A red node is a repo/service boundary. A green cluster around red is the service's modules/domains/components. A blue node shows a feature or function implemented by those modules. Black nodes are documents/evidence attached to the architecture. An orange node bridging two reds is a contract owned by one service and consumed by another. Isolated red or black nodes are maintenance gaps.
 
 Customize: edit `.obsidian/graph.json` → `colorGroups` array. Full legend at `.obsidian/COLOR-LEGEND.md` after bootstrap.
 

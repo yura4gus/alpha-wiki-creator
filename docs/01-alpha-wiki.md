@@ -235,7 +235,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Outputs | Mode-dependent: refreshed `.obsidian/`, static HTML at `wiki/render/html/`, Mermaid at `wiki/render/mermaid/`, DOT at `wiki/render/dot/`. |
 | Files read | All wiki pages and `wiki/graph/*`. |
 | Files written | Render output paths. Never touches wiki source pages. |
-| Color mapping | (See `00-architecture.md` glossary; semantic groups red/green/grey/orange/light-grey defined in `.obsidian/COLOR-LEGEND.md`.) |
+| Color mapping | Red = repos/services, green = modules/domains/components/adapters, blue = features/functions/flows/application, black = documents/evidence, orange = contracts, light grey = people/tasks. Full path-based rules live in `.obsidian/COLOR-LEGEND.md`. |
 | Tools | New `tools/render_html.py`, new `tools/render_mermaid.py`. |
 | Tests | Snapshot tests: sample wiki → expected HTML / Mermaid output. |
 | Integrations | Triggered by user; not part of automated hooks. |

@@ -1,8 +1,8 @@
 ---
-description: "Wiki health report — recent activity, stale pages, schema-evolution log, gaps, lint summary"
+description: "Health / Gap status — one cross-cutting wiki health report"
 ---
 
-Invoke the `status` skill from the `alpha-wiki` plugin to produce a wiki health report.
+Invoke the `status` skill from the `alpha-wiki` plugin to produce the standard wiki health report with mandatory Gap Check. Human meaning: show what is healthy, stale, missing, or risky across the wiki.
 
 Run: `uv run python -c "from tools.status import status_report; from pathlib import Path; print(status_report(Path('<wiki_dir>')))"`
 

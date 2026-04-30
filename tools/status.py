@@ -1,13 +1,22 @@
 """Wiki health report — recent activity, staleness, gaps, schema-evolution log."""
 from __future__ import annotations
-import re
-from datetime import date as _date, timedelta
+from datetime import date as _date
 from pathlib import Path
-from tools.wiki_engine import scan_wiki, read_edges, rebuild_open_questions
+from tools.wiki_engine import (
+    read_edges,
+    rebuild_context_brief,
+    rebuild_edges,
+    rebuild_open_questions,
+    scan_wiki,
+)
 
 STALE_THRESHOLD_DAYS = 30
 
 def status_report(wiki_dir: Path) -> str:
+    rebuild_edges(wiki_dir)
+    rebuild_context_brief(wiki_dir)
+    rebuild_open_questions(wiki_dir)
+
     pages = scan_wiki(wiki_dir)
     log_text = (wiki_dir / "log.md").read_text() if (wiki_dir / "log.md").exists() else ""
     edges_path = wiki_dir / "graph" / "edges.jsonl"
@@ -42,17 +51,27 @@ def status_report(wiki_dir: Path) -> str:
     if open_q_path.exists():
         open_q_count = sum(1 for ln in open_q_path.read_text().splitlines() if ln.startswith("- "))
 
+    gap_items = _gap_check(pages, edges, open_q_count, len(log_lines), len(stale), len(no_date))
+
     # Build report
     parts = [
         f"# Wiki Status Report",
         f"\n_Generated: {today.isoformat()}_\n",
-        f"## Stats",
+        f"## Status Summary",
         f"- Pages: {len(pages)}",
         f"- Edges: {len(edges)}",
         f"- Open questions: {open_q_count}",
         f"- Recent log entries: {len(log_lines)}",
-        f"\n## Recent activity (last {len(recent)})",
+        f"- Gap check: {'clear' if not gap_items else str(len(gap_items)) + ' gap(s)'}",
+        f"\n## Gap Check",
     ]
+    if gap_items:
+        parts.extend(f"- {item}" for item in gap_items)
+    else:
+        parts.append("- No cross-cutting gaps detected.")
+    parts.append(
+        f"\n## Recent activity (last {len(recent)})",
+    )
     if recent:
         parts.extend(f"- {ln[3:]}" for ln in recent)
     else:
@@ -70,3 +89,27 @@ def status_report(wiki_dir: Path) -> str:
             parts.append(f"_… and {len(no_date) - 20} more_")
     parts.append(f"\n_Run `/alpha-wiki:lint --suggest` for structural gaps._")
     return "\n".join(parts) + "\n"
+
+
+def _gap_check(pages, edges, open_q_count: int, log_count: int, stale_count: int, no_date_count: int) -> list[str]:
+    """Return cross-cutting health gaps, not per-file lint findings."""
+    gaps: list[str] = []
+    page_count = len(pages)
+    dirs = {Path(p.path).parent.name for p in pages}
+
+    if page_count == 0:
+        gaps.append("Content gap: no wiki pages exist yet; ingest first durable source.")
+        return gaps
+    if page_count > 1 and not edges:
+        gaps.append("Graph gap: multiple pages exist but no typed edges were generated.")
+    if log_count == 0:
+        gaps.append("Process gap: no log entries; recent wiki changes are not auditable.")
+    if open_q_count:
+        gaps.append(f"Decision gap: {open_q_count} open question(s) need owner or next action.")
+    if stale_count:
+        gaps.append(f"Freshness gap: {stale_count} page(s) are older than {STALE_THRESHOLD_DAYS} days.")
+    if no_date_count:
+        gaps.append(f"Metadata gap: {no_date_count} page(s) have no date_updated.")
+    if not dirs.intersection({"decisions", "specs", "contracts", "features", "claims", "papers"}):
+        gaps.append("Coverage gap: no decision/spec/contract/feature/claim evidence pages detected.")
+    return gaps

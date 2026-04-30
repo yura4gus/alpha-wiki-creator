@@ -58,10 +58,11 @@ Keep the wiki trustworthy as a graph. Lint is the guardrail that prevents markdo
 
 If the Obsidian graph looks wrong, lint should guide the user:
 
-- Isolated red service/module: missing decisions/specs/contracts links.
+- Isolated red repo/service: missing decisions/specs/contracts/module links.
 - Orange contract without owner/consumers: contract page incomplete.
-- Green module with only grey links: missing parent service/module.
-- Dark grey document with no inbound links: likely orphan or unindexed output.
+- Green module with no red parent: missing service/repo ownership link.
+- Blue feature/flow with no green implementation link: feature is not tied to modules.
+- Black document with no inbound links: likely orphan or unindexed output.
 - People/tasks cluster disconnected from work pages: missing ownership links.
 
 ## Safe Fix Rules

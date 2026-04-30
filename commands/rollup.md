@@ -1,9 +1,9 @@
 ---
-description: "Generate a weekly or monthly wiki activity rollup"
+description: "Summarize wiki activity — weekly or monthly rollup"
 argument-hint: "[week | month] [--write]"
 ---
 
-Invoke the `rollup` skill from the `alpha-wiki` plugin.
+Invoke the `rollup` skill from the `alpha-wiki` plugin. Human meaning: summarize what changed in the wiki over a week or month.
 
 Arguments: $ARGUMENTS
 

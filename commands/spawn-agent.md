@@ -1,9 +1,9 @@
 ---
-description: "Add a Claude Code subagent that operates on the wiki (maintainer, reviewer, or domain-specific)"
+description: "Create wiki helper agent — maintainer, reviewer, or domain-specific"
 argument-hint: "<name> <role>"
 ---
 
-Invoke the `spawn-agent` skill from the `alpha-wiki` plugin.
+Invoke the `spawn-agent` skill from the `alpha-wiki` plugin. Human meaning: create a wiki-aware helper that follows Alpha-Wiki boundaries.
 
 Arguments: $ARGUMENTS
 

@@ -4,18 +4,35 @@ The default `graph.json` color groups for an Alpha-wiki vault:
 
 | Color | Hex | Meaning | Paths matched |
 |---|---|---|---|
-| 🔴 Red | `#E94B43` | **Service / repo / top-level architectural unit** | `modules/`, `bounded-contexts/`, `adapters/inbound/`, `application/` |
-| 🟢 Green | `#4CAF50` | **Module / sub-component within a service** | `components/`, `core/`, `ports/`, `domains/`, `use-cases/` |
-| ⚫ Dark grey | `#444B57` | **Document** (decisions, specs, concepts, APIs, entities, papers, summaries, claims, experiments, ideas, features, flows, metrics, personas, projects, areas, resources, journals, goals, sources, etc.) | All non-code page types |
-| 🟠 Orange | `#FF7F00` | **Contract** (REST/GraphQL/gRPC/events/webhooks) — special category, lives at service boundaries | `contracts/` |
+| 🔴 Red | `#E94B43` | **Repo / service / top-level architectural unit** | `services/`, `repos/`, `repositories/`, `systems/`, `bounded-contexts/`, `applications/` |
+| 🟢 Green | `#16A34A` | **Module / domain / sub-component inside a service** | `modules/`, `components/`, `core/`, `ports/`, `domains/`, `adapters/`, `infrastructure/` |
+| 🔵 Blue | `#2563EB` | **Feature / function / user-facing flow** | `features/`, `flows/`, `use-cases/`, `application/` |
+| ⚫ Black | `#111111` | **Document / evidence page** (decisions, specs, concepts, APIs, entities, papers, summaries, claims, experiments, ideas, metrics, personas, projects, areas, resources, journals, goals, sources, etc.) | All non-code page types |
+| 🟠 Orange | `#F97316` | **Contract** (REST/GraphQL/gRPC/events/webhooks) — special category, lives at service boundaries | `contracts/` |
 | ⚪ Light grey | `#A9A9A9` | **People / tasks** — meta layer | `people/`, `tasks/` |
 
 ## Reading the graph
 
-- A **red node** with many outgoing dark-grey edges = a service that has accumulated docs (decisions, specs, APIs)
-- A **green cluster around a red node** = a service with multiple sub-modules
+- A **red node** = a separate repo/service/system boundary. In a multi-repo architecture, red nodes are the first thing to orient by.
+- A **green cluster around a red node** = modules, domains, or components that live inside that service.
+- A **blue node connected to green nodes** = a feature/function/flow implemented by one or more modules.
+- A **black node attached to red/green/blue nodes** = documentary evidence: decisions, specs, claims, papers, ideas, metrics.
 - An **orange node bridging two red nodes** = a contract owned by one service and consumed by another
 - An **isolated red node** = a service with no documented decisions/specs yet (lint flags this as a maintenance gap)
+- A **black island** = a document that has not been attached to the architecture yet; link it or archive it.
+
+## Grouping rule
+
+Use the directory to express the graph layer:
+
+1. Repo/service boundary → red.
+2. Internal module/domain/component → green.
+3. Feature/function/flow → blue.
+4. Evidence document → black.
+5. Integration contract → orange.
+6. Work/people metadata → light grey.
+
+Do not recolor individual pages as a workaround. If a node has the wrong color, move it to the correct semantic directory or evolve the schema.
 
 ## Customizing
 
@@ -25,4 +42,4 @@ Convert hex to decimal: `int("E94B43", 16)` in Python or `parseInt("E94B43", 16)
 
 ## Why path-based, not tag-based
 
-Alpha-wiki pages don't carry tags by default — they carry frontmatter (`type:`, `status:`, etc.). Obsidian's graph color groups support `path:` queries which match the directory layout we already enforce. Path-based grouping needs zero per-page maintenance.
+Alpha-wiki pages don't carry tags by default — they carry frontmatter (`type:`, `status:`, etc.). Obsidian's graph color groups support `path:` queries which match the directory layout we already enforce. Path-based grouping needs zero per-page maintenance and makes color a schema signal, not decoration.
