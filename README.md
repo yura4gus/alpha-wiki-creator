@@ -194,6 +194,7 @@ Current architecture set:
 - [`docs/best-practices-gap-analysis-2026-04-30.md`](docs/best-practices-gap-analysis-2026-04-30.md) — operator/AI ergonomics gap scan
 - [`docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md`](docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
 - [`docs/final-release-hardening-plan.md`](docs/final-release-hardening-plan.md) — consolidated key improvements required for final release
+- [`docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md`](docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md) — end-to-end lifecycle automation and closure audit
 
 Decision records:
 

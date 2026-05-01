@@ -1,0 +1,238 @@
+# Alpha-Wiki Lifecycle Automation Audit — 2026-05-01
+
+Goal: verify how closed, universalized, and automated the Alpha-Wiki lifecycle is today, and identify the exact gaps that must be automated before final release.
+
+## Lifecycle Under Audit
+
+```text
+install
+  -> init/bootstrap
+  -> ingest/update pages
+  -> rebuild graph artifacts
+  -> lint structural rules
+  -> status gap report
+  -> review trust report
+  -> rollup activity summary
+  -> CI/hooks keep it current
+```
+
+## Automation Verdict
+
+Current state: **partially closed and increasingly automated**.
+
+Alpha-Wiki now has the right deterministic spine: bootstrap, graph rebuild, lint, status, review, rollup, hooks, CI templates, and cluster-link lint. The remaining release risk is that `ingest` and `query` are still mostly skill-mediated rather than backed by deterministic pipelines, and Graph QA exports are not implemented yet.
+
+## Rule-To-Automation Matrix
+
+| Rule / Invariant | Current Automation | Current Tests | Status | Gap |
+|---|---|---|---|---|
+| Raw sources are read-only | `CLAUDE.md` mutability matrix, ingest skill discipline | Bootstrap/template tests | partial | No pre-write enforcement for `raw/**` yet. |
+| Wiki pages are markdown/frontmatter | Templates, parser, lint frontmatter checks | Parsing/frontmatter tests | pass | Expand invalid YAML/frontmatter shape checks. |
+| Graph artifacts are generated, not hand-edited | `wiki_engine.py`, hooks, status/review refresh | Graph/status/hook tests | pass | Add CI check that graph artifacts are current after PR changes. |
+| Cluster ownership links are required | `cluster-link-gap` lint, status `Cluster gap`, frontmatter templates | `test_lint_cluster_links`, lifecycle smoke | in-progress | Need stronger per-entity policy and review scoring. |
+| Color labels role, not cluster | Obsidian legend, render skill, tests | Obsidian graph tests | pass | Add Graph QA export snapshots. |
+| `ingest` updates pages/log/graph/lint | Skill instructions | Partial integration tests | partial | Implement `tools/ingest_pipeline.py`. |
+| `query` reads brief/index/pages with citations | Skill instructions | Skill docs tests | partial | Implement `tools/wiki_search.py` and query pressure tests. |
+| `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
+| `status` exposes gaps | `tools/status.py` | Status tests | pass | Add provenance/freshness/cluster score. |
+| `review` produces trust report | `tools/review.py` | Review/rollup tests | pass | Add semantic cluster/provenance/freshness sections. |
+| `rollup` summarizes activity | `tools/rollup.py`, CI template | Rollup tests | pass | Add unresolved gap and decision summary. |
+| Claude hooks keep graph fresh | `assets/hooks/*` | Hook mode/runtime asset tests | pass | Hooks are Claude-specific; Codex needs explicit/manual workflow or adapter. |
+| CI checks wiki health | `assets/workflows/*` | Runtime asset tests | partial | CI lint template runs; review/rollup depend on headless Claude and secrets. |
+| Codex path exists | `scripts/install_codex.py`, docs | Codex installer tests | partial | No Codex-native hooks/automation yet. |
+
+## Lifecycle Closure Analysis
+
+### 1. Install
+
+Automated:
+
+- Claude Code plugin install is documented.
+- Codex skill adapter install exists through `scripts/install_codex.py`.
+- Bootstrap writes tools, hooks, workflows, Obsidian config, wiki skeleton.
+
+Gaps:
+
+- No `doctor` command yet.
+- No platform compatibility matrix beyond Codex adapter doc.
+
+Next automation:
+
+- `tools/doctor.py`: check Python, uv, tools import, wiki dir, config, hooks, CI workflows, graph artifacts, Codex skill install target.
+
+### 2. Init / Bootstrap
+
+Automated:
+
+- `scripts/bootstrap.py` renders project files.
+- Safe-existing protection exists for top-level files.
+- Custom wiki dir is propagated into hooks/workflows.
+- Obsidian config and graph seeds are generated.
+
+Gaps:
+
+- First-run checklist is still documentation-level.
+- Existing-repo migration audit is planned, not implemented as `tools/init_audit.py`.
+
+Next automation:
+
+- Bootstrap should optionally run `doctor`, `lint`, `status`, and graph rebuild after init and print a first-run checklist.
+
+### 3. Ingest / Update
+
+Automated:
+
+- Skill-level workflow is strong.
+- Classifier exists for artifact classification.
+- Graph rebuild and lint can be run after writes.
+
+Gaps:
+
+- No deterministic `tools/ingest_pipeline.py`.
+- Provenance extraction and cluster-link enforcement are not yet written into an ingest backend.
+- Resume/recovery for long ingest is absent.
+
+Next automation:
+
+- Implement ingest pipeline with page writes, provenance, cluster links, log append, graph rebuild, lint summary, and resumable state.
+
+### 4. Graph / Cluster
+
+Automated:
+
+- `wiki_engine.py` rebuilds `edges.jsonl`, `context_brief.md`, `open_questions.md`.
+- `cluster-link-gap` detects unclustered documents/features/contracts/modules.
+- Status surfaces cluster gaps.
+- Obsidian colors are documented and tested.
+
+Gaps:
+
+- No Mermaid/DOT export yet.
+- No snapshot proving mixed-color service clusters render correctly.
+- Red service/repo with no attached docs is not yet detected.
+
+Next automation:
+
+- Add `tools/render_mermaid.py`, `tools/render_dot.py`, and graph QA snapshots.
+- Extend lint/review to detect service/repo nodes with no attached evidence pages.
+
+### 5. Lint
+
+Automated:
+
+- Deterministic lint exists.
+- Pre-commit hook runs `lint --fix`.
+- CI lint workflow exists.
+- Cluster-link lint has tests.
+
+Gaps:
+
+- Checks are still in one file.
+- Full release set not complete: duplicate aliases, stale metadata, missing provenance, invalid frontmatter shape, current graph check.
+
+Next automation:
+
+- Split into `tools/lint_checks/*` and add per-check tests.
+
+### 6. Status
+
+Automated:
+
+- Status rebuilds graph artifacts before reporting.
+- Status includes Gap Check and cluster gap.
+
+Gaps:
+
+- No health score/provenance score yet.
+- No owner/timebox for open questions yet.
+
+Next automation:
+
+- Add score sections only after core checks are stable.
+
+### 7. Review
+
+Automated:
+
+- `tools/review.py` combines status + lint findings.
+- CI review workflow exists.
+
+Gaps:
+
+- Review is structural, not yet a full trust audit.
+- It does not yet summarize clusters, provenance, freshness policy, or open-question ownership.
+
+Next automation:
+
+- Extend review report with `Cluster Health`, `Provenance`, `Freshness`, `Open Questions`, and `Next Actions`.
+
+### 8. Rollup
+
+Automated:
+
+- `tools/rollup.py` and CI rollup workflow exist.
+- Rollup write is idempotent.
+
+Gaps:
+
+- Rollup does not yet separate activity, decisions, unresolved gaps, and schema changes.
+
+Next automation:
+
+- Add sections and link back to source pages.
+
+### 9. Hooks / CI / Platform Automation
+
+Automated:
+
+- Claude hooks cover session start, pre-tool-use, post-tool-use, session end, pre-commit.
+- CI templates cover lint, review, rollup.
+
+Gaps:
+
+- Codex has skill adapter but no native hook automation.
+- Review/rollup CI depends on Claude secrets.
+- No `doctor` check for secrets/hook install.
+
+Next automation:
+
+- Document Codex manual equivalent flow and add `doctor` warnings.
+- Make workflow templates fail clearly when secrets are missing.
+
+## Universalization Scorecard
+
+| Area | Score | Reason |
+|---|---:|---|
+| Domain presets | 7/10 | Multiple presets exist; cluster fields strongest in software preset first. |
+| Platform support | 5/10 | Claude good; Codex adapter exists; Gemini deferred. |
+| Automation closure | 6/10 | Graph/lint/status/review automated; ingest/query still skill-mediated. |
+| Graph/cluster discipline | 7/10 | Cluster lint exists; Graph QA snapshots still missing. |
+| Operator UX | 6/10 | README/commands improved; doctor/checklist still missing. |
+| AI context grasp | 7/10 | context brief/index/graph exist; budget profiles/search helper missing. |
+
+## Key Findings
+
+1. The lifecycle is **structurally closed** for graph/status/lint/review once pages exist.
+2. The lifecycle is **not fully closed** for ingest/query because those are still mostly procedural skills.
+3. Cluster semantics are now partially automated through lint/status, but release needs Graph QA snapshots and richer review.
+4. Claude automation is significantly stronger than Codex automation.
+5. Final release should prioritize deterministic ingest, query helper, doctor, and graph QA before packaging.
+
+## Evidence Commands
+
+Run during this audit:
+
+```bash
+rg --files assets commands docs references scripts skills tests tools .github .claude-plugin | sort
+for f in assets/hooks/*.sh assets/workflows/*.yml; do sed -n '1,220p' "$f"; done
+.venv/bin/python -m pytest
+```
+
+Additional lifecycle evidence:
+
+- `tests/integration/test_alpha_wiki_lifecycle_closure.py`
+- `tests/unit/test_lint_cluster_links.py`
+- `tests/unit/test_status.py`
+- `tests/unit/test_wiki_engine_edges.py`
+
+Latest result: `84 passed`.

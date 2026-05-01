@@ -44,3 +44,22 @@ def test_final_release_plan_covers_key_hardening_topics():
         "Release Gates",
     ]:
         assert phrase in text
+
+
+def test_lifecycle_automation_audit_covers_closed_loop():
+    text = (ROOT / "docs" / "alpha-wiki-lifecycle-automation-audit-2026-05-01.md").read_text()
+
+    for phrase in [
+        "install",
+        "init/bootstrap",
+        "ingest/update pages",
+        "rebuild graph artifacts",
+        "lint structural rules",
+        "status gap report",
+        "review trust report",
+        "rollup activity summary",
+        "Rule-To-Automation Matrix",
+        "partially closed",
+        "Universalization Scorecard",
+    ]:
+        assert phrase in text

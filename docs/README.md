@@ -19,6 +19,7 @@ This folder contains the current project design package for Alpha-Wiki and the r
 - [`best-practices-gap-analysis-2026-04-30.md`](best-practices-gap-analysis-2026-04-30.md) — operator and AI ergonomics gap scan
 - [`karpathy-llm-wiki-compliance-audit-2026-05-01.md`](karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
 - [`final-release-hardening-plan.md`](final-release-hardening-plan.md) — consolidated key improvements required for final release
+- [`alpha-wiki-lifecycle-automation-audit-2026-05-01.md`](alpha-wiki-lifecycle-automation-audit-2026-05-01.md) — end-to-end lifecycle automation and closure audit
 
 ## ADRs
 
