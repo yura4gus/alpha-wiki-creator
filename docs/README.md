@@ -18,6 +18,7 @@ This folder contains the current project design package for Alpha-Wiki and the r
 - [`codex-adapter.md`](codex-adapter.md) — OpenAI Codex CLI install and Alpha-Wiki skill mapping
 - [`best-practices-gap-analysis-2026-04-30.md`](best-practices-gap-analysis-2026-04-30.md) — operator and AI ergonomics gap scan
 - [`karpathy-llm-wiki-compliance-audit-2026-05-01.md`](karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
+- [`final-release-hardening-plan.md`](final-release-hardening-plan.md) — consolidated key improvements required for final release
 
 ## ADRs
 

@@ -193,6 +193,7 @@ Current architecture set:
 - [`docs/codex-adapter.md`](docs/codex-adapter.md) — OpenAI Codex CLI install and skill mapping
 - [`docs/best-practices-gap-analysis-2026-04-30.md`](docs/best-practices-gap-analysis-2026-04-30.md) — operator/AI ergonomics gap scan
 - [`docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md`](docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
+- [`docs/final-release-hardening-plan.md`](docs/final-release-hardening-plan.md) — consolidated key improvements required for final release
 
 Decision records:
 
