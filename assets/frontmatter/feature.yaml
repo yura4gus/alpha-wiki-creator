@@ -2,4 +2,7 @@ title: ""
 slug: ""
 status: "discovery"  # discovery | building | shipped | sunset
 owner: ""
+belongs_to: ""
+implements: []
+target_module: ""
 tracks_metric: []

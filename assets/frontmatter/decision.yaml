@@ -3,5 +3,7 @@ slug: ""
 status: "proposed"   # proposed | accepted | superseded | rejected
 date: ""
 affects: []
+belongs_to: ""
+source: ""
 supersedes: ""
 superseded_by: ""

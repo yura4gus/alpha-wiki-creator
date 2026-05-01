@@ -86,8 +86,23 @@ EDGE_KEYS = {
     "service", "consumers", "supersedes", "superseded_by", "supports",
     "extends", "tested_by", "contradicts", "inspired_by", "addresses_gap",
     "derived_from", "invalidates", "target_module", "defined_in",
-    "belongs_to", "distilled_from", "tracks_metric", "persona",
+    "belongs_to", "owned_by", "distilled_from", "tracks_metric", "persona",
+    "source", "sources",
 }
+
+SERVICE_DIRS = {"services", "repos", "repositories", "systems", "bounded-contexts", "applications"}
+MODULE_DIRS = {"components", "core", "ports", "domains", "adapters", "infrastructure"}
+FEATURE_DIRS = {"features", "flows", "use-cases", "application"}
+DOCUMENT_DIRS = {
+    "decisions", "specs", "concepts", "apis", "entities", "papers", "summaries",
+    "topics", "claims", "experiments", "ideas", "foundations", "metrics",
+}
+CLUSTER_RELATION_KEYS = {
+    "belongs_to", "owned_by", "affects", "implements", "service", "target_module",
+    "defined_in", "depends_on",
+}
+FEATURE_CLUSTER_KEYS = {"implements", "target_module", "belongs_to", "affects", "service"}
+MODULE_OWNER_KEYS = {"belongs_to", "owned_by", "service", "defined_in"}
 
 
 def rebuild_edges(wiki_dir: Path) -> list[Edge]:
@@ -104,6 +119,55 @@ def rebuild_edges(wiki_dir: Path) -> list[Edge]:
     return edges
 
 
+def page_role(wiki_dir: Path, page: Page) -> str:
+    """Return graph role for lint/status cluster checks."""
+    rel = Path(page.path).relative_to(wiki_dir)
+    dirs = set(rel.parts[:-1])
+    first = rel.parts[0] if len(rel.parts) > 1 else ""
+    if "contracts" in dirs:
+        return "contract"
+    if first in SERVICE_DIRS:
+        return "service"
+    if first == "modules":
+        return "module-root"
+    if first in MODULE_DIRS:
+        return "module"
+    if first in FEATURE_DIRS:
+        return "feature"
+    if first in DOCUMENT_DIRS:
+        return "document"
+    return "other"
+
+
+def cluster_relation_targets(page: Page, keys: set[str] | None = None) -> list[str]:
+    """Return explicit cluster/ownership targets from frontmatter."""
+    selected = keys or CLUSTER_RELATION_KEYS
+    targets: list[str] = []
+    for key in selected:
+        if key not in page.frontmatter:
+            continue
+        targets.extend(_coerce_targets(page.frontmatter[key]))
+    return sorted(set(targets))
+
+
+def cluster_gaps(wiki_dir: Path, page: Page) -> list[str]:
+    """Return semantic cluster gaps for a page."""
+    role = page_role(wiki_dir, page)
+    gaps: list[str] = []
+    if role == "document" and not cluster_relation_targets(page):
+        gaps.append("document has no cluster owner/link; add belongs_to, affects, implements, service, target_module, or defined_in")
+    if role == "feature" and not cluster_relation_targets(page, FEATURE_CLUSTER_KEYS):
+        gaps.append("feature/flow has no implementation or owner link; add implements, target_module, belongs_to, affects, or service")
+    if role == "module" and not cluster_relation_targets(page, MODULE_OWNER_KEYS):
+        gaps.append("module/domain/component has no service/repo owner; add belongs_to, owned_by, service, or defined_in")
+    if role == "contract":
+        if not cluster_relation_targets(page, {"service"}):
+            gaps.append("contract has no service owner")
+        if not cluster_relation_targets(page, {"consumers"}):
+            gaps.append("contract has no consumers")
+    return gaps
+
+
 def read_edges(path: Path) -> list[Edge]:
     if not path.exists():
         return []
@@ -112,7 +176,10 @@ def read_edges(path: Path) -> list[Edge]:
 
 def _coerce_targets(value) -> list[str]:
     if isinstance(value, str):
-        return [s for s in WIKILINK_RE.findall(value)] or ([value] if not value.startswith("[") else [])
+        stripped = value.strip()
+        if not stripped:
+            return []
+        return [s for s in WIKILINK_RE.findall(stripped)] or ([stripped] if not stripped.startswith("[") else [])
     if isinstance(value, list):
         out: list[str] = []
         for v in value:

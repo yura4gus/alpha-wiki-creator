@@ -52,6 +52,7 @@ Keep the wiki trustworthy as a graph. Lint is the guardrail that prevents markdo
 | `duplicate-slug` | Error | No |
 | `missing-reverse-link` | Warning | Yes |
 | `orphan` | Warning | No |
+| `cluster-link-gap` | Warning | No |
 | `dependency-rule-violation` | Warning | No |
 
 ## Graph And Color Diagnostics
@@ -64,6 +65,8 @@ If the Obsidian graph looks wrong, lint should guide the user:
 - Blue feature/flow with no green implementation link: feature is not tied to modules.
 - Black document with no inbound links: likely orphan or unindexed output.
 - People/tasks cluster disconnected from work pages: missing ownership links.
+
+Cluster ownership is checked through typed frontmatter links such as `belongs_to`, `owned_by`, `affects`, `implements`, `service`, `target_module`, `defined_in`, and `consumers`. Colors help humans read node roles; cluster links help agents and tools understand where a page belongs.
 
 ## Safe Fix Rules
 

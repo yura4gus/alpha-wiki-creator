@@ -62,6 +62,7 @@ Use one stable format so every session can compare status over time:
    - Graph gap: pages exist but typed edges are absent.
    - Process gap: no auditable log entries.
    - Decision gap: open questions have no owner or next action.
+   - Cluster gap: pages have no typed ownership/cluster links.
    - Freshness gap: pages are stale.
    - Metadata gap: pages miss `date_updated`.
    - Coverage gap: no decisions/specs/contracts/features/claims/papers.

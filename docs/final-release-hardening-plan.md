@@ -18,6 +18,12 @@ This plan consolidates the key improvements discovered during Phase 0:
 | AgentOps v1.0 | Separate operating-model plugin: project init, planning, execution, review, state files, optional Alpha-Wiki backend. | Fresh install → init-project → onboard → plan-slice → execute-slice → cto-review works without Alpha-Wiki. |
 | Combined v1.0 | Alpha-Wiki + AgentOps integration: AgentOps uses Alpha-Wiki as knowledge backend when present. | Combined smoke test routes state/wiki correctly and passes integration checks. |
 
+## Implementation Progress
+
+| Item | Status | Evidence |
+|---|---|---|
+| R0.1 cluster semantics base | in-progress | `owned_by/source` graph edges, `cluster-link-gap` lint, status `Cluster gap`, cluster frontmatter templates, unit tests. |
+
 ## Release Principles
 
 1. Markdown memory remains inspectable plain files.

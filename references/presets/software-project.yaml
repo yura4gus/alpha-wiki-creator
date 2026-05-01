@@ -4,22 +4,22 @@ entity_types:
   - name: module
     dir: modules
     frontmatter_required: [title, slug, status]
-    frontmatter_optional: [depends_on, dependents, owner, description]
+    frontmatter_optional: [belongs_to, owned_by, depends_on, dependents, owner, description]
     sections_required: [Provides, Consumes, Decisions, "Active tasks"]
   - name: component
     dir: components
     frontmatter_required: [title, slug, parent_module]
-    frontmatter_optional: [status, tests]
+    frontmatter_optional: [belongs_to, owned_by, status, tests]
     sections_required: [Specs]
   - name: decision
     dir: decisions
     frontmatter_required: [title, slug, status, date]
-    frontmatter_optional: [affects, supersedes, superseded_by]
+    frontmatter_optional: [belongs_to, source, affects, supersedes, superseded_by]
     sections_required: [Context, Decision, Consequences]
   - name: spec
     dir: specs
     frontmatter_required: [title, slug, kind, status]
-    frontmatter_optional: [implements, version]
+    frontmatter_optional: [belongs_to, source, implements, version]
     sections_required: [Entities, Requirements]
   - name: entity
     dir: entities

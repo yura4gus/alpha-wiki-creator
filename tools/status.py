@@ -3,6 +3,7 @@ from __future__ import annotations
 from datetime import date as _date
 from pathlib import Path
 from tools.wiki_engine import (
+    cluster_gaps,
     read_edges,
     rebuild_context_brief,
     rebuild_edges,
@@ -51,7 +52,16 @@ def status_report(wiki_dir: Path) -> str:
     if open_q_path.exists():
         open_q_count = sum(1 for ln in open_q_path.read_text().splitlines() if ln.startswith("- "))
 
-    gap_items = _gap_check(pages, edges, open_q_count, len(log_lines), len(stale), len(no_date))
+    cluster_gap_count = sum(len(cluster_gaps(wiki_dir, page)) for page in pages)
+    gap_items = _gap_check(
+        pages,
+        edges,
+        open_q_count,
+        len(log_lines),
+        len(stale),
+        len(no_date),
+        cluster_gap_count,
+    )
 
     # Build report
     parts = [
@@ -91,7 +101,15 @@ def status_report(wiki_dir: Path) -> str:
     return "\n".join(parts) + "\n"
 
 
-def _gap_check(pages, edges, open_q_count: int, log_count: int, stale_count: int, no_date_count: int) -> list[str]:
+def _gap_check(
+    pages,
+    edges,
+    open_q_count: int,
+    log_count: int,
+    stale_count: int,
+    no_date_count: int,
+    cluster_gap_count: int,
+) -> list[str]:
     """Return cross-cutting health gaps, not per-file lint findings."""
     gaps: list[str] = []
     page_count = len(pages)
@@ -106,6 +124,8 @@ def _gap_check(pages, edges, open_q_count: int, log_count: int, stale_count: int
         gaps.append("Process gap: no log entries; recent wiki changes are not auditable.")
     if open_q_count:
         gaps.append(f"Decision gap: {open_q_count} open question(s) need owner or next action.")
+    if cluster_gap_count:
+        gaps.append(f"Cluster gap: {cluster_gap_count} page cluster link issue(s) need typed ownership links.")
     if stale_count:
         gaps.append(f"Freshness gap: {stale_count} page(s) are older than {STALE_THRESHOLD_DAYS} days.")
     if no_date_count:

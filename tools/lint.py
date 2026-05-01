@@ -3,7 +3,12 @@ from __future__ import annotations
 from pathlib import Path
 from collections import Counter
 from tools._models import LintFinding, LintSeverity
-from tools.wiki_engine import scan_wiki, parse_page, EDGE_KEYS, REVERSE_OF, _coerce_targets, rebuild_edges
+from tools.wiki_engine import (
+    REVERSE_OF,
+    _coerce_targets,
+    cluster_gaps,
+    scan_wiki,
+)
 
 
 def check_broken_wikilinks(wiki_dir: Path) -> list[LintFinding]:
@@ -163,6 +168,25 @@ def check_dependency_rules(wiki_dir: Path, rules: list[dict]) -> list[LintFindin
     return findings
 
 
+def check_cluster_links(wiki_dir: Path) -> list[LintFinding]:
+    findings: list[LintFinding] = []
+    for page in scan_wiki(wiki_dir):
+        for gap in cluster_gaps(wiki_dir, page):
+            findings.append(LintFinding(
+                check="cluster-link-gap",
+                severity=LintSeverity.WARNING,
+                file=page.path,
+                line=0,
+                message=f"{page.slug}: {gap}",
+                fix_available=False,
+                suggested_fix=(
+                    "Add a typed cluster link such as belongs_to, affects, implements, "
+                    "service, target_module, defined_in, or consumers."
+                ),
+            ))
+    return findings
+
+
 def run_all_checks(wiki_dir: Path, schema: dict, dir_to_type: dict, dependency_rules: list[dict]) -> list[LintFinding]:
     findings: list[LintFinding] = []
     findings += check_broken_wikilinks(wiki_dir)
@@ -171,6 +195,7 @@ def run_all_checks(wiki_dir: Path, schema: dict, dir_to_type: dict, dependency_r
     findings += check_required_frontmatter(wiki_dir, schema, dir_to_type)
     findings += check_duplicate_slugs(wiki_dir)
     findings += check_dependency_rules(wiki_dir, dependency_rules)
+    findings += check_cluster_links(wiki_dir)
     return findings
 
 

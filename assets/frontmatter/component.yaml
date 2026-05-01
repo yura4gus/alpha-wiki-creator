@@ -1,5 +1,7 @@
 title: ""
 slug: ""
 parent_module: ""
+belongs_to: ""
+owned_by: ""
 status: "draft"
 tests: []

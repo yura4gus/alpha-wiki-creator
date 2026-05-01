@@ -3,5 +3,7 @@ slug: ""
 kind: ""             # prd | rfc | api | protocol | runbook | threat-model | test-plan | diagram
 status: "draft"
 implements: []
+belongs_to: ""
+source: ""
 version: ""
 date_updated: ""

@@ -38,6 +38,7 @@ Always consider:
    - Red nodes isolated.
    - Orange contracts missing consumers/owners.
    - Dark grey docs with no inbound links.
+   - Pages missing typed cluster ownership (`belongs_to`, `affects`, `implements`, `service`, `target_module`, `consumers`).
    - Pages without `date_updated`.
 4. Surface report with:
    - Summary.

@@ -57,3 +57,18 @@ def test_status_report_rebuilds_graph_before_gap_check(tmp_path: Path):
     assert "Edges: 1" in r
     assert [(edge.source, edge.target, edge.relation) for edge in edges] == [("m1", "m2", "depends_on")]
     assert "Graph gap" not in r
+
+
+def test_status_report_surfaces_cluster_gaps(tmp_path: Path):
+    wiki = tmp_path / "wiki"
+    (wiki / "decisions").mkdir(parents=True)
+    (wiki / "log.md").write_text("# Log\n\n## [2026-05-01] ingest | added decision\n")
+    today = date.today().isoformat()
+    (wiki / "decisions" / "d1.md").write_text(
+        f"---\ntitle: D1\nslug: d1\nstatus: accepted\ndate_updated: {today}\n---\n# D1\n"
+    )
+
+    r = status_report(wiki)
+
+    assert "Cluster gap:" in r
+    assert "typed ownership links" in r
