@@ -21,6 +21,17 @@ The default `graph.json` color groups for an Alpha-wiki vault:
 - An **isolated red node** = a service with no documented decisions/specs yet (lint flags this as a maintenance gap)
 - A **black island** = a document that has not been attached to the architecture yet; link it or archive it.
 
+## Color is not cluster
+
+Do not interpret one color as one cluster. Obsidian layout clusters should emerge from typed wikilinks and shared architecture boundaries. Color answers "what kind of node is this?", not "which subgraph does this belong to?"
+
+Good graph shape:
+
+- One service cluster can contain red, green, blue, black, and orange nodes.
+- One color can appear in many different clusters.
+- Cross-service contracts are orange bridges, not a separate orange island.
+- A black document cluster with no red/green/blue attachment is usually a documentation gap.
+
 ## Grouping rule
 
 Use the directory to express the graph layer:

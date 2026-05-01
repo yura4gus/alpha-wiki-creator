@@ -15,6 +15,9 @@ This folder contains the current project design package for Alpha-Wiki and the r
 - [`audit-verified-inventory.md`](audit-verified-inventory.md) — Phase 0 verified repository inventory and review/rollup decision
 - [`roadmap-execution.md`](roadmap-execution.md) — phase-by-phase execution roadmap
 - [`implementation-plan-2026-04-30.md`](implementation-plan-2026-04-30.md) — implementation plan for the current repository
+- [`codex-adapter.md`](codex-adapter.md) — OpenAI Codex CLI install and Alpha-Wiki skill mapping
+- [`best-practices-gap-analysis-2026-04-30.md`](best-practices-gap-analysis-2026-04-30.md) — operator and AI ergonomics gap scan
+- [`karpathy-llm-wiki-compliance-audit-2026-05-01.md`](karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
 
 ## ADRs
 

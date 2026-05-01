@@ -39,6 +39,7 @@ def test_obsidian_legend_explains_graph_grouping():
         "Module / domain",
         "Feature / function",
         "Document / evidence",
+        "Color is not cluster",
         "Grouping rule",
     ]:
         assert phrase in legend

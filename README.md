@@ -36,7 +36,7 @@ In one line: **Karpathy gave the idea, Alpha-wiki gives the runtime.**
 
 ## Install
 
-One command:
+### Claude Code
 
 ```bash
 claude plugins marketplace add yura4gus/alpha-wiki-creator
@@ -50,6 +50,28 @@ Then in any project:
 ```
 /alpha-wiki:init
 ```
+
+### Codex CLI (OpenAI)
+
+Install and sign in to Codex, then install Alpha-Wiki's Codex skill adapters:
+
+```bash
+npm install -g @openai/codex
+codex --login
+git clone https://github.com/yura4gus/alpha-wiki-creator
+cd alpha-wiki-creator
+python3 scripts/install_codex.py
+```
+
+Then in any project:
+
+```bash
+codex
+```
+
+Ask Codex to use `$alpha-wiki-init` to bootstrap the wiki. Codex skill names are prefixed (`$alpha-wiki-query`, `$alpha-wiki-lint`, `$alpha-wiki-status`, etc.) so they do not collide with generic local skills. Claude slash commands stay unchanged.
+
+OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --login`.
 
 ## Architecture
 
@@ -153,6 +175,8 @@ The bootstrap ships a default `.obsidian/graph.json` with **color groups** so th
 
 A red node is a repo/service boundary. A green cluster around red is the service's modules/domains/components. A blue node shows a feature or function implemented by those modules. Black nodes are documents/evidence attached to the architecture. An orange node bridging two reds is a contract owned by one service and consumed by another. Isolated red or black nodes are maintenance gaps.
 
+Color is not a clustering mechanism. Clusters should emerge from typed links and shared architecture boundaries; colors only label the kind of node you are looking at.
+
 Customize: edit `.obsidian/graph.json` → `colorGroups` array. Full legend at `.obsidian/COLOR-LEGEND.md` after bootstrap.
 
 ## Documentation
@@ -166,6 +190,9 @@ Current architecture set:
 - [`docs/04-state-backend-contract.md`](docs/04-state-backend-contract.md) — state backend abstraction
 - [`docs/roadmap-execution.md`](docs/roadmap-execution.md) — execution roadmap
 - [`docs/implementation-plan-2026-04-30.md`](docs/implementation-plan-2026-04-30.md) — implementation plan for the current repo
+- [`docs/codex-adapter.md`](docs/codex-adapter.md) — OpenAI Codex CLI install and skill mapping
+- [`docs/best-practices-gap-analysis-2026-04-30.md`](docs/best-practices-gap-analysis-2026-04-30.md) — operator/AI ergonomics gap scan
+- [`docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md`](docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
 
 Decision records:
 

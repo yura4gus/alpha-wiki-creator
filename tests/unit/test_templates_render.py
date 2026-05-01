@@ -49,5 +49,7 @@ def test_generated_readme_uses_alpha_wiki_ci_commands():
     assert "/alpha-wiki:lint" in out
     assert "/alpha-wiki:review" in out
     assert "/alpha-wiki:rollup" in out
+    assert "$alpha-wiki-status" in out
+    assert "Color is not a cluster" in out
     assert "`wiki:review`" not in out
     assert "/wiki-review" not in out

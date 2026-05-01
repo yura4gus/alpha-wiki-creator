@@ -8,10 +8,19 @@ is in `CLAUDE.md`.
 
 ## Three commands to know
 
+Claude Code:
+
 - `/alpha-wiki:ingest <path>` — ingest a raw artifact into the wiki
 - `/alpha-wiki:query <question>` — ask/find in the wiki with cited evidence
 - `/alpha-wiki:lint --fix` — check/fix wiki structure
 - `/alpha-wiki:status` — health report with mandatory Gap Check
+
+Codex:
+
+- `$alpha-wiki-ingest` — ingest a raw artifact into the wiki
+- `$alpha-wiki-query` — ask/find in the wiki with cited evidence
+- `$alpha-wiki-lint` — check/fix wiki structure
+- `$alpha-wiki-status` — health report with mandatory Gap Check
 
 ## Layout
 
@@ -27,6 +36,9 @@ The `{{ wiki_dir }}/` directory is an Obsidian vault. Open it in Obsidian to bro
 the graph view. Dataview is enabled. Graph colors are semantic: red repos/services,
 green modules/domains/adapters, blue features/flows/application, black documents,
 orange contracts, and light grey people/tasks.
+
+Color is not a cluster. Clusters should emerge from typed links; colors only label
+node kind.
 
 ## Hooks
 

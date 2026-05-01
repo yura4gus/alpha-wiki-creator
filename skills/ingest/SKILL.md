@@ -72,12 +72,13 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 
 ## Graph And Obsidian Discipline
 
-- Red nodes should represent top-level services/modules or architectural units.
-- Green nodes should represent sub-components, core/domain/ports/use-cases, or internal modules.
+- Red nodes should represent repos, services, systems, or top-level architectural units.
+- Green nodes should represent modules, domains, components, adapters, infrastructure, core, or ports.
+- Blue nodes should represent features, functions, flows, use-cases, or application-layer behavior.
 - Orange nodes should be boundary contracts and must link to owners/consumers.
-- Dark grey nodes should be documents: decisions, specs, claims, papers, concepts, features, flows, metrics.
+- Black nodes should be documents/evidence: decisions, specs, claims, papers, concepts, metrics.
 - Light grey nodes should be people/tasks.
-- If a page appears in the wrong color cluster, the directory/type choice is probably wrong. Fix the slot before ingesting more content.
+- Color is not cluster. If a page has the wrong color, the directory/type choice is probably wrong. Fix the slot before ingesting more content.
 
 ## Quality Bar
 

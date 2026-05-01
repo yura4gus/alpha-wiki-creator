@@ -63,6 +63,8 @@ The rendered graph should be understandable without reading page bodies:
 
 If a black document floats alone, the problem is usually missing links. If a module appears black, the problem is usually schema/directory placement. If a service appears green, the repo/service boundary is not explicit enough yet.
 
+Color is not cluster. Do not build or describe one red cluster, one green cluster, one black cluster. A useful cluster normally mixes colors: red service boundary, green modules, blue features, black evidence, and orange contracts connected by typed links.
+
 ## Workflow
 
 1. Detect wiki dir and config.
