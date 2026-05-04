@@ -41,6 +41,7 @@ def test_final_release_plan_covers_key_hardening_topics():
         "Platform compatibility matrix",
         "Cluster Semantics Contract",
         "Graph QA",
+        "Release readiness audit",
         "Release Gates",
     ]:
         assert phrase in text
@@ -61,5 +62,33 @@ def test_lifecycle_automation_audit_covers_closed_loop():
         "Rule-To-Automation Matrix",
         "partially closed",
         "Universalization Scorecard",
+    ]:
+        assert phrase in text
+
+
+def test_platform_matrix_covers_supported_and_deferred_runtimes():
+    text = (ROOT / "docs" / "platform-compatibility-matrix.md").read_text()
+
+    for phrase in [
+        "Claude Code is the primary supported runtime",
+        "Codex is supported through prefixed skill adapters",
+        "Gemini is not supported",
+        "Session hooks",
+        "Doctor check",
+        "Codex has no native session-start/session-end hook equivalent",
+    ]:
+        assert phrase in text
+
+
+def test_final_release_readiness_audit_names_release_blockers():
+    text = (ROOT / "docs" / "final-release-readiness-audit-2026-05-04.md").read_text()
+
+    for phrase in [
+        "BLOCKED for final v1.0",
+        "`CHANGELOG.md` missing",
+        "`docs/quickstart.md` missing",
+        "Fresh install smoke not recorded",
+        "Release readiness audit tool",
+        "Plugin metadata/version/tag",
     ]:
         assert phrase in text

@@ -198,6 +198,8 @@ Current architecture set:
 - [`docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md`](docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
 - [`docs/final-release-hardening-plan.md`](docs/final-release-hardening-plan.md) — consolidated key improvements required for final release
 - [`docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md`](docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md) — end-to-end lifecycle automation and closure audit
+- [`docs/platform-compatibility-matrix.md`](docs/platform-compatibility-matrix.md) — Claude/Codex/Gemini support and limitation matrix
+- [`docs/final-release-readiness-audit-2026-05-04.md`](docs/final-release-readiness-audit-2026-05-04.md) — final-release gate audit and blocking gaps
 
 Decision records:
 
@@ -226,7 +228,13 @@ uv sync --dev
 .venv/bin/python -m pytest
 ```
 
-106 tests across unit + integration.
+Run the deterministic final-release gate:
+
+```bash
+.venv/bin/python tools/release_audit.py --root .
+```
+
+Current expected release-audit verdict: `BLOCKED` until `CHANGELOG.md`, `docs/quickstart.md`, fresh install smoke evidence, and packaging/version prep are complete.
 
 ## License
 

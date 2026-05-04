@@ -20,6 +20,8 @@ This folder contains the current project design package for Alpha-Wiki and the r
 - [`karpathy-llm-wiki-compliance-audit-2026-05-01.md`](karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
 - [`final-release-hardening-plan.md`](final-release-hardening-plan.md) — consolidated key improvements required for final release
 - [`alpha-wiki-lifecycle-automation-audit-2026-05-01.md`](alpha-wiki-lifecycle-automation-audit-2026-05-01.md) — end-to-end lifecycle automation and closure audit
+- [`platform-compatibility-matrix.md`](platform-compatibility-matrix.md) — Claude/Codex/Gemini support matrix and release language
+- [`final-release-readiness-audit-2026-05-04.md`](final-release-readiness-audit-2026-05-04.md) — deterministic final-release readiness audit and blocking gaps
 
 ## ADRs
 

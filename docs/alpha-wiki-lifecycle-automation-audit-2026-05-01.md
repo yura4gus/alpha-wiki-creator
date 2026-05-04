@@ -20,7 +20,7 @@ install
 
 Current state: **partially closed and increasingly automated**.
 
-Alpha-Wiki now has the right deterministic spine: bootstrap, graph rebuild, lint, status, review, rollup, hooks, CI templates, and cluster-link lint. The remaining release risk is that `ingest` and `query` are still mostly skill-mediated rather than backed by deterministic pipelines, and Graph QA exports are not implemented yet.
+Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, query, graph rebuild, lint, status, review, render, rollup, hooks, CI templates, and release audit. The remaining release risk is packaging and fresh-install evidence: quickstart, changelog, version/tag prep, and semantic trust tooling for claims/contracts/contradictions.
 
 ## Rule-To-Automation Matrix
 
@@ -56,7 +56,8 @@ Automated:
 
 Gaps:
 
-- No platform compatibility matrix beyond Codex adapter doc.
+- Platform matrix exists; Codex hook parity is still documented as explicit/manual operation.
+- Gemini is deferred and must not be claimed in release language.
 
 Next automation:
 
@@ -207,7 +208,7 @@ Next automation:
 |---|---:|---|
 | Domain presets | 7/10 | Multiple presets exist; cluster fields strongest in software preset first. |
 | Platform support | 5/10 | Claude good; Codex adapter exists; Gemini deferred. |
-| Automation closure | 6/10 | Graph/lint/status/review automated; ingest/query still skill-mediated. |
+| Automation closure | 8/10 | Graph/lint/status/review/render automated; deterministic ingest/query backends exist; release is blocked mainly by packaging and fresh-install smoke. |
 | Graph/cluster discipline | 8/10 | Cluster lint and Mermaid/DOT Graph QA exports exist; service evidence scoring still missing. |
 | Operator UX | 7/10 | README/commands improved; doctor exists; first-run checklist still missing. |
 | AI context grasp | 7/10 | context brief/index/graph exist; budget profiles/search helper missing. |
@@ -215,10 +216,10 @@ Next automation:
 ## Key Findings
 
 1. The lifecycle is **structurally closed** for graph/status/lint/review once pages exist.
-2. The lifecycle is **partially closed** for ingest; the MVP backend and pressure/resume tests exist, but claim extraction and contradiction handling remain.
+2. The lifecycle is **mostly closed** for ingest/query at the deterministic backend level; claim extraction and contradiction handling remain.
 3. Cluster semantics are now partially automated through lint/status and Graph QA exports, but release needs richer review.
 4. Claude automation is significantly stronger than Codex automation.
-5. Final release should prioritize deterministic ingest, richer review, and first-run checklist before packaging.
+5. Final release should prioritize quickstart/changelog, fresh install smoke evidence, packaging/version prep, and then deeper semantic trust checks.
 
 ## Evidence Commands
 
@@ -235,7 +236,10 @@ Additional lifecycle evidence:
 - `tests/integration/test_alpha_wiki_lifecycle_closure.py`
 - `tests/unit/test_lint_cluster_links.py`
 - `tests/unit/test_graph_exports.py`
+- `tests/unit/test_ingest_pipeline.py`
+- `tests/unit/test_wiki_search.py`
 - `tests/unit/test_status.py`
 - `tests/unit/test_wiki_engine_edges.py`
+- `tests/unit/test_release_audit.py`
 
-Latest result: `106 passed`.
+Latest result: `111 passed`.

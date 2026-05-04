@@ -25,9 +25,9 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
 | Skills | 11 present | `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
 | Commands | 11 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 14 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `ingest_pipeline.py`, `lint.py`, `render_dot.py`, `render_html.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
+| Deterministic tools | 15 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `ingest_pipeline.py`, `lint.py`, `release_audit.py`, `render_dot.py`, `render_html.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 43 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, ingest pipeline, query helper, status, review, rollup, wiki engine, and templates. |
+| Tests | 44 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, ingest pipeline, query helper, release audit, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -80,6 +80,7 @@ Missing Phase 1a skills:
 | `tools/render_mermaid.py` | Mermaid graph export with typed service clusters and role colors. |
 | `tools/render_dot.py` | Graphviz DOT graph export with typed service clusters and role colors. |
 | `tools/render_html.py` | Static read-only HTML export for index, pages, and graph artifacts. |
+| `tools/release_audit.py` | Deterministic final-release gate across command/skill surface, core tools, docs, packaging, trust depth, and platform support. |
 | `tools/wiki_search.py` | Deterministic markdown search and query report with citations, no embeddings. |
 | `tools/status.py` | Basic wiki status report. |
 | `tools/review.py` | Wiki-level structural review: status snapshot, lint findings, suggested next actions. |
@@ -100,7 +101,7 @@ Confirmed missing deterministic tools from Phase 1a target:
 
 ## Tests Inventory
 
-Verified test files: 34.
+Verified test files: 44.
 
 Coverage areas:
 
@@ -113,6 +114,7 @@ Coverage areas:
 - Lint checks and CLI.
 - Wiki engine parsing, edges, context brief, open questions, CLI.
 - Classifier and LLM fallback stub.
+- Release audit final gate and CLI exit behavior.
 - Status report.
 - Review and rollup backend tools.
 - Template rendering.
@@ -140,12 +142,12 @@ Missing Phase 1a pressure-test suites:
 | Repo CI only runs tests | `.github/workflows/plugin-ci.yml` | Generated target-project workflows are not tested as live repo workflows. |
 | Target CI templates include lint/review/rollup | `assets/workflows/wiki-lint.yml`, `wiki-review.yml`, `wiki-rollup.yml` | Templates exist and are now backed by skills/commands/tools. |
 | Generated review/rollup templates use alpha namespace | `claude -p "/alpha-wiki:review"` and `claude -p "/alpha-wiki:rollup month --write"` | Old `/wiki-*` namespace mismatch resolved. |
-| `wiki-lint.yml` hardcodes `wiki` | `uv run python tools/lint.py --wiki-dir wiki --dry-run` | Does not honor custom `wiki_dir`, including `.wiki`. |
-| Hook mode selection is not honored | `scripts/bootstrap.py` copies all `assets/hooks/*` when hooks is `all`, `session`, or `git` | Must split session hooks from git hooks. |
-| Hooks default to `wiki` | Hook scripts use `WIKI_DIR="${WIKI_DIR:-wiki}"` | `settings-local.j2` uses `path_glob` but does not set `WIKI_DIR`; custom `wiki_dir` can drift. |
-| `post-tool-use` rebuilds only context brief | `assets/hooks/post-tool-use.sh` calls `rebuild-context-brief` only | Must rebuild `edges.jsonl` and `open_questions.md` too. |
-| Upgrade graph initialization is destructive | `scripts/bootstrap.py` always writes graph files in `_initialize_graph` | Must preserve existing graph artifacts during upgrade unless explicitly rebuilding. |
-| Existing repo bootstrap overwrite risk remains | `_render_top_level_files` skips only `README.md` on upgrade | Must protect `pyproject.toml`, `.gitignore`, `CLAUDE.md`, `.env.example`, and provide dry-run conflict report. |
+| Generated workflow wiki dir | `scripts/bootstrap.py` rewrites `--wiki-dir wiki` to the configured `wiki_dir` | Closed for generated projects; source asset remains the default template. |
+| Hook mode selection | `_hook_files_for_mode()` splits `session`, `git`, `all`, and `none` | Closed. |
+| Generated hook wiki dir | `_render_runtime_asset()` rewrites `WIKI_DIR="${WIKI_DIR:-wiki}"` to the configured `wiki_dir` | Closed for generated projects. |
+| `post-tool-use` graph rebuild | `assets/hooks/post-tool-use.sh` runs `rebuild-edges`, `rebuild-context-brief`, and `rebuild-open-questions` | Closed. |
+| Upgrade graph initialization | `_initialize_graph(..., upgrade=True)` preserves existing graph artifacts | Closed. |
+| Existing repo bootstrap protection | Protected writes preserve top-level files and record `.alpha-wiki/bootstrap-report.md` | Closed. |
 
 ## T0.2 Decision: review / rollup Status
 
