@@ -12,7 +12,7 @@ Phase 0 audit is complete.
 - `T0.3` ADR approval: already closed; ADR-001..006 are marked `Status: Accepted`.
 - `T0.4` marketplace topology: closed by ADR-005.
 - `T0.5` spawn-agent boundary: closed by ADR-006.
-- `T0.6` skill content audit: closed; all 10 backed skill bodies were expanded into richer operational manuals.
+- `T0.6` skill content audit: closed; the original 10 backed skill bodies were expanded into richer operational manuals.
 
 Phase 1a can start with confirmed repo facts, not assumptions.
 
@@ -23,9 +23,9 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | Root package | Present | `pyproject.toml`, `uv.lock`, `README.md`, `LICENSE`. Package name is `alpha-wiki`, version `0.1.0`. |
 | Plugin metadata | Present | `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`. Marketplace lists one plugin: `alpha-wiki`. |
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
-| Skills | 10 present | `init`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
-| Commands | 10 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 8 Python modules | `_env.py`, `_models.py`, `classify.py`, `lint.py`, `status.py`, `wiki_engine.py`, `review.py`, `rollup.py`. |
+| Skills | 11 present | `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
+| Commands | 11 present | One command file per existing skill under `commands/`. |
+| Deterministic tools | 9 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `lint.py`, `status.py`, `wiki_engine.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
 | Tests | 34 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
@@ -36,6 +36,7 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | Skill | File | Status | Phase 1a action |
 |---|---|---|---|
 | `init` | `skills/init/SKILL.md` | Expanded operational manual | Full 15-dimension pressure testing remains Phase 1a. |
+| `doctor` | `skills/doctor/SKILL.md` | Backed install/runtime verifier | Add final release smoke usage. |
 | `ingest` | `skills/ingest/SKILL.md` | Expanded operational manual | Back with deterministic ingest pipeline and pressure tests. |
 | `query` | `skills/query/SKILL.md` | Expanded operational manual | Add deterministic search/citation tooling and pressure tests. |
 | `lint` | `skills/lint/SKILL.md` | Expanded operational manual backed by `tools/lint.py` | Expand severity/check model to target spec. |
@@ -57,6 +58,7 @@ Missing Phase 1a skills:
 | Command | File | Backing skill | Notes |
 |---|---|---|---|
 | `/alpha-wiki:init` | `commands/init.md` | `init` | Present. |
+| `/alpha-wiki:doctor` | `commands/doctor.md` | `doctor` | Implemented with `tools/doctor.py`. |
 | `/alpha-wiki:ingest` | `commands/ingest.md` | `ingest` | Present. |
 | `/alpha-wiki:query` | `commands/query.md` | `query` | Present. |
 | `/alpha-wiki:lint` | `commands/lint.md` | `lint` | Present. |
@@ -72,6 +74,7 @@ Missing Phase 1a skills:
 | Module | Verified responsibilities |
 |---|---|
 | `tools/wiki_engine.py` | Markdown/frontmatter parsing, wikilink extraction, edge rebuild, context brief rebuild, open questions rebuild, `add-edge` CLI. |
+| `tools/doctor.py` | Install/runtime lifecycle verification: Python, uv, imports, config, wiki dir, graph artifacts, lint, hooks, CI, platform hints. |
 | `tools/lint.py` | Broken wikilinks, missing reverse links, orphans, required frontmatter, duplicate slugs, dependency rules, safe missing-reverse fixes. |
 | `tools/status.py` | Basic wiki status report. |
 | `tools/review.py` | Wiki-level structural review: status snapshot, lint findings, suggested next actions. |

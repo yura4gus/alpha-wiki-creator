@@ -38,6 +38,7 @@ python3 scripts/install_codex.py --dry-run
 | Claude Code | Codex skill |
 |---|---|
 | `/alpha-wiki:init` | `$alpha-wiki-init` |
+| `/alpha-wiki:doctor` | `$alpha-wiki-doctor` |
 | `/alpha-wiki:ingest` | `$alpha-wiki-ingest` |
 | `/alpha-wiki:query` | `$alpha-wiki-query` |
 | `/alpha-wiki:lint` | `$alpha-wiki-lint` |
@@ -56,7 +57,7 @@ The repository skills are named `init`, `query`, `status`, etc. Those are good C
 
 - Codex does not use Claude slash commands; ask it to use the corresponding `$alpha-wiki-*` skill.
 - Keep the same Alpha-Wiki mutability matrix: source wiki pages are editable, `graph/` is generated, schema changes are gated.
-- The Python tools remain the deterministic backend. Codex should prefer `tools/lint.py`, `tools/wiki_engine.py`, `tools/status.py`, `tools/review.py`, and `tools/rollup.py` over ad hoc text rewrites.
+- The Python tools remain the deterministic backend. Codex should prefer `tools/doctor.py`, `tools/lint.py`, `tools/wiki_engine.py`, `tools/status.py`, `tools/review.py`, and `tools/rollup.py` over ad hoc text rewrites.
 - Session hooks are Claude Code-specific. In Codex, run `$alpha-wiki-status`, `$alpha-wiki-lint`, or `$alpha-wiki-review` explicitly until a Codex-native automation layer is added.
 
 ## References

@@ -23,7 +23,7 @@ Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11
 | Karpathy's gist (sketch) | Alpha-wiki (runtime) |
 |---|---|
 | 3 untyped layers | Same 3 layers, made explicit as **mutability contracts** + 5 domain presets + 4 architectural overlays |
-| 3 operations (ingest, query, lint) | **10 skills + 10 slash commands** — ingest, query, lint, evolve, status, spawn-agent, render, init, review, rollup |
+| 3 operations (ingest, query, lint) | **11 skills + 11 slash commands** — init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup |
 | No frontmatter rules | **Required frontmatter per entity type**, lint-blocked on violations |
 | Manual cross-links | **Bidirectional enforcement** — every forward link gets a reverse, written automatically by the engine |
 | No automation | **Three-layer hooks** — session-start loads `context_brief.md`, post-tool-use rebuilds the graph, session-end runs lint and appends a log entry, pre-commit blocks 🔴 errors, weekly CI review |
@@ -102,6 +102,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
                        ┌─────────┴──────────┐
                        │  wiki plugin       │
                        │  /alpha-wiki:init        │
+                       │  /alpha-wiki:doctor      │
                        │  /alpha-wiki:ingest      │
                        │  /alpha-wiki:query       │
                        │  /alpha-wiki:lint        │
@@ -123,7 +124,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 - **Schema evolution** — new entity types added through ingest, never preempted
 - **Auto-generated context** — `wiki/graph/context_brief.md` (≤8000 chars) loaded at every session start
 - **Obsidian-compatible** — `.obsidian/` config generated, graph view works out of the box
-- **Deterministic engine** — `tools/lint.py` + `tools/wiki_engine.py` are pure Python, no LLM, fully tested
+- **Deterministic engine** — `tools/doctor.py`, `tools/lint.py`, and `tools/wiki_engine.py` are pure Python, no LLM, fully tested
 - **Schema-evolution gate** — every new entity type confirmed before added (or auto-mode if you trust)
 - **CI-ready** — weekly `/alpha-wiki:review`, monthly `/alpha-wiki:rollup` via headless Claude
 
@@ -131,15 +132,16 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 
 ```
 1. /alpha-wiki:init           Bootstrap (interview → render → first commit)
-2. /alpha-wiki:ingest <path>  Raw artifact (PRD, ADR, OpenAPI spec, …) → wiki page(s)
-3. /alpha-wiki:query <q>      Ask/find in the wiki with cited evidence
-4. /alpha-wiki:lint --fix     Check/fix structure (links, reverses, frontmatter)
-5. /alpha-wiki:status         Health + mandatory Gap Check
-6. /alpha-wiki:evolve <type>  Add a new entity type to the schema
-7. /alpha-wiki:spawn-agent    Add a wiki-aware subagent
-8. /alpha-wiki:render         Refresh Obsidian config or generate static HTML
-9. /alpha-wiki:review         Weekly structural review — status + lint + next actions
-10. /alpha-wiki:rollup        Weekly/monthly activity summary
+2. /alpha-wiki:doctor         Verify install/runtime/wiki health
+3. /alpha-wiki:ingest <path>  Raw artifact (PRD, ADR, OpenAPI spec, …) → wiki page(s)
+4. /alpha-wiki:query <q>      Ask/find in the wiki with cited evidence
+5. /alpha-wiki:lint --fix     Check/fix structure (links, reverses, frontmatter)
+6. /alpha-wiki:status         Health + mandatory Gap Check
+7. /alpha-wiki:evolve <type>  Add a new entity type to the schema
+8. /alpha-wiki:spawn-agent    Add a wiki-aware subagent
+9. /alpha-wiki:render         Refresh Obsidian config or generate static HTML
+10. /alpha-wiki:review        Weekly structural review — status + lint + next actions
+11. /alpha-wiki:rollup        Weekly/monthly activity summary
 ```
 
 The `session-start` hook auto-loads `context_brief.md` so the agent has compressed context for free.
@@ -150,6 +152,7 @@ The `session-end` hook runs lint and appends a log entry. Most users never invok
 | Slash command | Purpose |
 |---|---|
 | `/alpha-wiki:init` | Bootstrap wiki + scaffolding into the current project |
+| `/alpha-wiki:doctor` | Verify Python/tools/wiki graph/hooks/CI/Codex/Claude runtime health |
 | `/alpha-wiki:ingest` | raw → wiki page(s); triggers schema-evolve if no slot fits |
 | `/alpha-wiki:query` | Ask/find in the wiki; synthesize from index + relevant cited pages |
 | `/alpha-wiki:lint` | Check/fix wiki structure: links, reverses, orphans, frontmatter, dependency rules |
@@ -223,7 +226,7 @@ uv sync --dev
 .venv/bin/python -m pytest
 ```
 
-45 tests across unit + integration.
+88 tests across unit + integration.
 
 ## License
 

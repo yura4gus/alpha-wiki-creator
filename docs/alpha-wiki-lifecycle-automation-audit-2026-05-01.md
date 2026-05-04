@@ -31,6 +31,7 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, graph rebuild, lint
 | Graph artifacts are generated, not hand-edited | `wiki_engine.py`, hooks, status/review refresh | Graph/status/hook tests | pass | Add CI check that graph artifacts are current after PR changes. |
 | Cluster ownership links are required | `cluster-link-gap` lint, status `Cluster gap`, frontmatter templates | `test_lint_cluster_links`, lifecycle smoke | in-progress | Need stronger per-entity policy and review scoring. |
 | Color labels role, not cluster | Obsidian legend, render skill, tests | Obsidian graph tests | pass | Add Graph QA export snapshots. |
+| `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests | pass | Add release smoke usage once packaging is final. |
 | `ingest` updates pages/log/graph/lint | Skill instructions | Partial integration tests | partial | Implement `tools/ingest_pipeline.py`. |
 | `query` reads brief/index/pages with citations | Skill instructions | Skill docs tests | partial | Implement `tools/wiki_search.py` and query pressure tests. |
 | `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
@@ -50,15 +51,15 @@ Automated:
 - Claude Code plugin install is documented.
 - Codex skill adapter install exists through `scripts/install_codex.py`.
 - Bootstrap writes tools, hooks, workflows, Obsidian config, wiki skeleton.
+- `doctor` verifies Python, uv, tools import, wiki dir, config, graph artifacts, lint, Claude hooks, CI workflows, and Codex skill installation hints.
 
 Gaps:
 
-- No `doctor` command yet.
 - No platform compatibility matrix beyond Codex adapter doc.
 
 Next automation:
 
-- `tools/doctor.py`: check Python, uv, tools import, wiki dir, config, hooks, CI workflows, graph artifacts, Codex skill install target.
+- Wire `doctor --platform both --refresh --strict` into final release smoke instructions.
 
 ### 2. Init / Bootstrap
 
@@ -192,7 +193,7 @@ Gaps:
 
 - Codex has skill adapter but no native hook automation.
 - Review/rollup CI depends on Claude secrets.
-- No `doctor` check for secrets/hook install.
+- `doctor` checks hook/workflow presence and Codex skill installation hints.
 
 Next automation:
 
@@ -207,7 +208,7 @@ Next automation:
 | Platform support | 5/10 | Claude good; Codex adapter exists; Gemini deferred. |
 | Automation closure | 6/10 | Graph/lint/status/review automated; ingest/query still skill-mediated. |
 | Graph/cluster discipline | 7/10 | Cluster lint exists; Graph QA snapshots still missing. |
-| Operator UX | 6/10 | README/commands improved; doctor/checklist still missing. |
+| Operator UX | 7/10 | README/commands improved; doctor exists; first-run checklist still missing. |
 | AI context grasp | 7/10 | context brief/index/graph exist; budget profiles/search helper missing. |
 
 ## Key Findings
@@ -216,7 +217,7 @@ Next automation:
 2. The lifecycle is **not fully closed** for ingest/query because those are still mostly procedural skills.
 3. Cluster semantics are now partially automated through lint/status, but release needs Graph QA snapshots and richer review.
 4. Claude automation is significantly stronger than Codex automation.
-5. Final release should prioritize deterministic ingest, query helper, doctor, and graph QA before packaging.
+5. Final release should prioritize deterministic ingest, query helper, Graph QA, and first-run checklist before packaging.
 
 ## Evidence Commands
 
@@ -235,4 +236,4 @@ Additional lifecycle evidence:
 - `tests/unit/test_status.py`
 - `tests/unit/test_wiki_engine_edges.py`
 
-Latest result: `84 passed`.
+Latest result: `88 passed`.

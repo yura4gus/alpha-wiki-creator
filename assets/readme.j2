@@ -6,10 +6,11 @@ This project uses an LLM-maintained wiki (Karpathy + OmegaWiki style) as persist
 agent memory. The wiki lives in `{{ wiki_dir }}/`. The runtime contract for agents
 is in `CLAUDE.md`.
 
-## Three commands to know
+## Core commands to know
 
 Claude Code:
 
+- `/alpha-wiki:doctor --refresh` — verify install/runtime/wiki health
 - `/alpha-wiki:ingest <path>` — ingest a raw artifact into the wiki
 - `/alpha-wiki:query <question>` — ask/find in the wiki with cited evidence
 - `/alpha-wiki:lint --fix` — check/fix wiki structure
@@ -17,6 +18,7 @@ Claude Code:
 
 Codex:
 
+- `$alpha-wiki-doctor` — verify install/runtime/wiki health
 - `$alpha-wiki-ingest` — ingest a raw artifact into the wiki
 - `$alpha-wiki-query` — ask/find in the wiki with cited evidence
 - `$alpha-wiki-lint` — check/fix wiki structure
@@ -28,7 +30,7 @@ Codex:
 - `{{ wiki_dir }}/` — LLM-maintained markdown
 - `{{ wiki_dir }}/graph/` — auto-generated context brief, edges, open questions
 - `CLAUDE.md` — runtime contract
-- `tools/` — Python engine (lint, edges, classify)
+- `tools/` — Python engine (doctor, lint, edges, classify)
 
 ## Obsidian
 

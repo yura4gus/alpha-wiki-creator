@@ -29,7 +29,9 @@ description: "Bootstrap a wiki"
 def test_install_codex_skills_writes_prefixed_skill_set(tmp_path: Path):
     installed = install_codex_skills(tmp_path)
 
-    assert len(installed) == 10
+    assert len(installed) == 11
     assert (tmp_path / "alpha-wiki-init" / "SKILL.md").exists()
+    assert (tmp_path / "alpha-wiki-doctor" / "SKILL.md").exists()
     assert (tmp_path / "alpha-wiki-query" / "SKILL.md").exists()
+    assert "name: alpha-wiki-doctor" in (tmp_path / "alpha-wiki-doctor" / "SKILL.md").read_text()
     assert "name: alpha-wiki-status" in (tmp_path / "alpha-wiki-status" / "SKILL.md").read_text()

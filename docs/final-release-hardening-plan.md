@@ -24,6 +24,7 @@ This plan consolidates the key improvements discovered during Phase 0:
 |---|---|---|
 | R0.1 cluster semantics base | in-progress | `owned_by/source` graph edges, `cluster-link-gap` lint, status `Cluster gap`, cluster frontmatter templates, unit tests. |
 | Lifecycle automation audit | done | `docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md`, lifecycle closure integration test. |
+| R0.7 doctor command | done | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor`, unit tests. |
 
 ## Release Principles
 

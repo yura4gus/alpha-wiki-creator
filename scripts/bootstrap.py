@@ -142,7 +142,7 @@ def _render_context(config: InterviewConfig, merged: dict) -> dict:
         "date": _date.today().isoformat(),
         "entity_types": merged.get("entity_types", []),
         "cross_ref_rules": merged.get("cross_ref_rules", []),
-        "skills": ["/alpha-wiki:init", "/alpha-wiki:ingest", "/alpha-wiki:query", "/alpha-wiki:lint",
+        "skills": ["/alpha-wiki:init", "/alpha-wiki:doctor", "/alpha-wiki:ingest", "/alpha-wiki:query", "/alpha-wiki:lint",
                    "/alpha-wiki:evolve", "/alpha-wiki:spawn-agent", "/alpha-wiki:render", "/alpha-wiki:status",
                    "/alpha-wiki:review", "/alpha-wiki:rollup"],
         "schema_evolve_mode": config.schema_evolve_mode,

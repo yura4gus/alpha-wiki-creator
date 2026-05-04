@@ -171,7 +171,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Checks | Broken links, missing backlinks, orphan pages, missing frontmatter, invalid frontmatter, duplicate slugs, duplicate entities by alias, stale pages, contradiction markers, missing provenance, invalid entity types, schema drift, missing migration notes, unresolved open questions, dependency-rule violations from architectural overlay. |
 | Modes | `--fix` (auto-safe corrections), `--suggest` (LLM-assisted manual fixes), `--dry-run` (report only), `--ci` (exit non-zero on 🔴), `--pre-commit` (block 🔴, allow 🟡). |
 | Tools | `lint.py` — pure Python, deterministic, fully tested. Extended with per-check modules in `lint_checks/`. |
-| Tests | Existing 45 tests preserved; new tests per added check. |
+| Tests | Existing test suite preserved; new tests per added check. |
 | Integrations | Invoked by pre-commit hook, session-end hook, CI workflow, `daily-maintenance`, `status`, `cto-review` (when AgentOps present). |
 
 ### 4.5 `/alpha-wiki:status`

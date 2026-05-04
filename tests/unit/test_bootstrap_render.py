@@ -25,6 +25,7 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
     assert "bootstrap" in (tmp_path / "wiki" / "log.md").read_text()
     assert (tmp_path / ".alpha-wiki" / "config.yaml").exists()
     claude = (tmp_path / "CLAUDE.md").read_text()
+    assert "/alpha-wiki:doctor" in claude
     assert "/alpha-wiki:review" in claude
     assert "/alpha-wiki:rollup" in claude
 
