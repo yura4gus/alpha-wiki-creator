@@ -7,4 +7,8 @@ Invoke the `ingest` skill from the `alpha-wiki` plugin. Human meaning: import ra
 
 $ARGUMENTS
 
-For each path: classify, match a slot or trigger schema-evolve (gated by default), render page(s), update index/log/graph. Surface any schema-evolve choices to the user before writing.
+Run deterministic ingest first:
+
+`uv run python tools/ingest_pipeline.py --wiki-dir <wiki_dir> $ARGUMENTS`
+
+For each path: classify, match a slot or trigger schema-evolve (gated by default), render page(s) with provenance, update log/graph, then surface lint warnings. If deterministic ingest cannot place the source cleanly, stop and surface schema-evolve choices before writing custom structure.

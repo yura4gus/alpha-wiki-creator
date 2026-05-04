@@ -25,9 +25,9 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
 | Skills | 11 present | `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
 | Commands | 11 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 12 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `lint.py`, `render_dot.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
+| Deterministic tools | 13 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `ingest_pipeline.py`, `lint.py`, `render_dot.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 42 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, query helper, status, review, rollup, wiki engine, and templates. |
+| Tests | 43 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, ingest pipeline, query helper, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -37,7 +37,7 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 |---|---|---|---|
 | `init` | `skills/init/SKILL.md` | Expanded operational manual | Full 15-dimension pressure testing remains Phase 1a. |
 | `doctor` | `skills/doctor/SKILL.md` | Backed install/runtime verifier | Add final release smoke usage. |
-| `ingest` | `skills/ingest/SKILL.md` | Expanded operational manual | Back with deterministic ingest pipeline and pressure tests. |
+| `ingest` | `skills/ingest/SKILL.md` | Backed by deterministic local-file ingest MVP | Add pressure tests for richer source types and resumability. |
 | `query` | `skills/query/SKILL.md` | Backed by deterministic search/citation helper | Add contradiction-aware pressure tests after claims tooling. |
 | `lint` | `skills/lint/SKILL.md` | Expanded operational manual backed by `tools/lint.py` | Expand severity/check model to target spec. |
 | `evolve` | `skills/evolve/SKILL.md` | Expanded operational manual backed by `scripts/add_entity_type.py` | Add migration planning implementation for existing pages. |
@@ -75,6 +75,7 @@ Missing Phase 1a skills:
 |---|---|
 | `tools/wiki_engine.py` | Markdown/frontmatter parsing, wikilink extraction, edge rebuild, context brief rebuild, open questions rebuild, `add-edge` CLI. |
 | `tools/doctor.py` | Install/runtime lifecycle verification: Python, uv, imports, config, wiki dir, graph artifacts, lint, hooks, CI, platform hints. |
+| `tools/ingest_pipeline.py` | Deterministic local-file ingest: page write, provenance, optional cluster link, log, graph rebuild, lint summary. |
 | `tools/lint.py` | Broken wikilinks, missing reverse links, orphans, required frontmatter, duplicate slugs, dependency rules, safe missing-reverse fixes. |
 | `tools/render_mermaid.py` | Mermaid graph export with typed service clusters and role colors. |
 | `tools/render_dot.py` | Graphviz DOT graph export with typed service clusters and role colors. |
@@ -91,7 +92,6 @@ Missing Phase 1a skills:
 
 Confirmed missing deterministic tools from Phase 1a target:
 
-- `tools/ingest_pipeline.py`
 - `tools/contradiction_detector.py`
 - `tools/status_report.py`
 - `tools/contracts_check.py`

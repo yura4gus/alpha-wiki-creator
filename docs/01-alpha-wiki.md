@@ -135,9 +135,9 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Review gates | If schema-evolve triggered: gate before adding new entity type (per ADR for schema changes); else no gate. |
 | Failure modes | Source unparseable; no slot fits and user rejects schema-evolve; cross-reference target missing; provenance metadata cannot be attached. |
 | Rollback | Atomic per-page commit; failed ingest leaves `raw/` untouched and rolls back partial wiki writes. |
-| Tools | `wiki_engine.py` for graph ops; new `tools/ingest_pipeline.py` for orchestration; new `tools/classifier.py` for category detection; new `tools/contradiction_detector.py` for stale-claim flagging. |
+| Tools | `wiki_engine.py` for graph ops; `tools/ingest_pipeline.py` implemented for local-file MVP; new `tools/contradiction_detector.py` planned for stale-claim flagging. |
 | Tests | PDF mixed content, OpenAPI YAML, transcript, ADR markdown, contradicting claim, oversized file, file with no parseable structure. |
-| Pipeline | Source validation → provenance capture → classification (11 categories) → chunking → entity extraction → claim extraction → page create/update → frontmatter enforcement → cross-link insertion → backlink update → contradiction detection → stale-claim flagging → open-questions extraction → risk extraction → schema-evolve trigger if needed → context_brief rebuild → post-ingest lint → handoff summary. |
+| Pipeline | Implemented MVP: source validation → provenance capture → classification → page create → optional cluster link → open-question extraction → graph rebuild → post-ingest lint → log entry. Planned: chunking → entity extraction → claim extraction → contradiction detection → stale-claim flagging → schema-evolve trigger. |
 | Integrations | Triggers `evolve` if no slot fits. Updates `index/*` indexes. Writes log.md entry consumed by `status`. |
 
 ### 4.3 `/alpha-wiki:query`
@@ -295,7 +295,7 @@ Pure-Python, deterministic, no LLM. Tested fully.
 | `tools/lint.py` (existing) | Structural lint engine. |
 | `tools/wiki_engine.py` (existing) | Graph rebuild, edges, context_brief, open_questions. |
 | `tools/init_audit.py` (new) | Existing-repo audit for `init` migration mode. |
-| `tools/ingest_pipeline.py` (new) | Ingest orchestration (validation, classification, page-write, lint). |
+| `tools/ingest_pipeline.py` (implemented) | Ingest orchestration MVP (validation, classification, page-write, provenance, graph rebuild, lint). |
 | `tools/classifier.py` (new) | Category detection (11 raw artifact categories). |
 | `tools/contradiction_detector.py` (new) | Stale-claim and contradiction detection. |
 | `tools/wiki_search.py` (implemented) | Wiki search (deterministic markdown ranking + line citations; BM25 only if Phase 6). |

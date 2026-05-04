@@ -48,7 +48,10 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
    - `.alpha-wiki/config.yaml`
 
 3. For each source:
-   - Classify with deterministic tooling when available.
+   - Classify and write the first deterministic page with:
+     - `uv run python tools/ingest_pipeline.py --wiki-dir <wiki_dir> <source>`
+   - Use `--slot <dir>` when the target directory is obvious.
+   - Use `--belongs-to <slug>` when attaching the page to a service/repo/module cluster.
    - Read enough surrounding wiki pages to avoid duplicates.
    - Extract durable facts, decisions, open questions, risks, contracts, dependencies, dates, owners, and claims.
    - Keep uncertain statements marked as `assumption`, `risk`, or `open`.
@@ -102,3 +105,4 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 - `references/schema-evolution.md`
 - `references/cross-reference-rules.md`
 - `references/concept.md`
+- `tools/ingest_pipeline.py`

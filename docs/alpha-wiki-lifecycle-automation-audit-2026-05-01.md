@@ -32,7 +32,7 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, graph rebuild, lint
 | Cluster ownership links are required | `cluster-link-gap` lint, status `Cluster gap`, frontmatter templates | `test_lint_cluster_links`, lifecycle smoke | in-progress | Need stronger per-entity policy and review scoring. |
 | Color labels role, not cluster | Obsidian legend, Mermaid/DOT exports, render skill, tests | Obsidian graph tests, Graph export tests | pass | Add visual-image snapshots later if needed. |
 | `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests | pass | Add release smoke usage once packaging is final. |
-| `ingest` updates pages/log/graph/lint | Skill instructions | Partial integration tests | partial | Implement `tools/ingest_pipeline.py`. |
+| `ingest` updates pages/log/graph/lint | `tools/ingest_pipeline.py`, skill instructions | Ingest pipeline tests | partial | Expand pressure tests for ADR, OpenAPI, transcript, oversized and conflicting sources. |
 | `query` reads brief/index/pages with citations | `tools/wiki_search.py`, skill instructions | Query helper tests | pass | Add contradiction-aware query pressure tests after claims tooling. |
 | `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
 | `status` exposes gaps | `tools/status.py` | Status tests | pass | Health scoring can be refined after ingest/query are deterministic. |
@@ -89,13 +89,13 @@ Automated:
 
 Gaps:
 
-- No deterministic `tools/ingest_pipeline.py`.
-- Provenance extraction and cluster-link enforcement are not yet written into an ingest backend.
+- Deterministic `tools/ingest_pipeline.py` exists for local source files.
+- Provenance, optional cluster-link attachment, log append, graph rebuild, and lint summary are backend-backed.
 - Resume/recovery for long ingest is absent.
 
 Next automation:
 
-- Implement ingest pipeline with page writes, provenance, cluster links, log append, graph rebuild, lint summary, and resumable state.
+- Expand ingest pressure fixtures and add resumable state.
 
 ### 4. Graph / Cluster
 
@@ -214,7 +214,7 @@ Next automation:
 ## Key Findings
 
 1. The lifecycle is **structurally closed** for graph/status/lint/review once pages exist.
-2. The lifecycle is **not fully closed** for ingest because it is still mostly procedural skill logic.
+2. The lifecycle is **partially closed** for ingest; the MVP backend exists, but pressure cases and resumability remain.
 3. Cluster semantics are now partially automated through lint/status and Graph QA exports, but release needs richer review.
 4. Claude automation is significantly stronger than Codex automation.
 5. Final release should prioritize deterministic ingest, richer review, and first-run checklist before packaging.
@@ -237,4 +237,4 @@ Additional lifecycle evidence:
 - `tests/unit/test_status.py`
 - `tests/unit/test_wiki_engine_edges.py`
 
-Latest result: `96 passed`.
+Latest result: `98 passed`.
