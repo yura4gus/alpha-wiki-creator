@@ -1,6 +1,6 @@
 ---
 name: render
-description: "Refresh the wiki presentation layer: Obsidian graph settings plus deterministic Mermaid/DOT graph exports. Use when colors, graph filters, vault settings, or generated visual artifacts are stale. Do not use to change wiki content."
+description: "Refresh the wiki presentation layer: Obsidian graph settings plus deterministic Mermaid/DOT/HTML exports. Use when colors, graph filters, vault settings, static read-only pages, or generated visual artifacts are stale. Do not use to change wiki content."
 argument-hint: "[obsidian | html | mermaid | dot]"
 ---
 
@@ -28,7 +28,7 @@ Refresh `.obsidian/` configuration:
 
 ### `html`
 
-Static HTML export target. If backend is not implemented, refuse clearly and point to the planned tool.
+Static read-only HTML export target. Useful for release bundles, audit snapshots, and readers who do not have Obsidian. Backed by `tools/render_html.py`.
 
 ### `mermaid`
 
@@ -79,7 +79,7 @@ Color is not cluster. Do not build or describe one red cluster, one green cluste
 4. For export modes:
    - `mermaid`: run `uv run python tools/render_mermaid.py --wiki-dir <wiki_dir>`.
    - `dot`: run `uv run python tools/render_dot.py --wiki-dir <wiki_dir>`.
-   - `html`: refuse unsupported mode with a precise message, not a silent no-op.
+   - `html`: run `uv run python tools/render_html.py --wiki-dir <wiki_dir>`.
 5. Run `/alpha-wiki:lint --suggest` if graph data changed.
 
 ## Done Criteria
@@ -96,3 +96,4 @@ Color is not cluster. Do not build or describe one red cluster, one green cluste
 - `tools/wiki_engine.py`
 - `tools/render_mermaid.py`
 - `tools/render_dot.py`
+- `tools/render_html.py`

@@ -1,5 +1,5 @@
 ---
-description: "Visualize wiki graph — refresh Obsidian colors/config or export Mermaid/DOT graph QA snapshots"
+description: "Visualize wiki graph — refresh Obsidian config or export Mermaid/DOT/HTML snapshots"
 argument-hint: "[obsidian | mermaid | dot | html]"
 ---
 
@@ -13,4 +13,4 @@ For `mermaid`: run `uv run python tools/render_mermaid.py --wiki-dir <wiki_dir>`
 
 For `dot`: run `uv run python tools/render_dot.py --wiki-dir <wiki_dir>` and write `<wiki_dir>/graph/graph.dot`.
 
-For `html`: render a static site to `dist/wiki/` (v0.2 — refuse with a pointer to `references/concept.md` until shipped).
+For `html`: run `uv run python tools/render_html.py --wiki-dir <wiki_dir>` and write `<wiki_dir>/render/html/index.html`. Use `--out <dir>` when the user wants a release/shareable bundle somewhere else.

@@ -232,12 +232,12 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Purpose | Refresh Obsidian config or generate static HTML / Mermaid graphs. |
 | Trigger description | Use when the user wants to refresh the Obsidian view, generate static HTML for sharing, or export the wiki graph. |
 | Inputs | Mode flag (`obsidian` | `html` | `mermaid` | `dot`). |
-| Outputs | Mode-dependent: refreshed `.obsidian/`, static HTML at `wiki/render/html/` when implemented, Mermaid at `wiki/graph/graph.mmd`, DOT at `wiki/graph/graph.dot`. |
+| Outputs | Mode-dependent: refreshed `.obsidian/`, static HTML at `wiki/render/html/`, Mermaid at `wiki/graph/graph.mmd`, DOT at `wiki/graph/graph.dot`. |
 | Files read | All wiki pages and `wiki/graph/*`. |
 | Files written | Render output paths. Never touches wiki source pages. |
 | Color mapping | Red = repos/services, green = modules/domains/components/adapters, blue = features/functions/flows/application, black = documents/evidence, orange = contracts, light grey = people/tasks. Full path-based rules live in `.obsidian/COLOR-LEGEND.md`. |
-| Tools | New `tools/render_html.py` planned; `tools/render_mermaid.py` and `tools/render_dot.py` implemented. |
-| Tests | Snapshot tests: sample wiki → expected Mermaid / DOT output. |
+| Tools | `tools/render_html.py`, `tools/render_mermaid.py`, and `tools/render_dot.py` implemented. |
+| Tests | Snapshot tests: sample wiki → expected HTML / Mermaid / DOT output. |
 | Integrations | Triggered by user; not part of automated hooks. |
 
 ### 4.9 `/alpha-wiki:contracts-check`
@@ -302,7 +302,7 @@ Pure-Python, deterministic, no LLM. Tested fully.
 | `tools/status_report.py` (new) | Health score, suggested next actions. |
 | `tools/contracts_check.py` (new) | Contract-specific lint. |
 | `tools/claims_check.py` (new) | Claim consistency. |
-| `tools/render_html.py` (new) | Static HTML output. |
+| `tools/render_html.py` (implemented) | Static read-only HTML output. |
 | `tools/render_mermaid.py` (implemented) | Mermaid output with typed clusters and role colors. |
 | `tools/render_dot.py` (implemented) | DOT output with typed clusters and role colors. |
 

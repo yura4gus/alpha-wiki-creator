@@ -31,6 +31,7 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, graph rebuild, lint
 | Graph artifacts are generated, not hand-edited | `wiki_engine.py`, hooks, status/review refresh | Graph/status/hook tests | pass | Add CI check that graph artifacts are current after PR changes. |
 | Cluster ownership links are required | `cluster-link-gap` lint, status `Cluster gap`, frontmatter templates | `test_lint_cluster_links`, lifecycle smoke | in-progress | Need stronger per-entity policy and review scoring. |
 | Color labels role, not cluster | Obsidian legend, Mermaid/DOT exports, render skill, tests | Obsidian graph tests, Graph export tests | pass | Add visual-image snapshots later if needed. |
+| Static read-only export exists | `tools/render_html.py`, render skill | HTML export tests | pass | Keep visual polish minimal until dogfooding. |
 | `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests | pass | Add release smoke usage once packaging is final. |
 | `ingest` updates pages/log/graph/lint | `tools/ingest_pipeline.py`, skill instructions | Ingest pipeline pressure tests | partial | Add conflicting-source/claim extraction after claims tooling. |
 | `query` reads brief/index/pages with citations | `tools/wiki_search.py`, skill instructions | Query helper tests | pass | Add contradiction-aware query pressure tests after claims tooling. |
@@ -237,4 +238,4 @@ Additional lifecycle evidence:
 - `tests/unit/test_status.py`
 - `tests/unit/test_wiki_engine_edges.py`
 
-Latest result: `104 passed`.
+Latest result: `106 passed`.

@@ -29,6 +29,7 @@ This plan consolidates the key improvements discovered during Phase 0:
 | R0.6 trust report base | in-progress | Status/review now include cluster health, provenance score, freshness, open-question follow-up, and next actions. |
 | R0.4 query helper | done | `tools/wiki_search.py`, query CLI, citation/ranking tests. |
 | R0.3 ingest pipeline MVP | in-progress | `tools/ingest_pipeline.py`, local-file ingest CLI, provenance/log/graph/lint/resume pressure tests. |
+| R1.10 static HTML export | done | `tools/render_html.py`, static read-only HTML bundle tests. |
 
 ## Release Principles
 

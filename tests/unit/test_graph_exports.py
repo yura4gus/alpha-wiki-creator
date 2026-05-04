@@ -4,6 +4,8 @@ from click.testing import CliRunner
 
 from tools.render_dot import cli as dot_cli
 from tools.render_dot import render_dot
+from tools.render_html import cli as html_cli
+from tools.render_html import render_html
 from tools.render_mermaid import cli as mermaid_cli
 from tools.render_mermaid import render_mermaid
 from tools.wiki_engine import rebuild_edges
@@ -89,3 +91,30 @@ def test_graph_export_clis_write_default_graph_files(tmp_path: Path):
     assert dot.exit_code == 0, dot.output
     assert (wiki / "graph" / "graph.mmd").exists()
     assert (wiki / "graph" / "graph.dot").exists()
+
+
+def test_html_export_writes_static_read_only_site(tmp_path: Path):
+    wiki = _mixed_cluster_wiki(tmp_path)
+
+    out = render_html(wiki)
+
+    assert (out / "index.html").exists()
+    assert (out / "style.css").exists()
+    assert (out / "services" / "auth-service.html").exists()
+    assert (out / "graph" / "graph.mmd").exists()
+    assert (out / "graph" / "graph.dot").exists()
+    index = (out / "index.html").read_text()
+    service = (out / "services" / "auth-service.html").read_text()
+    assert "Alpha-Wiki Export" in index
+    assert "Auth Service" in service
+    assert "Static read-only export" in index
+
+
+def test_html_export_cli_writes_custom_output_dir(tmp_path: Path):
+    wiki = _mixed_cluster_wiki(tmp_path)
+    out = tmp_path / "site"
+
+    result = CliRunner().invoke(html_cli, ["--wiki-dir", str(wiki), "--out", str(out)])
+
+    assert result.exit_code == 0, result.output
+    assert (out / "index.html").exists()
