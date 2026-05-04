@@ -18,9 +18,10 @@ Synthesize answers from maintained wiki memory with citations, uncertainty label
 
 1. Start with `<wiki_dir>/graph/context_brief.md`.
 2. Read `<wiki_dir>/index.md`.
-3. Use explicit filenames, slugs, wikilinks, and frontmatter. Avoid embedding-style guesses.
-4. Select 3-7 relevant pages for normal questions; expand only when the topic crosses domains.
-5. Prefer accepted/stable pages over draft/stub pages, but mention stale or draft status when it matters.
+3. Run `tools/wiki_search.py` for deterministic candidate ranking and line citations.
+4. Use explicit filenames, slugs, wikilinks, and frontmatter. Avoid embedding-style guesses.
+5. Select 3-7 relevant pages for normal questions; expand only when the topic crosses domains.
+6. Prefer accepted/stable pages over draft/stub pages, but mention stale or draft status when it matters.
 
 ## Answer Format
 
@@ -41,7 +42,8 @@ Use this structure unless the user asked for something smaller:
 
 1. Detect wiki dir from `CLAUDE.md` or default to `wiki/`.
 2. Read `context_brief.md` and `index.md`.
-3. Search candidate pages by slug, title, directory, and frontmatter.
+3. Search candidate pages by slug, title, directory, frontmatter, and body:
+   - `uv run python tools/wiki_search.py --wiki-dir <wiki_dir> --query "<question>"`
 4. Read candidate pages deeply enough to avoid shallow summary.
 5. Check for contradictions:
    - Conflicting statuses.
@@ -80,3 +82,4 @@ When the wiki is thin, explain how to make the next query better:
 
 - `references/concept.md`
 - `references/cross-reference-rules.md`
+- `tools/wiki_search.py`

@@ -33,7 +33,7 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, graph rebuild, lint
 | Color labels role, not cluster | Obsidian legend, Mermaid/DOT exports, render skill, tests | Obsidian graph tests, Graph export tests | pass | Add visual-image snapshots later if needed. |
 | `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests | pass | Add release smoke usage once packaging is final. |
 | `ingest` updates pages/log/graph/lint | Skill instructions | Partial integration tests | partial | Implement `tools/ingest_pipeline.py`. |
-| `query` reads brief/index/pages with citations | Skill instructions | Skill docs tests | partial | Implement `tools/wiki_search.py` and query pressure tests. |
+| `query` reads brief/index/pages with citations | `tools/wiki_search.py`, skill instructions | Query helper tests | pass | Add contradiction-aware query pressure tests after claims tooling. |
 | `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
 | `status` exposes gaps | `tools/status.py` | Status tests | pass | Health scoring can be refined after ingest/query are deterministic. |
 | `review` produces trust report | `tools/review.py` | Review/rollup tests | pass | Add deeper semantic contradiction checks after query/claims tooling. |
@@ -214,10 +214,10 @@ Next automation:
 ## Key Findings
 
 1. The lifecycle is **structurally closed** for graph/status/lint/review once pages exist.
-2. The lifecycle is **not fully closed** for ingest/query because those are still mostly procedural skills.
+2. The lifecycle is **not fully closed** for ingest because it is still mostly procedural skill logic.
 3. Cluster semantics are now partially automated through lint/status and Graph QA exports, but release needs richer review.
 4. Claude automation is significantly stronger than Codex automation.
-5. Final release should prioritize deterministic ingest, query helper, richer review, and first-run checklist before packaging.
+5. Final release should prioritize deterministic ingest, richer review, and first-run checklist before packaging.
 
 ## Evidence Commands
 
@@ -237,4 +237,4 @@ Additional lifecycle evidence:
 - `tests/unit/test_status.py`
 - `tests/unit/test_wiki_engine_edges.py`
 
-Latest result: `92 passed`.
+Latest result: `96 passed`.

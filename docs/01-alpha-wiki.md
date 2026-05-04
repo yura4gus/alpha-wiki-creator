@@ -154,8 +154,8 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | State updated | None. |
 | Review gates | None for read-only query; if user requests synthesis page, normal `ingest` gates apply. |
 | Failure modes | No relevant pages found; conflicting answers across pages; question too broad to answer. |
-| Tools | New `tools/wiki_search.py` (BM25 over wiki/ if Phase 6 adds it; for MVP, file-grep + index lookup). |
-| Tests | Question with conflicting evidence, question with stale answer, question with no answer, question requiring synthesis across 5+ pages. |
+| Tools | `tools/wiki_search.py` implemented (deterministic markdown search; BM25 deferred unless Phase 6 needs it). |
+| Tests | Current: ranking, no answer, truth status, CLI. Next: conflicting evidence, stale answer, synthesis across 5+ pages. |
 | Integrations | Reads context_brief produced by `wiki_engine.py`. Reads indexes produced by `ingest`. |
 
 ### 4.4 `/alpha-wiki:lint`
@@ -298,7 +298,7 @@ Pure-Python, deterministic, no LLM. Tested fully.
 | `tools/ingest_pipeline.py` (new) | Ingest orchestration (validation, classification, page-write, lint). |
 | `tools/classifier.py` (new) | Category detection (11 raw artifact categories). |
 | `tools/contradiction_detector.py` (new) | Stale-claim and contradiction detection. |
-| `tools/wiki_search.py` (new) | Wiki search (file-grep + index lookup; BM25 only if Phase 6). |
+| `tools/wiki_search.py` (implemented) | Wiki search (deterministic markdown ranking + line citations; BM25 only if Phase 6). |
 | `tools/status_report.py` (new) | Health score, suggested next actions. |
 | `tools/contracts_check.py` (new) | Contract-specific lint. |
 | `tools/claims_check.py` (new) | Claim consistency. |

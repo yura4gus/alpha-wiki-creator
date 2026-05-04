@@ -27,6 +27,7 @@ This plan consolidates the key improvements discovered during Phase 0:
 | R0.7 doctor command | done | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor`, unit tests. |
 | R0.2 Graph QA exports | done | `tools/render_mermaid.py`, `tools/render_dot.py`, mixed-role cluster export tests. |
 | R0.6 trust report base | in-progress | Status/review now include cluster health, provenance score, freshness, open-question follow-up, and next actions. |
+| R0.4 query helper | done | `tools/wiki_search.py`, query CLI, citation/ranking tests. |
 
 ## Release Principles
 

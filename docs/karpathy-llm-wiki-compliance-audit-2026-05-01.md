@@ -114,7 +114,7 @@ These do not block Karpathy-core compliance, but they matter for production qual
 | Gap | Why not Phase 0 blocker | Phase 1a action |
 |---|---|---|
 | Deterministic ingest pipeline not implemented | Karpathy ingest is LLM-mediated; Phase 0 needs the operation contract, not full extraction tooling. | Add `tools/ingest_pipeline.py`, pressure tests, provenance extraction. |
-| Deterministic query search helper not implemented | Karpathy query can read `index.md` and relevant pages manually. | Add `tools/wiki_search.py` or grep/index helper with citation support. |
+| Deterministic query search helper implemented | `tools/wiki_search.py` provides markdown ranking and line citations without embeddings. | Add contradiction-aware pressure tests after claims tooling. |
 | `index.md` population is still basic | Bootstrap creates the catalog; richer index generation can follow schema hardening. | Add deterministic index rebuild/update path. |
 | Context brief is structural, not semantic | It is enough for orientation; richer summaries need stable ingest/query semantics. | Add budgeted context profiles and better page summaries. |
 | Pressure tests for skills are not complete | Existing unit/integration tests cover tools and docs, not all skill pressure scenarios. | Add `tests/skills/*_pressure.py`. |

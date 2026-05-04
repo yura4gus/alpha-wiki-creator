@@ -25,9 +25,9 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
 | Skills | 11 present | `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
 | Commands | 11 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 11 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `lint.py`, `render_dot.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `review.py`, `rollup.py`. |
+| Deterministic tools | 12 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `lint.py`, `render_dot.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 41 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, status, review, rollup, wiki engine, and templates. |
+| Tests | 42 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, query helper, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -38,7 +38,7 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | `init` | `skills/init/SKILL.md` | Expanded operational manual | Full 15-dimension pressure testing remains Phase 1a. |
 | `doctor` | `skills/doctor/SKILL.md` | Backed install/runtime verifier | Add final release smoke usage. |
 | `ingest` | `skills/ingest/SKILL.md` | Expanded operational manual | Back with deterministic ingest pipeline and pressure tests. |
-| `query` | `skills/query/SKILL.md` | Expanded operational manual | Add deterministic search/citation tooling and pressure tests. |
+| `query` | `skills/query/SKILL.md` | Backed by deterministic search/citation helper | Add contradiction-aware pressure tests after claims tooling. |
 | `lint` | `skills/lint/SKILL.md` | Expanded operational manual backed by `tools/lint.py` | Expand severity/check model to target spec. |
 | `evolve` | `skills/evolve/SKILL.md` | Expanded operational manual backed by `scripts/add_entity_type.py` | Add migration planning implementation for existing pages. |
 | `status` | `skills/status/SKILL.md` | Expanded operational manual backed by `tools/status.py` | Add health score and suggested-next-actions implementation. |
@@ -78,6 +78,7 @@ Missing Phase 1a skills:
 | `tools/lint.py` | Broken wikilinks, missing reverse links, orphans, required frontmatter, duplicate slugs, dependency rules, safe missing-reverse fixes. |
 | `tools/render_mermaid.py` | Mermaid graph export with typed service clusters and role colors. |
 | `tools/render_dot.py` | Graphviz DOT graph export with typed service clusters and role colors. |
+| `tools/wiki_search.py` | Deterministic markdown search and query report with citations, no embeddings. |
 | `tools/status.py` | Basic wiki status report. |
 | `tools/review.py` | Wiki-level structural review: status snapshot, lint findings, suggested next actions. |
 | `tools/rollup.py` | Weekly/monthly activity rollup generation and optional write to `wiki/rollups/`. |
@@ -92,7 +93,6 @@ Confirmed missing deterministic tools from Phase 1a target:
 
 - `tools/ingest_pipeline.py`
 - `tools/contradiction_detector.py`
-- `tools/wiki_search.py`
 - `tools/status_report.py`
 - `tools/contracts_check.py`
 - `tools/claims_check.py`
