@@ -20,7 +20,7 @@ install
 
 Current state: **partially closed and increasingly automated**.
 
-Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, query, graph rebuild, lint, status, review, render, rollup, hooks, CI templates, and release audit. The remaining release risk is packaging and fresh-install evidence: quickstart, changelog, version/tag prep, and semantic trust tooling for claims/contracts/contradictions.
+Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, query, graph rebuild, lint, status, review, render, rollup, hooks, CI templates, release smoke, and release audit. The remaining release risk is semantic trust tooling for claims/contracts/contradictions, plus the final publish-time tag.
 
 ## Rule-To-Automation Matrix
 
@@ -32,7 +32,7 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, que
 | Cluster ownership links are required | `cluster-link-gap` lint, status `Cluster gap`, frontmatter templates | `test_lint_cluster_links`, lifecycle smoke | in-progress | Need stronger per-entity policy and review scoring. |
 | Color labels role, not cluster | Obsidian legend, Mermaid/DOT exports, render skill, tests | Obsidian graph tests, Graph export tests | pass | Add visual-image snapshots later if needed. |
 | Static read-only export exists | `tools/render_html.py`, render skill | HTML export tests | pass | Keep visual polish minimal until dogfooding. |
-| `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests | pass | Add release smoke usage once packaging is final. |
+| `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests, release smoke | pass | Keep smoke in release checklist. |
 | `ingest` updates pages/log/graph/lint | `tools/ingest_pipeline.py`, skill instructions | Ingest pipeline pressure tests | partial | Add conflicting-source/claim extraction after claims tooling. |
 | `query` reads brief/index/pages with citations | `tools/wiki_search.py`, skill instructions | Query helper tests | pass | Add contradiction-aware query pressure tests after claims tooling. |
 | `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
@@ -208,9 +208,9 @@ Next automation:
 |---|---:|---|
 | Domain presets | 7/10 | Multiple presets exist; cluster fields strongest in software preset first. |
 | Platform support | 5/10 | Claude good; Codex adapter exists; Gemini deferred. |
-| Automation closure | 8/10 | Graph/lint/status/review/render automated; deterministic ingest/query backends exist; release is blocked mainly by packaging and fresh-install smoke. |
+| Automation closure | 9/10 | Graph/lint/status/review/render automated; deterministic ingest/query backends exist; release smoke and release audit are executable. |
 | Graph/cluster discipline | 8/10 | Cluster lint and Mermaid/DOT Graph QA exports exist; service evidence scoring still missing. |
-| Operator UX | 7/10 | README/commands improved; doctor exists; first-run checklist still missing. |
+| Operator UX | 8/10 | README/commands improved; doctor and quickstart exist; deeper examples per skill can still improve. |
 | AI context grasp | 7/10 | context brief/index/graph exist; budget profiles/search helper missing. |
 
 ## Key Findings
@@ -219,7 +219,7 @@ Next automation:
 2. The lifecycle is **mostly closed** for ingest/query at the deterministic backend level; claim extraction and contradiction handling remain.
 3. Cluster semantics are now partially automated through lint/status and Graph QA exports, but release needs richer review.
 4. Claude automation is significantly stronger than Codex automation.
-5. Final release should prioritize quickstart/changelog, fresh install smoke evidence, packaging/version prep, and then deeper semantic trust checks.
+5. P0 release blockers are closed; final hardening should prioritize deeper semantic trust checks.
 
 ## Evidence Commands
 
@@ -241,5 +241,6 @@ Additional lifecycle evidence:
 - `tests/unit/test_status.py`
 - `tests/unit/test_wiki_engine_edges.py`
 - `tests/unit/test_release_audit.py`
+- `tests/unit/test_release_smoke.py`
 
-Latest result: `111 passed`.
+Latest result: `114 passed`.

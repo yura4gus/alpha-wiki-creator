@@ -84,11 +84,50 @@ def test_final_release_readiness_audit_names_release_blockers():
     text = (ROOT / "docs" / "final-release-readiness-audit-2026-05-04.md").read_text()
 
     for phrase in [
-        "BLOCKED for final v1.0",
-        "`CHANGELOG.md` missing",
-        "`docs/quickstart.md` missing",
-        "Fresh install smoke not recorded",
+        "READY_WITH_WARNINGS",
+        "P0 release blockers are closed",
+        "Quickstart",
+        "Changelog",
+        "Fresh install smoke",
         "Release readiness audit tool",
         "Plugin metadata/version/tag",
     ]:
         assert phrase in text
+
+
+def test_quickstart_covers_first_run_operator_path():
+    text = (ROOT / "docs" / "quickstart.md").read_text()
+
+    for phrase in [
+        "Install",
+        "Bootstrap A Project",
+        "Verify Runtime",
+        "Ingest First Durable Source",
+        "Query And Check Status",
+        "Read The Graph",
+        "Color is node role",
+        "Cluster is typed relationship",
+    ]:
+        assert phrase in text
+
+
+def test_changelog_and_smoke_evidence_cover_release_limits():
+    changelog = (ROOT / "CHANGELOG.md").read_text()
+    smoke = (ROOT / "docs" / "release-smoke-2026-05-05.md").read_text()
+
+    for phrase in [
+        "## [0.1.0]",
+        "11 operations",
+        "Codex is supported",
+        "Gemini is not packaged",
+        "Semantic trust tools",
+    ]:
+        assert phrase in changelog
+
+    for phrase in [
+        "Smoke verdict: PASS",
+        "Claude/Codex doctor",
+        "Ingest/query/status/review",
+        "Render exports",
+    ]:
+        assert phrase in smoke

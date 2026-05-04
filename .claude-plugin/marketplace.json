@@ -12,7 +12,7 @@
     {
       "name": "alpha-wiki",
       "version": "0.1.0",
-      "description": "Bootstraps an LLM-maintained wiki into any project: 10 skills (init, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup), typed cross-links, schema evolution, Obsidian-compatible.",
+      "description": "Bootstraps an LLM-maintained wiki into any project: 11 skills (init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup), typed cross-links, schema evolution, Obsidian-compatible.",
       "source": "./",
       "author": {
         "name": "yura4gus",

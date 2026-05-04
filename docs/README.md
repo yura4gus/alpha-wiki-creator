@@ -15,6 +15,7 @@ This folder contains the current project design package for Alpha-Wiki and the r
 - [`audit-verified-inventory.md`](audit-verified-inventory.md) — Phase 0 verified repository inventory and review/rollup decision
 - [`roadmap-execution.md`](roadmap-execution.md) — phase-by-phase execution roadmap
 - [`implementation-plan-2026-04-30.md`](implementation-plan-2026-04-30.md) — implementation plan for the current repository
+- [`quickstart.md`](quickstart.md) — 10-minute install, bootstrap, ingest, query, and status path
 - [`codex-adapter.md`](codex-adapter.md) — OpenAI Codex CLI install and Alpha-Wiki skill mapping
 - [`best-practices-gap-analysis-2026-04-30.md`](best-practices-gap-analysis-2026-04-30.md) — operator and AI ergonomics gap scan
 - [`karpathy-llm-wiki-compliance-audit-2026-05-01.md`](karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
@@ -22,6 +23,7 @@ This folder contains the current project design package for Alpha-Wiki and the r
 - [`alpha-wiki-lifecycle-automation-audit-2026-05-01.md`](alpha-wiki-lifecycle-automation-audit-2026-05-01.md) — end-to-end lifecycle automation and closure audit
 - [`platform-compatibility-matrix.md`](platform-compatibility-matrix.md) — Claude/Codex/Gemini support matrix and release language
 - [`final-release-readiness-audit-2026-05-04.md`](final-release-readiness-audit-2026-05-04.md) — deterministic final-release readiness audit and blocking gaps
+- [`release-smoke-2026-05-05.md`](release-smoke-2026-05-05.md) — fresh-project Claude/Codex release smoke evidence
 
 ## ADRs
 

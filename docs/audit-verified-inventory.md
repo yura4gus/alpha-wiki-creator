@@ -25,9 +25,9 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
 | Skills | 11 present | `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
 | Commands | 11 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 15 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `ingest_pipeline.py`, `lint.py`, `release_audit.py`, `render_dot.py`, `render_html.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
+| Deterministic tools | 16 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `ingest_pipeline.py`, `lint.py`, `release_audit.py`, `release_smoke.py`, `render_dot.py`, `render_html.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 44 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, ingest pipeline, query helper, release audit, status, review, rollup, wiki engine, and templates. |
+| Tests | 45 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, ingest pipeline, query helper, release audit, release smoke, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -81,6 +81,7 @@ Missing Phase 1a skills:
 | `tools/render_dot.py` | Graphviz DOT graph export with typed service clusters and role colors. |
 | `tools/render_html.py` | Static read-only HTML export for index, pages, and graph artifacts. |
 | `tools/release_audit.py` | Deterministic final-release gate across command/skill surface, core tools, docs, packaging, trust depth, and platform support. |
+| `tools/release_smoke.py` | Fresh-project release smoke covering bootstrap, Claude/Codex doctor, ingest, query, status, review, and exports. |
 | `tools/wiki_search.py` | Deterministic markdown search and query report with citations, no embeddings. |
 | `tools/status.py` | Basic wiki status report. |
 | `tools/review.py` | Wiki-level structural review: status snapshot, lint findings, suggested next actions. |
@@ -101,7 +102,7 @@ Confirmed missing deterministic tools from Phase 1a target:
 
 ## Tests Inventory
 
-Verified test files: 44.
+Verified test files: 45.
 
 Coverage areas:
 
@@ -115,6 +116,7 @@ Coverage areas:
 - Wiki engine parsing, edges, context brief, open questions, CLI.
 - Classifier and LLM fallback stub.
 - Release audit final gate and CLI exit behavior.
+- Release smoke on a fresh temporary project.
 - Status report.
 - Review and rollup backend tools.
 - Template rendering.

@@ -4,9 +4,9 @@ Goal: independently check whether Alpha-Wiki is ready for a final public release
 
 ## Verdict
 
-Current verdict: **BLOCKED for final v1.0**, acceptable for a beta/hardening release.
+Current verdict: **READY_WITH_WARNINGS** for the current packaged release.
 
-Reason: the lifecycle backbone is now real and tested, but release packaging docs and semantic trust tooling are not complete.
+Reason: P0 packaging blockers are closed. The remaining warning is semantic trust depth: claims, contracts, and contradiction tooling are deferred and must stay explicit in release notes.
 
 ## What Is Release-Strong
 
@@ -17,16 +17,17 @@ Reason: the lifecycle backbone is now real and tested, but release packaging doc
 | Codex path | pass with limitations | `scripts/install_codex.py`, prefixed skills, doctor platform check. |
 | Graph semantics | pass | Typed cluster links, Obsidian colors, Mermaid/DOT exports, Graph QA tests. |
 | Static read-only export | pass | `tools/render_html.py`. |
-| Test suite | pass | Latest recorded result: `111 passed`. |
+| Test suite | pass | Latest recorded result: `114 passed`. |
+| Quickstart | pass | `docs/quickstart.md`. |
+| Changelog | pass | `CHANGELOG.md`. |
+| Fresh install smoke | pass | `docs/release-smoke-2026-05-05.md`. |
+| Packaging/version metadata | pass | `pyproject.toml`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, and changelog entry are aligned. |
 
 ## Blocking Gaps
 
 | Gap | Severity | Why it blocks final release |
 |---|---|---|
-| `CHANGELOG.md` missing | P0 | Users need release notes and migration visibility. |
-| `docs/quickstart.md` missing | P0 | A new user needs a reliable 10-minute path. |
-| Fresh install smoke not recorded | P0 | Tests cover internals; release needs install/init/ingest/query/status smoke evidence. |
-| Packaging/version gate not completed | P0 | Plugin metadata, version, changelog, and tag are not release-final. |
+| None currently recorded | - | P0 release blockers are closed as of 2026-05-05. |
 
 ## Non-Blocking But Important
 
@@ -42,18 +43,16 @@ Reason: the lifecycle backbone is now real and tested, but release packaging doc
 
 | Gate | Current State |
 |---|---|
-| Full test suite | pass: `111 passed` |
+| Full test suite | pass: `114 passed` |
 | Release readiness audit tool | pass: `tools/release_audit.py` exists |
 | Platform compatibility matrix | pass: `docs/platform-compatibility-matrix.md` |
-| Quickstart | fail |
-| Changelog | fail |
-| Fresh install smoke | fail until executed and recorded |
-| Plugin metadata/version/tag | fail until release prep |
+| Quickstart | pass: `docs/quickstart.md` |
+| Changelog | pass: `CHANGELOG.md` |
+| Fresh install smoke | pass: `docs/release-smoke-2026-05-05.md` |
+| Plugin metadata/version/tag | pass for metadata/version; tag should be created at publish time |
 
 ## Recommended Next Work
 
-1. Add `docs/quickstart.md`.
-2. Add `CHANGELOG.md`.
-3. Run and record fresh install smoke for Claude and Codex.
-4. Add release notes that explicitly defer claims/contradictions and Gemini.
-5. Then rerun `tools/release_audit.py`.
+1. Implement or explicitly continue deferring `tools/claims_check.py`, `tools/contracts_check.py`, and `tools/contradiction_detector.py`.
+2. Create the git tag only when publishing the release artifact.
+3. Re-run `.venv/bin/python tools/release_audit.py --root .` immediately before tagging.

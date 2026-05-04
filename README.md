@@ -193,6 +193,7 @@ Current architecture set:
 - [`docs/04-state-backend-contract.md`](docs/04-state-backend-contract.md) — state backend abstraction
 - [`docs/roadmap-execution.md`](docs/roadmap-execution.md) — execution roadmap
 - [`docs/implementation-plan-2026-04-30.md`](docs/implementation-plan-2026-04-30.md) — implementation plan for the current repo
+- [`docs/quickstart.md`](docs/quickstart.md) — 10-minute install → init → ingest → query path
 - [`docs/codex-adapter.md`](docs/codex-adapter.md) — OpenAI Codex CLI install and skill mapping
 - [`docs/best-practices-gap-analysis-2026-04-30.md`](docs/best-practices-gap-analysis-2026-04-30.md) — operator/AI ergonomics gap scan
 - [`docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md`](docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
@@ -200,6 +201,7 @@ Current architecture set:
 - [`docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md`](docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md) — end-to-end lifecycle automation and closure audit
 - [`docs/platform-compatibility-matrix.md`](docs/platform-compatibility-matrix.md) — Claude/Codex/Gemini support and limitation matrix
 - [`docs/final-release-readiness-audit-2026-05-04.md`](docs/final-release-readiness-audit-2026-05-04.md) — final-release gate audit and blocking gaps
+- [`docs/release-smoke-2026-05-05.md`](docs/release-smoke-2026-05-05.md) — fresh-project Claude/Codex release smoke evidence
 
 Decision records:
 
@@ -234,7 +236,7 @@ Run the deterministic final-release gate:
 .venv/bin/python tools/release_audit.py --root .
 ```
 
-Current expected release-audit verdict: `BLOCKED` until `CHANGELOG.md`, `docs/quickstart.md`, fresh install smoke evidence, and packaging/version prep are complete.
+Current expected release-audit verdict: `READY_WITH_WARNINGS`. The remaining warning is semantic trust depth: claims/contracts/contradiction tooling is deferred and called out in release notes.
 
 ## License
 
