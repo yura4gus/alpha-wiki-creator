@@ -4,6 +4,7 @@ from datetime import date as _date
 from pathlib import Path
 from tools.wiki_engine import (
     cluster_gaps,
+    page_role,
     read_edges,
     rebuild_context_brief,
     rebuild_edges,
@@ -12,6 +13,8 @@ from tools.wiki_engine import (
 )
 
 STALE_THRESHOLD_DAYS = 30
+PROVENANCE_KEYS = {"source", "sources", "derived_from", "distilled_from", "evidence", "evidence_strength"}
+CLUSTER_EDGE_RELATIONS = {"belongs_to", "owned_by", "service", "defined_in"}
 
 def status_report(wiki_dir: Path) -> str:
     rebuild_edges(wiki_dir)
@@ -53,6 +56,9 @@ def status_report(wiki_dir: Path) -> str:
         open_q_count = sum(1 for ln in open_q_path.read_text().splitlines() if ln.startswith("- "))
 
     cluster_gap_count = sum(len(cluster_gaps(wiki_dir, page)) for page in pages)
+    cluster_health = _cluster_health(wiki_dir, pages, edges, cluster_gap_count)
+    provenance = _provenance_health(pages)
+    open_question_followup = _open_question_followup(open_q_path)
     gap_items = _gap_check(
         pages,
         edges,
@@ -79,6 +85,28 @@ def status_report(wiki_dir: Path) -> str:
         parts.extend(f"- {item}" for item in gap_items)
     else:
         parts.append("- No cross-cutting gaps detected.")
+    parts.extend([
+        "\n## Cluster Health",
+        f"- Service clusters: {cluster_health['service_clusters']}",
+        f"- Cluster link gaps: {cluster_health['cluster_gap_count']}",
+        f"- Isolated service nodes: {cluster_health['isolated_services']}",
+        f"- Mixed-role clusters: {cluster_health['mixed_role_clusters']}",
+        "\n## Provenance",
+        f"- Pages with provenance: {provenance['with_provenance']}/{provenance['total_pages']}",
+        f"- Provenance score: {provenance['score']}%",
+    ])
+    if provenance["missing"]:
+        parts.extend(f"- Missing provenance: [[{slug}]]" for slug in provenance["missing"][:10])
+        if len(provenance["missing"]) > 10:
+            parts.append(f"_... and {len(provenance['missing']) - 10} more_")
+    parts.extend([
+        "\n## Freshness",
+        f"- Stale pages: {len(stale)}",
+        f"- Pages without date_updated: {len(no_date)}",
+        "\n## Open Question Follow-Up",
+        f"- Open questions: {open_q_count}",
+        f"- Missing owner/timebox: {open_question_followup['missing_owner_or_timebox']}",
+    ])
     parts.append(
         f"\n## Recent activity (last {len(recent)})",
     )
@@ -97,6 +125,8 @@ def status_report(wiki_dir: Path) -> str:
         parts.extend(f"- [[{slug}]]" for slug in no_date[:20])
         if len(no_date) > 20:
             parts.append(f"_… and {len(no_date) - 20} more_")
+    parts.append("\n## Suggested Next Actions")
+    parts.extend(_suggested_next_actions(gap_items, cluster_health, provenance, open_question_followup))
     parts.append(f"\n_Run `/alpha-wiki:lint --suggest` for structural gaps._")
     return "\n".join(parts) + "\n"
 
@@ -133,3 +163,75 @@ def _gap_check(
     if not dirs.intersection({"decisions", "specs", "contracts", "features", "claims", "papers"}):
         gaps.append("Coverage gap: no decision/spec/contract/feature/claim evidence pages detected.")
     return gaps
+
+
+def _cluster_health(wiki_dir: Path, pages, edges, cluster_gap_count: int) -> dict[str, int]:
+    service_slugs = {page.slug for page in pages if page_role(wiki_dir, page) == "service"}
+    role_by_slug = {page.slug: page_role(wiki_dir, page) for page in pages}
+    cluster_roles: dict[str, set[str]] = {slug: {"service"} for slug in service_slugs}
+    for edge in edges:
+        if edge.relation not in CLUSTER_EDGE_RELATIONS or edge.target not in service_slugs:
+            continue
+        cluster_roles.setdefault(edge.target, {"service"}).add(role_by_slug.get(edge.source, "other"))
+    attached_services = {slug for slug, roles in cluster_roles.items() if len(roles) > 1}
+    return {
+        "service_clusters": len(attached_services),
+        "cluster_gap_count": cluster_gap_count,
+        "isolated_services": len(service_slugs - attached_services),
+        "mixed_role_clusters": sum(1 for roles in cluster_roles.values() if len(roles) >= 3),
+    }
+
+
+def _provenance_health(pages) -> dict[str, object]:
+    total = len(pages)
+    with_provenance = []
+    missing = []
+    for page in pages:
+        has_frontmatter_provenance = any(key in page.frontmatter and page.frontmatter.get(key) for key in PROVENANCE_KEYS)
+        has_body_provenance = "source:" in page.body.lower() or "provenance:" in page.body.lower()
+        if has_frontmatter_provenance or has_body_provenance:
+            with_provenance.append(page.slug)
+        else:
+            missing.append(page.slug)
+    score = 100 if total == 0 else round(len(with_provenance) * 100 / total)
+    return {
+        "total_pages": total,
+        "with_provenance": len(with_provenance),
+        "score": score,
+        "missing": missing,
+    }
+
+
+def _open_question_followup(open_q_path: Path) -> dict[str, int]:
+    if not open_q_path.exists():
+        return {"missing_owner_or_timebox": 0}
+    missing = 0
+    for line in open_q_path.read_text().splitlines():
+        if not line.startswith("- "):
+            continue
+        lower = line.lower()
+        if "owner:" not in lower or ("due:" not in lower and "timebox:" not in lower):
+            missing += 1
+    return {"missing_owner_or_timebox": missing}
+
+
+def _suggested_next_actions(
+    gap_items: list[str],
+    cluster_health: dict[str, int],
+    provenance: dict[str, object],
+    open_question_followup: dict[str, int],
+) -> list[str]:
+    actions: list[str] = []
+    if any(item.startswith("Content gap") for item in gap_items):
+        actions.append("- Run `/alpha-wiki:ingest <path>` on the first durable source.")
+    if cluster_health["cluster_gap_count"] or cluster_health["isolated_services"]:
+        actions.append("- Add typed cluster links (`belongs_to`, `service`, `affects`, `implements`) before trusting graph layout.")
+    if provenance["missing"]:
+        actions.append("- Add `source`, `sources`, `derived_from`, or body provenance to unsupported pages.")
+    if open_question_followup["missing_owner_or_timebox"]:
+        actions.append("- Assign owner and due/timebox metadata to open questions.")
+    if any(item.startswith("Freshness gap") or item.startswith("Metadata gap") for item in gap_items):
+        actions.append("- Refresh stale pages and add `date_updated` during the next ingest/review pass.")
+    if not actions:
+        actions.append("- No immediate maintenance action required.")
+    return actions

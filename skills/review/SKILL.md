@@ -43,6 +43,7 @@ Always consider:
 4. Surface report with:
    - Summary.
    - Health snapshot.
+   - Trust checks: cluster gaps, isolated services, provenance, freshness.
    - Structural findings.
    - Graph/Obsidian observations.
    - Suggested next actions.

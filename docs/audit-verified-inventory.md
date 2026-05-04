@@ -25,9 +25,9 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
 | Skills | 11 present | `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
 | Commands | 11 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 9 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `lint.py`, `status.py`, `wiki_engine.py`, `review.py`, `rollup.py`. |
+| Deterministic tools | 11 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `lint.py`, `render_dot.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 34 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, status, review, rollup, wiki engine, and templates. |
+| Tests | 41 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -43,7 +43,7 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | `evolve` | `skills/evolve/SKILL.md` | Expanded operational manual backed by `scripts/add_entity_type.py` | Add migration planning implementation for existing pages. |
 | `status` | `skills/status/SKILL.md` | Expanded operational manual backed by `tools/status.py` | Add health score and suggested-next-actions implementation. |
 | `spawn-agent` | `skills/spawn-agent/SKILL.md` | Expanded operational manual with ADR-006 boundary | Add boundary pressure tests. |
-| `render` | `skills/render/SKILL.md` | Expanded operational manual; export modes documented as gated | Implement HTML/Mermaid/DOT backends if kept in Phase 1a. |
+| `render` | `skills/render/SKILL.md` | Expanded operational manual; Mermaid/DOT exports backed by deterministic tools | Implement HTML backend later if kept. |
 | `review` | `skills/review/SKILL.md` | Expanded operational manual backed by `tools/review.py` | Full 15-dimension hardening remains Phase 1a. |
 | `rollup` | `skills/rollup/SKILL.md` | Expanded operational manual backed by `tools/rollup.py` | Full 15-dimension hardening remains Phase 1a. |
 
@@ -76,6 +76,8 @@ Missing Phase 1a skills:
 | `tools/wiki_engine.py` | Markdown/frontmatter parsing, wikilink extraction, edge rebuild, context brief rebuild, open questions rebuild, `add-edge` CLI. |
 | `tools/doctor.py` | Install/runtime lifecycle verification: Python, uv, imports, config, wiki dir, graph artifacts, lint, hooks, CI, platform hints. |
 | `tools/lint.py` | Broken wikilinks, missing reverse links, orphans, required frontmatter, duplicate slugs, dependency rules, safe missing-reverse fixes. |
+| `tools/render_mermaid.py` | Mermaid graph export with typed service clusters and role colors. |
+| `tools/render_dot.py` | Graphviz DOT graph export with typed service clusters and role colors. |
 | `tools/status.py` | Basic wiki status report. |
 | `tools/review.py` | Wiki-level structural review: status snapshot, lint findings, suggested next actions. |
 | `tools/rollup.py` | Weekly/monthly activity rollup generation and optional write to `wiki/rollups/`. |
@@ -95,7 +97,6 @@ Confirmed missing deterministic tools from Phase 1a target:
 - `tools/contracts_check.py`
 - `tools/claims_check.py`
 - `tools/render_html.py`
-- `tools/render_mermaid.py`
 
 ## Tests Inventory
 

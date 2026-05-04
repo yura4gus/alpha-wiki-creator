@@ -72,3 +72,29 @@ def test_status_report_surfaces_cluster_gaps(tmp_path: Path):
 
     assert "Cluster gap:" in r
     assert "typed ownership links" in r
+
+
+def test_status_report_includes_trust_sections(tmp_path: Path):
+    wiki = tmp_path / "wiki"
+    (wiki / "services").mkdir(parents=True)
+    (wiki / "decisions").mkdir()
+    (wiki / "graph").mkdir()
+    (wiki / "log.md").write_text("# Log\n\n## [2026-05-04] ingest | auth cluster\n")
+    today = date.today().isoformat()
+    (wiki / "services" / "auth-service.md").write_text(
+        f"---\ntitle: Auth Service\nslug: auth-service\nstatus: stable\ndate_updated: {today}\nsource: '[[raw-auth-prd]]'\n---\n# Auth Service\n"
+    )
+    (wiki / "decisions" / "auth-adr.md").write_text(
+        f"---\ntitle: Auth ADR\nslug: auth-adr\nstatus: accepted\ndate_updated: {today}\nbelongs_to: '[[auth-service]]'\n---\n# Auth ADR\n"
+    )
+    (wiki / "graph" / "open_questions.md").write_text("# Open questions\n\n- Who owns auth? owner: yura due: 2026-05-10\n")
+
+    r = status_report(wiki)
+
+    assert "## Cluster Health" in r
+    assert "Service clusters: 1" in r
+    assert "## Provenance" in r
+    assert "Provenance score: 50%" in r
+    assert "Missing provenance: [[auth-adr]]" in r
+    assert "## Open Question Follow-Up" in r
+    assert "Missing owner/timebox: 0" in r

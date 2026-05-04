@@ -30,13 +30,13 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, graph rebuild, lint
 | Wiki pages are markdown/frontmatter | Templates, parser, lint frontmatter checks | Parsing/frontmatter tests | pass | Expand invalid YAML/frontmatter shape checks. |
 | Graph artifacts are generated, not hand-edited | `wiki_engine.py`, hooks, status/review refresh | Graph/status/hook tests | pass | Add CI check that graph artifacts are current after PR changes. |
 | Cluster ownership links are required | `cluster-link-gap` lint, status `Cluster gap`, frontmatter templates | `test_lint_cluster_links`, lifecycle smoke | in-progress | Need stronger per-entity policy and review scoring. |
-| Color labels role, not cluster | Obsidian legend, render skill, tests | Obsidian graph tests | pass | Add Graph QA export snapshots. |
+| Color labels role, not cluster | Obsidian legend, Mermaid/DOT exports, render skill, tests | Obsidian graph tests, Graph export tests | pass | Add visual-image snapshots later if needed. |
 | `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests | pass | Add release smoke usage once packaging is final. |
 | `ingest` updates pages/log/graph/lint | Skill instructions | Partial integration tests | partial | Implement `tools/ingest_pipeline.py`. |
 | `query` reads brief/index/pages with citations | Skill instructions | Skill docs tests | partial | Implement `tools/wiki_search.py` and query pressure tests. |
 | `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
-| `status` exposes gaps | `tools/status.py` | Status tests | pass | Add provenance/freshness/cluster score. |
-| `review` produces trust report | `tools/review.py` | Review/rollup tests | pass | Add semantic cluster/provenance/freshness sections. |
+| `status` exposes gaps | `tools/status.py` | Status tests | pass | Health scoring can be refined after ingest/query are deterministic. |
+| `review` produces trust report | `tools/review.py` | Review/rollup tests | pass | Add deeper semantic contradiction checks after query/claims tooling. |
 | `rollup` summarizes activity | `tools/rollup.py`, CI template | Rollup tests | pass | Add unresolved gap and decision summary. |
 | Claude hooks keep graph fresh | `assets/hooks/*` | Hook mode/runtime asset tests | pass | Hooks are Claude-specific; Codex needs explicit/manual workflow or adapter. |
 | CI checks wiki health | `assets/workflows/*` | Runtime asset tests | partial | CI lint template runs; review/rollup depend on headless Claude and secrets. |
@@ -108,14 +108,14 @@ Automated:
 
 Gaps:
 
-- No Mermaid/DOT export yet.
-- No snapshot proving mixed-color service clusters render correctly.
+- Mermaid/DOT exports exist and group mixed-role nodes by typed service links.
+- Export tests prove mixed red/green/blue/black/orange service clusters are not color-only clusters.
 - Red service/repo with no attached docs is not yet detected.
 
 Next automation:
 
-- Add `tools/render_mermaid.py`, `tools/render_dot.py`, and graph QA snapshots.
 - Extend lint/review to detect service/repo nodes with no attached evidence pages.
+- Add optional rendered image snapshots if Graphviz/Mermaid renderers are available in CI.
 
 ### 5. Lint
 
@@ -144,12 +144,12 @@ Automated:
 
 Gaps:
 
-- No health score/provenance score yet.
-- No owner/timebox for open questions yet.
+- Provenance score, cluster health, freshness, and open-question owner/timebox follow-up exist.
+- No unified health score yet.
 
 Next automation:
 
-- Add score sections only after core checks are stable.
+- Refine unified health score after core checks are stable.
 
 ### 7. Review
 
@@ -160,12 +160,12 @@ Automated:
 
 Gaps:
 
-- Review is structural, not yet a full trust audit.
-- It does not yet summarize clusters, provenance, freshness policy, or open-question ownership.
+- Review now summarizes cluster gaps, isolated services, provenance, and freshness.
+- It is still not a semantic contradiction audit.
 
 Next automation:
 
-- Extend review report with `Cluster Health`, `Provenance`, `Freshness`, `Open Questions`, and `Next Actions`.
+- Extend later with contradiction, claim confidence, and decision freshness details.
 
 ### 8. Rollup
 
@@ -207,7 +207,7 @@ Next automation:
 | Domain presets | 7/10 | Multiple presets exist; cluster fields strongest in software preset first. |
 | Platform support | 5/10 | Claude good; Codex adapter exists; Gemini deferred. |
 | Automation closure | 6/10 | Graph/lint/status/review automated; ingest/query still skill-mediated. |
-| Graph/cluster discipline | 7/10 | Cluster lint exists; Graph QA snapshots still missing. |
+| Graph/cluster discipline | 8/10 | Cluster lint and Mermaid/DOT Graph QA exports exist; service evidence scoring still missing. |
 | Operator UX | 7/10 | README/commands improved; doctor exists; first-run checklist still missing. |
 | AI context grasp | 7/10 | context brief/index/graph exist; budget profiles/search helper missing. |
 
@@ -215,9 +215,9 @@ Next automation:
 
 1. The lifecycle is **structurally closed** for graph/status/lint/review once pages exist.
 2. The lifecycle is **not fully closed** for ingest/query because those are still mostly procedural skills.
-3. Cluster semantics are now partially automated through lint/status, but release needs Graph QA snapshots and richer review.
+3. Cluster semantics are now partially automated through lint/status and Graph QA exports, but release needs richer review.
 4. Claude automation is significantly stronger than Codex automation.
-5. Final release should prioritize deterministic ingest, query helper, Graph QA, and first-run checklist before packaging.
+5. Final release should prioritize deterministic ingest, query helper, richer review, and first-run checklist before packaging.
 
 ## Evidence Commands
 
@@ -233,7 +233,8 @@ Additional lifecycle evidence:
 
 - `tests/integration/test_alpha_wiki_lifecycle_closure.py`
 - `tests/unit/test_lint_cluster_links.py`
+- `tests/unit/test_graph_exports.py`
 - `tests/unit/test_status.py`
 - `tests/unit/test_wiki_engine_edges.py`
 
-Latest result: `88 passed`.
+Latest result: `92 passed`.

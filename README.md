@@ -226,7 +226,7 @@ uv sync --dev
 .venv/bin/python -m pytest
 ```
 
-88 tests across unit + integration.
+92 tests across unit + integration.
 
 ## License
 

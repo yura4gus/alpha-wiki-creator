@@ -1,6 +1,6 @@
 ---
 name: render
-description: "Refresh the wiki presentation layer: Obsidian graph settings now, and static HTML/Mermaid/DOT exports when those backends are implemented. Use when colors, graph filters, vault settings, or generated visual artifacts are stale. Do not use to change wiki content."
+description: "Refresh the wiki presentation layer: Obsidian graph settings plus deterministic Mermaid/DOT graph exports. Use when colors, graph filters, vault settings, or generated visual artifacts are stale. Do not use to change wiki content."
 argument-hint: "[obsidian | html | mermaid | dot]"
 ---
 
@@ -32,11 +32,11 @@ Static HTML export target. If backend is not implemented, refuse clearly and poi
 
 ### `mermaid`
 
-Graph diagram export target. Useful for PRs/docs snapshots. If backend is not implemented, refuse clearly.
+Graph diagram export target. Useful for PRs/docs snapshots. Backed by `tools/render_mermaid.py`.
 
 ### `dot`
 
-Graphviz export target. Useful for dense graph inspection. If backend is not implemented, refuse clearly.
+Graphviz export target. Useful for dense graph inspection. Backed by `tools/render_dot.py`.
 
 ## Obsidian Color Semantics
 
@@ -77,8 +77,9 @@ Color is not cluster. Do not build or describe one red cluster, one green cluste
    - Ensure color groups match current directory semantics.
    - Preserve user-local customizations when possible; report conflicts.
 4. For export modes:
-   - Verify backend exists.
-   - Refuse unsupported modes with a precise message, not a silent no-op.
+   - `mermaid`: run `uv run python tools/render_mermaid.py --wiki-dir <wiki_dir>`.
+   - `dot`: run `uv run python tools/render_dot.py --wiki-dir <wiki_dir>`.
+   - `html`: refuse unsupported mode with a precise message, not a silent no-op.
 5. Run `/alpha-wiki:lint --suggest` if graph data changed.
 
 ## Done Criteria
@@ -93,3 +94,5 @@ Color is not cluster. Do not build or describe one red cluster, one green cluste
 - `assets/obsidian/COLOR-LEGEND.md`
 - `assets/obsidian/graph.json`
 - `tools/wiki_engine.py`
+- `tools/render_mermaid.py`
+- `tools/render_dot.py`

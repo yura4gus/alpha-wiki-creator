@@ -66,12 +66,26 @@ Use one stable format so every session can compare status over time:
    - Freshness gap: pages are stale.
    - Metadata gap: pages miss `date_updated`.
    - Coverage gap: no decisions/specs/contracts/features/claims/papers.
-3. `Recent activity`
-4. `Schema evolution`
-5. `Stale pages`
-6. `Pages without date_updated`
-7. `Lint summary`
-8. `Suggested next actions`
+3. `Cluster Health`
+   - Service clusters.
+   - Cluster link gaps.
+   - Isolated service nodes.
+   - Mixed-role clusters.
+4. `Provenance`
+   - Pages with provenance.
+   - Provenance score.
+   - Pages missing source/evidence metadata.
+5. `Freshness`
+   - Stale pages.
+   - Pages without `date_updated`.
+6. `Open Question Follow-Up`
+   - Open questions.
+   - Missing owner/timebox count.
+7. `Recent activity`
+8. `Schema evolution`
+9. `Stale pages`
+10. `Pages without date_updated`
+11. `Suggested next actions`
 
 The Gap Check is cross-cutting. It should tell the user where the wiki is structurally blind, even when individual lint checks pass.
 
@@ -85,6 +99,7 @@ Status should recommend concrete next steps:
 - Run `/alpha-wiki:review` before sharing or release.
 - Run `/alpha-wiki:rollup month --write` at period end.
 - Run `/alpha-wiki:render obsidian` if visual semantics look stale.
+- Run `/alpha-wiki:render mermaid` or `/alpha-wiki:render dot` to verify mixed-role clusters.
 
 ## Done Criteria
 

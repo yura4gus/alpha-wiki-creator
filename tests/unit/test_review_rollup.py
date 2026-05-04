@@ -14,6 +14,7 @@ def test_review_report_includes_status_and_lint_summary(sample_wiki: Path):
 
     assert "# Wiki Review" in report
     assert "## Health Snapshot" in report
+    assert "## Trust Checks" in report
     assert "## Structural Findings" in report
     assert "Errors:" in report
     assert "Warnings:" in report
