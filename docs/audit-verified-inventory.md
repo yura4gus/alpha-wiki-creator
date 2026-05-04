@@ -37,7 +37,7 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 |---|---|---|---|
 | `init` | `skills/init/SKILL.md` | Expanded operational manual | Full 15-dimension pressure testing remains Phase 1a. |
 | `doctor` | `skills/doctor/SKILL.md` | Backed install/runtime verifier | Add final release smoke usage. |
-| `ingest` | `skills/ingest/SKILL.md` | Backed by deterministic local-file ingest MVP | Add pressure tests for richer source types and resumability. |
+| `ingest` | `skills/ingest/SKILL.md` | Backed by deterministic local-file ingest MVP | Add claim extraction and contradiction checks. |
 | `query` | `skills/query/SKILL.md` | Backed by deterministic search/citation helper | Add contradiction-aware pressure tests after claims tooling. |
 | `lint` | `skills/lint/SKILL.md` | Expanded operational manual backed by `tools/lint.py` | Expand severity/check model to target spec. |
 | `evolve` | `skills/evolve/SKILL.md` | Expanded operational manual backed by `scripts/add_entity_type.py` | Add migration planning implementation for existing pages. |
@@ -75,7 +75,7 @@ Missing Phase 1a skills:
 |---|---|
 | `tools/wiki_engine.py` | Markdown/frontmatter parsing, wikilink extraction, edge rebuild, context brief rebuild, open questions rebuild, `add-edge` CLI. |
 | `tools/doctor.py` | Install/runtime lifecycle verification: Python, uv, imports, config, wiki dir, graph artifacts, lint, hooks, CI, platform hints. |
-| `tools/ingest_pipeline.py` | Deterministic local-file ingest: page write, provenance, optional cluster link, log, graph rebuild, lint summary. |
+| `tools/ingest_pipeline.py` | Deterministic local-file ingest: page write, provenance, optional cluster link, log, graph rebuild, lint summary, resume state. |
 | `tools/lint.py` | Broken wikilinks, missing reverse links, orphans, required frontmatter, duplicate slugs, dependency rules, safe missing-reverse fixes. |
 | `tools/render_mermaid.py` | Mermaid graph export with typed service clusters and role colors. |
 | `tools/render_dot.py` | Graphviz DOT graph export with typed service clusters and role colors. |

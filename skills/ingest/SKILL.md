@@ -52,6 +52,7 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
      - `uv run python tools/ingest_pipeline.py --wiki-dir <wiki_dir> <source>`
    - Use `--slot <dir>` when the target directory is obvious.
    - Use `--belongs-to <slug>` when attaching the page to a service/repo/module cluster.
+   - Use `--resume` for interrupted batches; resume state lives in `<wiki_dir>/graph/ingest_state.json`.
    - Read enough surrounding wiki pages to avoid duplicates.
    - Extract durable facts, decisions, open questions, risks, contracts, dependencies, dates, owners, and claims.
    - Keep uncertain statements marked as `assumption`, `risk`, or `open`.
@@ -95,7 +96,8 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 
 - Duplicate page: merge or update the existing page instead of creating a sibling.
 - Unknown schema: route to `/alpha-wiki:evolve`.
-- Oversized source: ingest in sections and log partial progress.
+- Oversized source: deterministic pipeline truncates the excerpt; ingest in sections if omitted material contains decisions, risks, or contracts.
+- Interrupted batch: rerun with `--resume`.
 - Ambiguous truth: write as assumption/risk/open question with provenance.
 - Broken graph: stop and run `/alpha-wiki:lint --fix` before continuing.
 
