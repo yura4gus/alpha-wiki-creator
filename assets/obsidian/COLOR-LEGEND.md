@@ -2,7 +2,7 @@
 
 The default `graph.json` color groups for an Alpha-wiki vault:
 
-Default graph filter: `path:.wiki/ OR path:wiki/`. This keeps the global graph focused on maintained wiki pages when the whole repository is opened as an Obsidian vault. Raw sources, command manuals, skill source files, tests, and generated exports remain searchable in Obsidian, but they are not part of the default trust graph. Color groups match three layouts: root vault with `.wiki/...`, root vault with `wiki/...`, and a vault opened directly inside the wiki directory.
+Default usage: open the generated `wiki/` directory itself as the Obsidian vault. Default graph filter: `-path:graph/ -path:render/ -path:outputs/`, so the graph stays focused on maintained wiki pages.
 
 | Color | Hex | Meaning | Paths matched |
 |---|---|---|---|
@@ -23,7 +23,7 @@ Default graph filter: `path:.wiki/ OR path:wiki/`. This keeps the global graph f
 - An **isolated red node** = a service with no documented decisions/specs yet (lint flags this as a maintenance gap)
 - A **black island** = a document that has not been attached to the architecture yet; link it or archive it.
 
-If the graph shows README/SKILL/source-manifest/old docs scattered everywhere, the graph filter is off or the vault was opened with an older `.obsidian/graph.json`. Restore the default search filter above and keep unresolved links hidden.
+If the graph shows repository README/SKILL/source-manifest/test fixture docs, the repository root was opened as the vault. Close that vault and open the `wiki/` folder directly.
 
 ## Color is not cluster
 
@@ -51,7 +51,7 @@ Do not recolor individual pages as a workaround. If a node has the wrong color, 
 
 ## Customizing
 
-Edit `.obsidian/graph.json` → `colorGroups` array. Each entry is `{ "query": <Obsidian search query>, "color": { "a": 1, "rgb": <decimal> } }`.
+Edit `<wiki_dir>/.obsidian/graph.json` -> `colorGroups` array. Each entry is `{ "query": <Obsidian search query>, "color": { "a": 1, "rgb": <decimal> } }`.
 
 Convert hex to decimal: `int("E94B43", 16)` in Python or `parseInt("E94B43", 16)` in JS.
 

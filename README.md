@@ -28,7 +28,7 @@ Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11
 | Manual cross-links | **Bidirectional enforcement** — every forward link gets a reverse, written automatically by the engine |
 | No automation | **Three-layer hooks** — session-start loads `context_brief.md`, post-tool-use rebuilds the graph, session-end runs lint and appends a log entry, pre-commit blocks 🔴 errors, weekly CI review |
 | Static index.md | **Auto-generated graph layer** — `edges.jsonl`, `context_brief.md` (≤8000 chars, loaded into every session for free), `open_questions.md` |
-| Bring your own UI | **Obsidian-first** — `.obsidian/` config ships with semantic color groups (🔴 repos/services, 🟢 modules/domains, 🔵 features/flows, ⚫ docs, 🟠 contracts) so the graph view reads like a system diagram |
+| Bring your own UI | **Obsidian-first** — the generated `wiki/.obsidian/` config ships with semantic color groups (🔴 repos/services, 🟢 modules/domains, 🔵 features/flows, ⚫ docs, 🟠 contracts) so the graph view reads like a system diagram |
 | One-shot setup | **Schema evolution** — `/alpha-wiki:evolve` adds new entity types through ingest, gates them by default, logs every schema change |
 | You write the subagents | **Subagent slot** — `/alpha-wiki:spawn-agent` generates wiki-aware Claude Code subagents that honor the mutability matrix |
 
@@ -123,7 +123,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 - **Typed cross-references** — bidirectional enforcement, lint flags missing reverses
 - **Schema evolution** — new entity types added through ingest, never preempted
 - **Auto-generated context** — `wiki/graph/context_brief.md` (≤8000 chars) loaded at every session start
-- **Obsidian-compatible** — `.obsidian/` config generated, graph view works out of the box
+- **Obsidian-compatible** — `wiki/.obsidian/` config generated, so opening the `wiki/` folder as a vault works out of the box
 - **Deterministic engine** — `tools/doctor.py`, `tools/lint.py`, and `tools/wiki_engine.py` are pure Python, no LLM, fully tested
 - **Schema-evolution gate** — every new entity type confirmed before added (or auto-mode if you trust)
 - **CI-ready** — weekly `/alpha-wiki:review`, monthly `/alpha-wiki:rollup` via headless Claude
@@ -167,7 +167,7 @@ On existing projects, `init` first audits the repo: it enumerates current durabl
 
 ## Reading the Obsidian graph
 
-The bootstrap ships a default `.obsidian/graph.json` with **color groups** so the graph view tells a story at a glance:
+The bootstrap ships a default `wiki/.obsidian/graph.json` with **color groups** so the graph view tells a story at a glance. Open the generated `wiki/` directory itself as the Obsidian vault; do not open the repository root.
 
 | Color | Meaning |
 |---|---|
@@ -182,7 +182,7 @@ A red node is a repo/service boundary. A green cluster around red is the service
 
 Color is not a clustering mechanism. Clusters should emerge from typed links and shared architecture boundaries; colors only label the kind of node you are looking at.
 
-Customize: edit `.obsidian/graph.json` → `colorGroups` array. Full legend at `.obsidian/COLOR-LEGEND.md` after bootstrap.
+Customize: edit `wiki/.obsidian/graph.json` → `colorGroups` array. Full legend at `wiki/.obsidian/COLOR-LEGEND.md` after bootstrap.
 
 ## Documentation
 

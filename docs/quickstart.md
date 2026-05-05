@@ -40,7 +40,7 @@ Use $alpha-wiki-init to bootstrap Alpha-Wiki in this project.
 Recommended first-run choices:
 
 - Preset: `software-project` unless the project is clearly research/product/personal.
-- Wiki dir: `wiki` for new projects, `.wiki` for existing codebases.
+- Wiki dir: `wiki`. Keep it visible so Obsidian can open it directly as a vault.
 - Hooks: `all` for Claude, `git` or `none` when operating mainly through Codex.
 - CI: enabled for GitHub projects.
 - Obsidian: enabled.
@@ -107,7 +107,7 @@ The status report must always show a `Gap Check`. Treat gaps as work routing, no
 
 ## 6. Read The Graph
 
-Open the wiki folder in Obsidian or render exports:
+Open the generated `wiki/` folder itself in Obsidian or render exports:
 
 ```text
 /alpha-wiki:render mermaid

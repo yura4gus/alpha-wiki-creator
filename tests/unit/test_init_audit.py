@@ -10,6 +10,8 @@ def test_init_audit_discovers_sources_and_excludes_wiki_raw(tmp_path: Path):
     (tmp_path / "skills" / "query" / "SKILL.md").write_text("# Skill\n")
     (tmp_path / ".wiki" / "specs").mkdir(parents=True)
     (tmp_path / ".wiki" / "specs" / "generated.md").write_text("# Generated\n")
+    (tmp_path / "wiki" / "specs").mkdir(parents=True)
+    (tmp_path / "wiki" / "specs" / "generated.md").write_text("# Generated\n")
     (tmp_path / ".alpha-wiki").mkdir()
     (tmp_path / ".alpha-wiki" / "config.yaml").write_text("wiki_dir: .wiki\n")
     (tmp_path / ".obsidian").mkdir()
@@ -25,6 +27,7 @@ def test_init_audit_discovers_sources_and_excludes_wiki_raw(tmp_path: Path):
     assert "docs/ADR-001-choice.md" in paths
     assert "skills/query/SKILL.md" in paths
     assert ".wiki/specs/generated.md" not in paths
+    assert "wiki/specs/generated.md" not in paths
     assert ".alpha-wiki/config.yaml" not in paths
     assert ".obsidian/graph.json" not in paths
     assert "raw/docs/old.md" not in paths
@@ -37,11 +40,12 @@ def test_init_audit_report_proposes_raw_and_wiki_processing_plan(tmp_path: Path)
     (tmp_path / "commands").mkdir()
     (tmp_path / "commands" / "status.md").write_text("# Status\n")
 
-    report = init_audit_report(tmp_path, wiki_dir=".wiki")
+    report = init_audit_report(tmp_path)
 
     assert "Alpha-Wiki Init Audit" in report
     assert "Proposed Raw Placement" in report
     assert "Processing Plan" in report
+    assert "Recommended wiki dir: `wiki`" in report
     assert "`README.md` -> `raw/docs/README.md`" in report
     assert "Batch 2 - command and skill manuals" in report
 

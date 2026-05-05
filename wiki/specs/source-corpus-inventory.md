@@ -30,12 +30,12 @@ evidence: raw/docs/source-manifest-2026-05-05.md
 - Run `tools/init_audit.py` during init or before any large migration.
 - Raw sources remain immutable evidence.
 - Existing live repo contracts can be represented by a raw manifest instead of duplicated blindly.
-- Curated `.wiki/**` pages summarize source sets with frontmatter, typed links, and provenance.
+- Curated `wiki/**` pages summarize source sets with frontmatter, typed links, and provenance.
 - Each future ingest batch should update this inventory or create a more specific spec/decision/module page.
 
 ## Current Coverage
 
-Already represented in `.wiki`:
+Already represented in `wiki/`:
 
 - [[alpha-wiki-runtime]]
 - [[codex-adapter-runtime]]

@@ -106,6 +106,8 @@ def test_html_export_writes_static_read_only_site(tmp_path: Path):
     index = (out / "index.html").read_text()
     service = (out / "services" / "auth-service.html").read_text()
     assert "Alpha-Wiki Export" in index
+    assert 'href="services/auth-service.html"' in index
+    assert 'href="wiki/services/auth-service.html"' not in index
     assert "Auth Service" in service
     assert "Static read-only export" in index
 

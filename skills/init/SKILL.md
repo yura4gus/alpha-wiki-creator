@@ -19,7 +19,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 - Follow Karpathy's LLM-Wiki shape: `raw/` is source evidence, `<wiki_dir>/` is maintained markdown memory, `CLAUDE.md` is the operating contract.
 - Prefer explicit markdown, frontmatter, wikilinks, and deterministic tools over embeddings or opaque retrieval.
 - Preserve existing project files by default. Never silently overwrite `CLAUDE.md`, `README.md`, `pyproject.toml`, `.gitignore`, or `.env.example`.
-- Choose `.wiki/` for existing codebases unless the user explicitly wants `wiki/`.
+- Choose `wiki/` by default, including existing codebases, so Obsidian can open the wiki folder directly as a vault.
 - Make the first graph usable: `edges.jsonl`, `context_brief.md`, and `open_questions.md` must exist after bootstrap.
 - Obsidian colors are path semantics, not decoration: red for top-level services/modules, green for submodules/core/ports/domains, orange for contracts, dark grey for documents, light grey for people/tasks.
 
@@ -37,7 +37,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 1. Inspect the repo before asking questions:
    - Detect code markers: `src/`, `package.json`, `pyproject.toml`, `go.mod`, etc.
-   - Detect existing `wiki/`, `.wiki/`, `raw/`, `CLAUDE.md`, `.obsidian/`, `.claude/`, `.github/workflows/`.
+   - Detect existing `wiki/`, legacy/custom `.wiki/`, `raw/`, `CLAUDE.md`, `wiki/.obsidian/`, legacy root `.obsidian/`, `.claude/`, `.github/workflows/`.
    - If existing project files are present, plan safe-existing mode.
    - Run or emulate `tools/init_audit.py --root <project> --wiki-dir <wiki_dir>` to enumerate durable source documents and exclude generated/runtime folders.
    - Classify candidate docs into root contracts, architecture docs, ADRs, commands, skills, references, specs, API contracts, transcripts, and archives.
@@ -51,7 +51,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 3. Interview sequentially:
    - Project name and one-line purpose.
-   - Wiki dir, with `wiki/` for greenfield and `.wiki/` for existing codebase.
+   - Wiki dir, defaulting to visible `wiki/` unless the user explicitly requests a custom hidden path.
    - Preset and overlay.
    - Obsidian config yes/no.
    - Hook mode: explain what each mode installs.
@@ -101,7 +101,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 - `raw/` directories.
 - `raw/docs/source-manifest.md` or a date-stamped source manifest when existing repo sources are discovered.
 - `.alpha-wiki/config.yaml` and optional `.alpha-wiki/bootstrap-report.md`.
-- `.obsidian/*` if enabled.
+- `<wiki_dir>/.obsidian/*` if enabled.
 - `.claude/hooks/*` and `.claude/settings.local.json` according to hook mode.
 - `.github/workflows/wiki-*.yml` if CI is enabled.
 - `tools/*.py` copied to the target project.

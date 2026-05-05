@@ -19,7 +19,7 @@ evidence: commands/init.md, skills/init/SKILL.md
 ## Entities
 
 - Operation: `/alpha-wiki:init` / `$alpha-wiki-init`.
-- Runtime output: `raw/`, `.wiki/` or `wiki/`, `CLAUDE.md`, graph artifacts, optional hooks, CI, and Obsidian config.
+- Runtime output: `raw/`, `wiki/`, `CLAUDE.md`, graph artifacts, optional hooks, CI, and `wiki/.obsidian/` config.
 - Deterministic tool: `tools/init_audit.py`.
 
 ## Requirements
@@ -33,7 +33,6 @@ evidence: commands/init.md, skills/init/SKILL.md
 
 ## Gates
 
-- User confirms preset, overlay, wiki dir, hooks, CI, schema evolution mode, and source migration mode.
+- User confirms preset, overlay, visible `wiki/` vault path, hooks, CI, schema evolution mode, and source migration mode.
 - Existing protected files trigger safe-existing mode.
 - Schema changes remain gated.
-

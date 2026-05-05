@@ -18,7 +18,7 @@ Make the wiki inspectable. Render translates maintained markdown and graph artif
 
 ### `obsidian`
 
-Refresh `.obsidian/` configuration:
+Refresh `<wiki_dir>/.obsidian/` configuration. Obsidian should open the wiki directory itself as the vault, not the repository root:
 
 - `graph.json`
 - `community-plugins.json`

@@ -204,7 +204,7 @@ def _initialize_wiki_files(target: Path, ctx: dict, upgrade: bool) -> None:
 
 def _copy_assets(target: Path, config: InterviewConfig) -> None:
     if config.obsidian:
-        obsidian = target / ".obsidian"
+        obsidian = target / config.wiki_dir / ".obsidian"
         obsidian.mkdir(exist_ok=True)
         for f in (ASSETS / "obsidian").iterdir():
             shutil.copy(f, obsidian / f.name)

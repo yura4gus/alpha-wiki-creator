@@ -108,7 +108,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Trigger description | Use when the user is starting wiki memory in a new repo or wants to add Alpha-Wiki to an existing project. |
 | When NOT to trigger | Wiki already exists at full structure; user explicitly asks for re-init (route to migration mode). |
 | Inputs | Repo root, optional `raw/` materials, user choices from interview (preset, overlay, automation level, Obsidian config, bilingual). |
-| Outputs | `wiki/` tree, `CLAUDE.md`, `raw/` if missing, `.claude/hooks/`, `.obsidian/` if requested, `.github/workflows/` if requested, first commit. |
+| Outputs | `wiki/` tree, `CLAUDE.md`, `raw/` if missing, `.claude/hooks/`, `wiki/.obsidian/` if requested, `.github/workflows/` if requested, first commit. |
 | Files read | Existing `CLAUDE.md`, `wiki/`, `raw/` if present. |
 | Files written | All wiki tree, hooks, CI workflows, settings. Never touches `wiki/agentops/` or `docs/agentops/` (AgentOps namespace per ADR-004). |
 | State updated | New `wiki/log.md` initialized; new `wiki/00_index.md`; new `wiki/graph/*` rebuilt. |
@@ -232,10 +232,10 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Purpose | Refresh Obsidian config or generate static HTML / Mermaid graphs. |
 | Trigger description | Use when the user wants to refresh the Obsidian view, generate static HTML for sharing, or export the wiki graph. |
 | Inputs | Mode flag (`obsidian` | `html` | `mermaid` | `dot`). |
-| Outputs | Mode-dependent: refreshed `.obsidian/`, static HTML at `wiki/render/html/`, Mermaid at `wiki/graph/graph.mmd`, DOT at `wiki/graph/graph.dot`. |
+| Outputs | Mode-dependent: refreshed `wiki/.obsidian/`, static HTML at `wiki/render/html/`, Mermaid at `wiki/graph/graph.mmd`, DOT at `wiki/graph/graph.dot`. |
 | Files read | All wiki pages and `wiki/graph/*`. |
 | Files written | Render output paths. Never touches wiki source pages. |
-| Color mapping | Red = repos/services, green = modules/domains/components/adapters, blue = features/functions/flows/application, black = documents/evidence, orange = contracts, light grey = people/tasks. Full path-based rules live in `.obsidian/COLOR-LEGEND.md`. |
+| Color mapping | Red = repos/services, green = modules/domains/components/adapters, blue = features/functions/flows/application, black = documents/evidence, orange = contracts, light grey = people/tasks. Full path-based rules live in `wiki/.obsidian/COLOR-LEGEND.md`. |
 | Tools | `tools/render_html.py`, `tools/render_mermaid.py`, and `tools/render_dot.py` implemented. |
 | Tests | Snapshot tests: sample wiki → expected HTML / Mermaid / DOT output. |
 | Integrations | Triggered by user; not part of automated hooks. |

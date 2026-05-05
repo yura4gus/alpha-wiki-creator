@@ -7,7 +7,7 @@ Invoke the `render` skill from the `alpha-wiki` plugin. Human meaning: refresh h
 
 Mode: $ARGUMENTS (default: `obsidian`)
 
-For `obsidian`: refresh `.obsidian/graph.json` colorGroups and `.obsidian/community-plugins.json` to match semantic graph layers: red repos/services, green modules/domains, blue features/flows, black documents, orange contracts. Idempotent — safe to re-run.
+For `obsidian`: refresh `<wiki_dir>/.obsidian/graph.json` colorGroups and `<wiki_dir>/.obsidian/community-plugins.json` to match semantic graph layers: red repos/services, green modules/domains, blue features/flows, black documents, orange contracts. Idempotent — safe to re-run.
 
 For `mermaid`: run `uv run python tools/render_mermaid.py --wiki-dir <wiki_dir>` and write `<wiki_dir>/graph/graph.mmd`.
 

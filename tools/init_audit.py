@@ -61,7 +61,7 @@ def discover_sources(root: Path) -> list[SourceCandidate]:
     return candidates
 
 
-def init_audit_report(root: Path, wiki_dir: str = ".wiki") -> str:
+def init_audit_report(root: Path, wiki_dir: str = "wiki") -> str:
     candidates = discover_sources(root)
     batches = _group(candidates, key=lambda item: item.batch)
     slots = _group(candidates, key=lambda item: item.wiki_slot)
@@ -131,7 +131,7 @@ def _excluded(path: Path, root: Path) -> bool:
     rel_parts = path.relative_to(root).parts
     if any(part in EXCLUDED_PARTS for part in rel_parts):
         return True
-    return "render" in rel_parts and ".wiki" in rel_parts
+    return "render" in rel_parts and any(part in {".wiki", "wiki"} for part in rel_parts)
 
 
 def _raw_target(rel: Path) -> str:
@@ -188,7 +188,7 @@ def _batch_sort_key(item: tuple[str, list[SourceCandidate]]) -> tuple[int, str]:
 
 @click.command()
 @click.option("--root", type=click.Path(path_type=Path, exists=True, file_okay=False), default=Path("."), show_default=True)
-@click.option("--wiki-dir", default=".wiki", show_default=True)
+@click.option("--wiki-dir", default="wiki", show_default=True)
 @click.option("--write-manifest", is_flag=True, help="Write raw/docs/source-manifest.md in addition to printing the audit.")
 @click.option("--manifest-out", type=click.Path(path_type=Path), help="Override manifest output path.")
 def cli(root: Path, wiki_dir: str, write_manifest: bool, manifest_out: Path | None) -> None:

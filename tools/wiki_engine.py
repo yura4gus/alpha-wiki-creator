@@ -67,15 +67,24 @@ def _wikilinks_from_frontmatter(fm: dict) -> list[str]:
 def scan_wiki(wiki_dir: Path) -> list[Page]:
     """Scan a wiki directory and parse all markdown pages.
 
-    Excludes:
-    - Files in graph/ subdirectories
+    Excludes generated/system material:
+    - graph/, render/, outputs/
+    - dot-prefixed directories such as .obsidian/
     - index.md and log.md files
     """
     return [
         parse_page(p)
         for p in wiki_dir.rglob("*.md")
-        if "graph" not in p.parts and p.name not in ("index.md", "log.md")
+        if _is_wiki_page(p, wiki_dir)
     ]
+
+
+def _is_wiki_page(path: Path, wiki_dir: Path) -> bool:
+    rel = path.relative_to(wiki_dir)
+    if path.name in ("index.md", "log.md"):
+        return False
+    excluded_dirs = {"graph", "render", "outputs"}
+    return not any(part in excluded_dirs or part.startswith(".") for part in rel.parts[:-1])
 
 
 import json

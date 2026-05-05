@@ -26,7 +26,7 @@ def test_greenfield_software_hexagonal(tmp_path: Path):
     # CLAUDE.md mentions hexagonal
     assert "hexagonal" in (tmp_path / "CLAUDE.md").read_text()
     # Obsidian config
-    assert (tmp_path / ".obsidian" / "graph.json").exists()
+    assert (tmp_path / "wiki" / ".obsidian" / "graph.json").exists()
     # Tools copied
     assert (tmp_path / "tools" / "lint.py").exists()
     # Empty edges + empty context brief

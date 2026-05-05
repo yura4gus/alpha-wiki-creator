@@ -32,7 +32,7 @@
 <h2>Entities</h2>
 <ul>
 <li>Operation: `/alpha-wiki:init` / `$alpha-wiki-init`.</li>
-<li>Runtime output: `raw/`, `.wiki/` or `wiki/`, `CLAUDE.md`, graph artifacts, optional hooks, CI, and Obsidian config.</li>
+<li>Runtime output: `raw/`, `wiki/`, `CLAUDE.md`, graph artifacts, optional hooks, CI, and `wiki/.obsidian/` config.</li>
 <li>Deterministic tool: `tools/init_audit.py`.</li>
 </ul>
 <h2>Requirements</h2>
@@ -46,7 +46,7 @@
 </ul>
 <h2>Gates</h2>
 <ul>
-<li>User confirms preset, overlay, wiki dir, hooks, CI, schema evolution mode, and source migration mode.</li>
+<li>User confirms preset, overlay, visible `wiki/` vault path, hooks, CI, schema evolution mode, and source migration mode.</li>
 <li>Existing protected files trigger safe-existing mode.</li>
 <li>Schema changes remain gated.</li>
 </ul>

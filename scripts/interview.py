@@ -18,7 +18,7 @@ class EntityTypeSpec:
 class InterviewConfig:
     project_name: str
     project_description: str
-    wiki_dir: str  # "wiki" or ".wiki"
+    wiki_dir: str  # "wiki" by default; custom names are allowed
     preset: str  # software-project | research | product | personal | knowledge-base | custom
     overlay: str  # none | clean | hexagonal | ddd | ddd+clean | ddd+hexagonal | layered
     custom_entity_types: list[EntityTypeSpec] | None
@@ -48,10 +48,7 @@ CODE_MARKERS = {
 
 
 def auto_detect_wiki_dir(cwd: Path) -> str:
-    """If existing codebase markers found → .wiki/, else wiki/."""
-    for marker in CODE_MARKERS:
-        if (cwd / marker).exists():
-            return ".wiki"
+    """Use a visible wiki/ directory so Obsidian can open it directly."""
     return "wiki"
 
 

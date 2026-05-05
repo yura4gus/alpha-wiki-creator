@@ -16,7 +16,8 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
     assert (tmp_path / "wiki" / "index.md").exists()
     assert (tmp_path / "wiki" / "log.md").exists()
     assert (tmp_path / "wiki" / "graph" / "edges.jsonl").exists()
-    assert (tmp_path / ".obsidian" / "graph.json").exists()
+    assert (tmp_path / "wiki" / ".obsidian" / "graph.json").exists()
+    assert not (tmp_path / ".obsidian" / "graph.json").exists()
     assert (tmp_path / "tools" / "lint.py").exists()
     # Entity-type dirs from software-project preset:
     for d in ["modules", "decisions", "specs", "entities", "contracts", "people", "tasks", "components"]:

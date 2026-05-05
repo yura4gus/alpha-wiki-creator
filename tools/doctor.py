@@ -203,10 +203,10 @@ def _check_wiki(project_dir: Path, wiki_dir: Path, refresh: bool) -> list[Doctor
     else:
         checks.append(DoctorCheck("wiki pages", WARN, "no durable wiki pages detected yet", "Run /alpha-wiki:ingest on the first durable source."))
 
-    obsidian = project_dir / ".obsidian" / "graph.json"
-    legend = project_dir / ".obsidian" / "COLOR-LEGEND.md"
+    obsidian = wiki_dir / ".obsidian" / "graph.json"
+    legend = wiki_dir / ".obsidian" / "COLOR-LEGEND.md"
     if obsidian.exists() and legend.exists():
-        checks.append(DoctorCheck("obsidian graph config", PASS, ".obsidian graph config and color legend exist"))
+        checks.append(DoctorCheck("obsidian graph config", PASS, "wiki .obsidian graph config and color legend exist"))
     else:
         checks.append(DoctorCheck("obsidian graph config", WARN, "Obsidian graph config or color legend is missing", "Run /alpha-wiki:init with Obsidian enabled or /alpha-wiki:render."))
     return checks

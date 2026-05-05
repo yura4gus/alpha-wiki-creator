@@ -4,7 +4,7 @@ Alpha-Wiki plugin repository and release-hardening workspace
 
 - **Preset:** software-project
 - **Overlay:** none
-- **Wiki dir:** `.wiki/`
+- **Wiki dir:** `wiki/`
 - **Generated:** 2026-05-05
 
 ## Mutability Matrix
@@ -12,61 +12,61 @@ Alpha-Wiki plugin repository and release-hardening workspace
 | Layer | Path | Writer | Rule |
 |---|---|---|---|
 | L1 Raw | `raw/**` | Human only | Immutable after ingest |
-| L2 Wiki | `.wiki/**` (excl. graph/) | LLM via skills | Each write triggers reverse-link check |
-| L3 Derived | `.wiki/graph/**` | `tools/wiki_engine.py` only | Auto-generated, hand edits clobbered |
+| L2 Wiki | `wiki/**` (excl. graph/) | LLM via skills | Each write triggers reverse-link check |
+| L3 Derived | `wiki/graph/**` | `tools/wiki_engine.py` only | Auto-generated, hand edits clobbered |
 | L4 Schema | `CLAUDE.md`, `.claude/**` | Human + `/alpha-wiki:evolve` (gated) | Contract layer |
 
 ## Page Types
 
 
-### module (`.wiki/modules/`)
+### module (`wiki/modules/`)
 
 - **Required frontmatter:** title, slug, status
 - **Optional frontmatter:** belongs_to, owned_by, depends_on, dependents, owner, description
 - **Required sections:** Provides, Consumes, Decisions, Active tasks
 
 
-### component (`.wiki/components/`)
+### component (`wiki/components/`)
 
 - **Required frontmatter:** title, slug, parent_module
 - **Optional frontmatter:** belongs_to, owned_by, status, tests
 - **Required sections:** Specs
 
 
-### decision (`.wiki/decisions/`)
+### decision (`wiki/decisions/`)
 
 - **Required frontmatter:** title, slug, status, date
 - **Optional frontmatter:** belongs_to, source, affects, supersedes, superseded_by
 - **Required sections:** Context, Decision, Consequences
 
 
-### spec (`.wiki/specs/`)
+### spec (`wiki/specs/`)
 
 - **Required frontmatter:** title, slug, kind, status
 - **Optional frontmatter:** belongs_to, source, implements, version
 - **Required sections:** Entities, Requirements
 
 
-### entity (`.wiki/entities/`)
+### entity (`wiki/entities/`)
 
 - **Required frontmatter:** title, slug, defined_in
 - **Required sections:** Used in contracts
 
 
-### contract (`.wiki/contracts/`)
+### contract (`wiki/contracts/`)
 
 - **Required frontmatter:** title, slug, transport, service, version, status
 - **Optional frontmatter:** consumers, source_file, breaking_changes, date_updated
 - **Required sections:** Migration notes
 
 
-### person (`.wiki/people/`)
+### person (`wiki/people/`)
 
 - **Required frontmatter:** title, slug, role
 - **Optional frontmatter:** email, github, areas
 
 
-### task (`.wiki/tasks/`)
+### task (`wiki/tasks/`)
 
 - **Required frontmatter:** title, slug, status, target_module
 - **Optional frontmatter:** assignee, due, blocked_by
@@ -109,7 +109,7 @@ Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stu
 ## Constraints
 
 - `raw/**` is read-only for the agent.
-- `.wiki/graph/**` is auto-generated (never hand-edit).
+- `wiki/graph/**` is auto-generated (never hand-edit).
 - Bidirectional links are required: every forward link must have a reverse.
 - New entity types require `/alpha-wiki:evolve` (gated by default).
 
@@ -136,8 +136,8 @@ Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stu
 
 ## Hooks behavior
 
-- **session-start** loads `.wiki/graph/context_brief.md` into agent context.
-- **pre-tool-use** validates frontmatter and reverse-link on writes to `.wiki/`.
+- **session-start** loads `wiki/graph/context_brief.md` into agent context.
+- **pre-tool-use** validates frontmatter and reverse-link on writes to `wiki/`.
 - **post-tool-use** debounces (5s) full graph rebuild: `edges.jsonl`, `context_brief.md`, `open_questions.md`.
 - **session-end** runs `lint --suggest`, appends a session-end log entry, and prints a summary.
 

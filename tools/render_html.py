@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import html
 import re
+import shutil
 from pathlib import Path
 
 import click
@@ -15,6 +16,10 @@ from tools.wiki_engine import rebuild_context_brief, rebuild_edges, rebuild_open
 
 def render_html(wiki_dir: Path, out_dir: Path | None = None) -> Path:
     target = out_dir or wiki_dir / "render" / "html"
+    if target.exists():
+        if target.resolve() == wiki_dir.resolve():
+            raise ValueError("HTML output directory must not be the wiki source directory")
+        shutil.rmtree(target)
     target.mkdir(parents=True, exist_ok=True)
     graph_dir = target / "graph"
     graph_dir.mkdir(exist_ok=True)
@@ -27,14 +32,14 @@ def render_html(wiki_dir: Path, out_dir: Path | None = None) -> Path:
     pages = sorted(scan_wiki(wiki_dir), key=lambda page: page.slug)
     for page in pages:
         _write_page(wiki_dir, target, page)
-    _write_index(target, pages)
+    _write_index(wiki_dir, target, pages)
     _write_style(target)
     return target
 
 
-def _write_index(out_dir: Path, pages: list[Page]) -> None:
+def _write_index(wiki_dir: Path, out_dir: Path, pages: list[Page]) -> None:
     rows = "\n".join(
-        f'<li><a href="{_page_href(page)}">{html.escape(page.title)}</a> '
+        f'<li><a href="{_page_href(wiki_dir, page)}">{html.escape(page.title)}</a> '
         f'<code>{html.escape(page.slug)}</code> '
         f'<span>{html.escape(str(page.frontmatter.get("status", "unknown")))}</span></li>'
         for page in pages
@@ -205,8 +210,8 @@ def _wikilink_repl(match: re.Match) -> str:
     return f'<a href="../{html.escape(slug)}.html">[[{html.escape(label)}]]</a>'
 
 
-def _page_href(page: Page) -> str:
-    return str(Path(page.path).with_suffix(".html")).split("/wiki/")[-1]
+def _page_href(wiki_dir: Path, page: Page) -> str:
+    return str(Path(page.path).relative_to(wiki_dir).with_suffix(".html"))
 
 
 def _relative_back(target: Path, out_dir: Path) -> str:

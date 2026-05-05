@@ -24,3 +24,16 @@ def test_scan_wiki_returns_pages(sample_wiki: Path):
     assert "m1" in slugs
     assert "d2" in slugs
     assert "c1" in slugs
+
+
+def test_scan_wiki_excludes_generated_and_obsidian_files(tmp_path: Path):
+    wiki = tmp_path / "wiki"
+    (wiki / "specs").mkdir(parents=True)
+    (wiki / "specs" / "kept.md").write_text("---\ntitle: Kept\nslug: kept\n---\n# Kept\n")
+    for folder in [".obsidian", "graph", "render", "outputs"]:
+        (wiki / folder).mkdir(parents=True)
+        (wiki / folder / "ignored.md").write_text("---\ntitle: Ignored\nslug: ignored\n---\n# Ignored\n")
+
+    slugs = sorted(page.slug for page in scan_wiki(wiki))
+
+    assert slugs == ["kept"]
