@@ -19,6 +19,11 @@ generated: 2026-05-05
 
 - [[no-embeddings-mvp]]
 - [[graph-cluster-semantics]]
+- [[alpha-wiki-agentops-boundary]]
+- [[superpowers-adapter-not-fork]]
+- [[state-backend-abstraction]]
+- [[marketplace-topology-deferred]]
+- [[spawn-agent-boundary]]
 
 
 ## Spec
@@ -26,6 +31,9 @@ generated: 2026-05-05
 - [[release-readiness-runtime]]
 - [[codex-adapter-runtime]]
 - [[source-corpus-inventory]]
+- [[ecosystem-plugin-architecture]]
+- [[alpha-wiki-product-spec]]
+- [[state-backend-contract]]
 
 
 ## Entity
@@ -36,6 +44,7 @@ generated: 2026-05-05
 ## Contract
 
 - [[codex-skill-adapter-contract]]
+- [[claude-plugin-marketplace-contract]]
 
 
 ## Person

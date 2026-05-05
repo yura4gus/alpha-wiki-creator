@@ -43,11 +43,18 @@ Already represented in `.wiki`:
 - [[no-embeddings-mvp]]
 - [[graph-cluster-semantics]]
 - [[codex-skill-adapter-contract]]
+- [[ecosystem-plugin-architecture]]
+- [[alpha-wiki-product-spec]]
+- [[state-backend-contract]]
+- [[claude-plugin-marketplace-contract]]
+- [[alpha-wiki-agentops-boundary]]
+- [[superpowers-adapter-not-fork]]
+- [[state-backend-abstraction]]
+- [[marketplace-topology-deferred]]
+- [[spawn-agent-boundary]]
 
 Not yet fully represented as individual wiki pages:
 
-- Architecture docs.
-- ADRs 001, 002, 004, 005, 006.
 - Command manuals.
 - Skill manuals.
 - Reference docs.

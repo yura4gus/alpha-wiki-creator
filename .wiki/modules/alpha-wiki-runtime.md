@@ -8,9 +8,15 @@ description: Plain-markdown agent memory runtime with Claude Code primary suppor
 evidence: README.md, docs/final-release-readiness-audit-2026-05-04.md, CHANGELOG.md, raw/docs/source-manifest-2026-05-05.md
 consumes:
   - "[[codex-skill-adapter-contract]]"
+  - "[[claude-plugin-marketplace-contract]]"
 decisions:
   - "[[no-embeddings-mvp]]"
   - "[[graph-cluster-semantics]]"
+  - "[[alpha-wiki-agentops-boundary]]"
+  - "[[superpowers-adapter-not-fork]]"
+  - "[[state-backend-abstraction]]"
+  - "[[marketplace-topology-deferred]]"
+  - "[[spawn-agent-boundary]]"
 ---
 # Alpha-Wiki Runtime
 
@@ -26,6 +32,7 @@ decisions:
 - Codex skill adapter installation through `scripts/install_codex.py`.
 - Release gates through `tools/release_audit.py` and `tools/release_smoke.py`.
 - Source inventory through [[source-corpus-inventory]].
+- Marketplace metadata through [[claude-plugin-marketplace-contract]].
 
 ## Consumes
 
@@ -35,6 +42,11 @@ decisions:
 
 - [[no-embeddings-mvp]]
 - [[graph-cluster-semantics]]
+- [[alpha-wiki-agentops-boundary]]
+- [[superpowers-adapter-not-fork]]
+- [[state-backend-abstraction]]
+- [[marketplace-topology-deferred]]
+- [[spawn-agent-boundary]]
 
 ## Active tasks
 

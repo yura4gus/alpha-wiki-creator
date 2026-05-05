@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alpha-Wiki Product Spec</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Alpha-Wiki Product Spec</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/01-alpha-wiki.md</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>kind</th><td>product-spec</td></tr>
+<tr><th>slug</th><td>alpha-wiki-product-spec</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Alpha-Wiki Product Spec</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>Alpha-Wiki Product Spec</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/01-alpha-wiki.md.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>Runtime layers: `raw/`, wiki pages, graph artifacts, gated schema contract.</li>
+<li>User operations: init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup.</li>
+<li>Deterministic tools: wiki engine, lint, init audit, ingest pipeline, query/search, status/review/rollup, renderers, release audit, trust-depth checks.</li>
+<li>Presentation layer: Obsidian config plus Mermaid, DOT, and static HTML exports.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>Alpha-Wiki is standalone and must not import AgentOps or Superpowers.</li>
+<li>Wiki pages use typed frontmatter, stable slugs, provenance, and wikilinks.</li>
+<li>`ingest`, `query`, and `lint` remain the core Karpathy operations.</li>
+<li>`init` must audit the existing source corpus before migration.</li>
+<li>Graph artifacts are generated from markdown; users should not hand-edit `graph/*`.</li>
+<li>Colors label node roles, while typed links form clusters.</li>
+</ul>
+<h2>Links</h2>
+<ul>
+<li>Runtime module: <a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></li>
+<li>Source migration: <a href="../source-corpus-inventory.html">[[source-corpus-inventory]]</a></li>
+<li>No embeddings decision: <a href="../no-embeddings-mvp.html">[[no-embeddings-mvp]]</a></li>
+<li>Graph semantics decision: <a href="../graph-cluster-semantics.html">[[graph-cluster-semantics]]</a></li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

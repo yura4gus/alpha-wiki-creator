@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alpha-Wiki AgentOps Boundary</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Alpha-Wiki AgentOps Boundary</h1>
+<table class="frontmatter">
+<tr><th>affects</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date</th><td>2026-04-29</td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/ADR-001-alpha-wiki-agentops-boundary.md</td></tr>
+<tr><th>slug</th><td>alpha-wiki-agentops-boundary</td></tr>
+<tr><th>status</th><td>accepted</td></tr>
+<tr><th>title</th><td>Alpha-Wiki AgentOps Boundary</td></tr>
+</table>
+<main>
+<h1>Alpha-Wiki AgentOps Boundary</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/ADR-001-alpha-wiki-agentops-boundary.md.</li>
+</ul>
+<h2>Context</h2>
+<p>Alpha-Wiki and AgentOps both persist project state, but they serve different product layers. A clean boundary prevents a monolithic plugin and keeps both products independently installable.</p>
+<h2>Decision</h2>
+<p>Alpha-Wiki owns the wiki memory layer: raw/wiki/schema mutability, page lifecycle, schema evolution, structural lint, graph artifacts, Obsidian/static rendering, and wiki-scoped queries.</p>
+<p>AgentOps owns the agent operating model: roles, communication mechanisms, process rhythms, review levels, architecture canon, state backend abstraction, and the `agentops/` subnamespace.</p>
+<h2>Consequences</h2>
+<ul>
+<li>Alpha-Wiki never imports AgentOps.</li>
+<li>AgentOps may use Alpha-Wiki as an optional state backend through a namespaced adapter.</li>
+<li>Shared installs keep AgentOps state under `wiki/agentops/`, not at wiki root.</li>
+<li>Each plugin can be tested, released, and upgraded independently.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

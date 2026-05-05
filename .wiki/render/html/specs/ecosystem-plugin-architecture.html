@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ecosystem Plugin Architecture</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Ecosystem Plugin Architecture</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/00-architecture.md</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>kind</th><td>architecture-spec</td></tr>
+<tr><th>slug</th><td>ecosystem-plugin-architecture</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Ecosystem Plugin Architecture</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>Ecosystem Plugin Architecture</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/00-architecture.md.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>Alpha-Wiki: memory and knowledge layer.</li>
+<li>AgentOps: agent operating model layer.</li>
+<li>Superpowers: optional execution discipline layer.</li>
+<li>Target project: host repository where the tools are installed.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>Alpha-Wiki must run alone and own wiki memory, schema, graph artifacts, structural lint, Obsidian/static rendering, and wiki-scoped query.</li>
+<li>AgentOps must run alone and own team roles, process rhythms, review levels, architecture canon, and AgentOps state.</li>
+<li>Superpowers remains optional and supplies process discipline when installed.</li>
+<li>Integrations are process-level adapters, not runtime imports.</li>
+<li>Slash namespaces stay separate: `/alpha-wiki:*`, `/agentops:*`, `/superpowers:*`.</li>
+</ul>
+<h2>Links</h2>
+<ul>
+<li>Boundary decision: <a href="../alpha-wiki-agentops-boundary.html">[[alpha-wiki-agentops-boundary]]</a></li>
+<li>Superpowers adapter decision: <a href="../superpowers-adapter-not-fork.html">[[superpowers-adapter-not-fork]]</a></li>
+<li>Marketplace decision: <a href="../marketplace-topology-deferred.html">[[marketplace-topology-deferred]]</a></li>
+<li>Spawn-agent boundary: <a href="../spawn-agent-boundary.html">[[spawn-agent-boundary]]</a></li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

@@ -1,32 +1,73 @@
 %% Alpha-Wiki graph export
 %% Clusters come from typed links; colors show node roles.
 flowchart LR
+  alpha_wiki_agentops_boundary["Alpha-Wiki AgentOps Boundary"]
+  alpha_wiki_product_spec["Alpha-Wiki Product Spec"]
   alpha_wiki_runtime["Alpha-Wiki Runtime"]
+  claude_plugin_marketplace_contract["Claude Plugin Marketplace Contract"]
   codex_adapter_runtime["Codex Adapter Runtime"]
   codex_skill_adapter_contract["Codex Skill Adapter Contract"]
+  ecosystem_plugin_architecture["Ecosystem Plugin Architecture"]
   graph_cluster_semantics["Graph Cluster Semantics"]
+  marketplace_topology_deferred["Marketplace Topology Deferred"]
   no_embeddings_mvp["No Embeddings MVP"]
   release_readiness_runtime["Release Readiness Runtime"]
+  source_corpus_inventory["Source Corpus Inventory"]
+  spawn_agent_boundary["Spawn Agent Boundary"]
+  state_backend_abstraction["State Backend Abstraction"]
+  state_backend_contract["State Backend Contract"]
+  superpowers_adapter_not_fork["Superpowers Adapter Not Fork"]
+  alpha_wiki_agentops_boundary --|"affects"| alpha_wiki_runtime
+  alpha_wiki_agentops_boundary --|"belongs_to"| alpha_wiki_runtime
+  alpha_wiki_product_spec --|"belongs_to"| alpha_wiki_runtime
+  alpha_wiki_product_spec --|"implements"| alpha_wiki_runtime
+  alpha_wiki_runtime --|"consumes"| claude_plugin_marketplace_contract
   alpha_wiki_runtime --|"consumes"| codex_skill_adapter_contract
+  claude_plugin_marketplace_contract --|"consumers"| alpha_wiki_runtime
+  claude_plugin_marketplace_contract --|"service"| alpha_wiki_runtime
   codex_adapter_runtime --|"belongs_to"| alpha_wiki_runtime
   codex_adapter_runtime --|"implements"| alpha_wiki_runtime
   codex_skill_adapter_contract --|"consumers"| alpha_wiki_runtime
   codex_skill_adapter_contract --|"service"| alpha_wiki_runtime
+  ecosystem_plugin_architecture --|"belongs_to"| alpha_wiki_runtime
+  ecosystem_plugin_architecture --|"implements"| alpha_wiki_runtime
   graph_cluster_semantics --|"affects"| alpha_wiki_runtime
   graph_cluster_semantics --|"belongs_to"| alpha_wiki_runtime
+  marketplace_topology_deferred --|"affects"| alpha_wiki_runtime
+  marketplace_topology_deferred --|"belongs_to"| alpha_wiki_runtime
   no_embeddings_mvp --|"affects"| alpha_wiki_runtime
   no_embeddings_mvp --|"belongs_to"| alpha_wiki_runtime
   release_readiness_runtime --|"belongs_to"| alpha_wiki_runtime
   release_readiness_runtime --|"implements"| alpha_wiki_runtime
+  source_corpus_inventory --|"belongs_to"| alpha_wiki_runtime
+  source_corpus_inventory --|"implements"| alpha_wiki_runtime
+  spawn_agent_boundary --|"affects"| alpha_wiki_runtime
+  spawn_agent_boundary --|"belongs_to"| alpha_wiki_runtime
+  state_backend_abstraction --|"affects"| alpha_wiki_runtime
+  state_backend_abstraction --|"belongs_to"| alpha_wiki_runtime
+  state_backend_contract --|"belongs_to"| alpha_wiki_runtime
+  state_backend_contract --|"implements"| alpha_wiki_runtime
+  superpowers_adapter_not_fork --|"affects"| alpha_wiki_runtime
+  superpowers_adapter_not_fork --|"belongs_to"| alpha_wiki_runtime
   classDef service fill:#E94B43,stroke:#7f1d1d,color:#ffffff;
   classDef module fill:#16A34A,stroke:#14532d,color:#ffffff;
   classDef feature fill:#2563EB,stroke:#1e3a8a,color:#ffffff;
   classDef document fill:#111111,stroke:#525252,color:#ffffff;
   classDef contract fill:#F97316,stroke:#9a3412,color:#ffffff;
   classDef other fill:#E5E7EB,stroke:#6B7280,color:#111111;
+  class alpha_wiki_agentops_boundary document;
+  class alpha_wiki_product_spec document;
   class alpha_wiki_runtime module;
+  class claude_plugin_marketplace_contract contract;
   class codex_adapter_runtime document;
   class codex_skill_adapter_contract contract;
+  class ecosystem_plugin_architecture document;
   class graph_cluster_semantics document;
+  class marketplace_topology_deferred document;
   class no_embeddings_mvp document;
   class release_readiness_runtime document;
+  class source_corpus_inventory document;
+  class spawn_agent_boundary document;
+  class state_backend_abstraction document;
+  class state_backend_contract document;
+  class superpowers_adapter_not_fork document;

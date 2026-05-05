@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Superpowers Adapter Not Fork</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Superpowers Adapter Not Fork</h1>
+<table class="frontmatter">
+<tr><th>affects</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date</th><td>2026-04-29</td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/ADR-002-superpowers-adapter-not-fork.md</td></tr>
+<tr><th>slug</th><td>superpowers-adapter-not-fork</td></tr>
+<tr><th>status</th><td>accepted</td></tr>
+<tr><th>title</th><td>Superpowers Adapter Not Fork</td></tr>
+</table>
+<main>
+<h1>Superpowers Adapter Not Fork</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/ADR-002-superpowers-adapter-not-fork.md.</li>
+</ul>
+<h2>Context</h2>
+<p>Superpowers provides execution discipline that AgentOps can benefit from, but a hard dependency would reduce platform compatibility and make AgentOps less composable.</p>
+<h2>Decision</h2>
+<p>AgentOps integrates Superpowers through a process-level adapter. It detects availability, instructs the agent to invoke Superpowers skills when present, and falls back to native AgentOps discipline when absent.</p>
+<p>AgentOps does not fork, copy wholesale, or call Superpowers programmatically.</p>
+<h2>Consequences</h2>
+<ul>
+<li>Superpowers remains optional.</li>
+<li>AgentOps can run on machines without Superpowers.</li>
+<li>Drift is managed through defensive detection and native fallback tests.</li>
+<li>Alpha-Wiki remains outside this integration and only records the decision as wiki memory.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

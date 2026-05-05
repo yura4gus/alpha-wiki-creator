@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>State Backend Contract</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>State Backend Contract</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/04-state-backend-contract.md, docs/ADR-004-state-backend-abstraction.md</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>kind</th><td>integration-contract</td></tr>
+<tr><th>slug</th><td>state-backend-contract</td></tr>
+<tr><th>status</th><td>accepted</td></tr>
+<tr><th>title</th><td>State Backend Contract</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>State Backend Contract</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/04-state-backend-contract.md.</li>
+<li>Decision source: docs/ADR-004-state-backend-abstraction.md.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>State backend root.</li>
+<li>AgentOps `agentops/` subnamespace.</li>
+<li>Alpha-Wiki root wiki namespace.</li>
+<li>`wiki/graph/context_brief.md` as shared read context when Alpha-Wiki is present.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>If Alpha-Wiki is present, AgentOps state resolves to `wiki/agentops/`.</li>
+<li>If Alpha-Wiki is absent, AgentOps state resolves to `docs/agentops/`.</li>
+<li>AgentOps must not write root-level wiki directories such as `wiki/decisions/`, `wiki/contracts/`, `wiki/state/`, or `wiki/reviews/`.</li>
+<li>The structure under `agentops/` stays identical across both backends.</li>
+<li>The adapter logs backend choice and uses the same path resolver for all writes.</li>
+</ul>
+<h2>Links</h2>
+<ul>
+<li>Decision: <a href="../state-backend-abstraction.html">[[state-backend-abstraction]]</a></li>
+<li>Boundary: <a href="../alpha-wiki-agentops-boundary.html">[[alpha-wiki-agentops-boundary]]</a></li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>
