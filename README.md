@@ -131,7 +131,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 ## Workflow
 
 ```
-1. /alpha-wiki:init           Bootstrap (interview → render → first commit)
+1. /alpha-wiki:init           Audit corpus → plan raw/wiki migration → bootstrap
 2. /alpha-wiki:doctor         Verify install/runtime/wiki health
 3. /alpha-wiki:ingest <path>  Raw artifact (PRD, ADR, OpenAPI spec, …) → wiki page(s)
 4. /alpha-wiki:query <q>      Ask/find in the wiki with cited evidence
@@ -146,6 +146,8 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 
 The `session-start` hook auto-loads `context_brief.md` so the agent has compressed context for free.
 The `session-end` hook runs lint and appends a log entry. Most users never invoke `/alpha-wiki:lint` manually.
+
+On existing projects, `init` first audits the repo: it enumerates current durable documents, proposes which ones belong in `raw/` or a source manifest, proposes target wiki slots, and creates a batch plan so the first wiki pages are small, linked, and reviewable.
 
 ## Skills
 

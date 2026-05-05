@@ -5,7 +5,7 @@ status: stable
 date_updated: 2026-05-05
 owner: yuragus
 description: Plain-markdown agent memory runtime with Claude Code primary support and Codex skill adapters.
-evidence: README.md, docs/final-release-readiness-audit-2026-05-04.md, CHANGELOG.md
+evidence: README.md, docs/final-release-readiness-audit-2026-05-04.md, CHANGELOG.md, raw/docs/source-manifest-2026-05-05.md
 consumes:
   - "[[codex-skill-adapter-contract]]"
 decisions:
@@ -25,6 +25,7 @@ decisions:
 - Structural lint/status/review/rollup tools.
 - Codex skill adapter installation through `scripts/install_codex.py`.
 - Release gates through `tools/release_audit.py` and `tools/release_smoke.py`.
+- Source inventory through [[source-corpus-inventory]].
 
 ## Consumes
 

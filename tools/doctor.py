@@ -22,6 +22,7 @@ FAIL = "FAIL"
 
 TOOL_MODULES = [
     "tools.doctor",
+    "tools.init_audit",
     "tools.wiki_engine",
     "tools.lint",
     "tools.status",

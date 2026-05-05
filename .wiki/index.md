@@ -25,6 +25,7 @@ generated: 2026-05-05
 
 - [[release-readiness-runtime]]
 - [[codex-adapter-runtime]]
+- [[source-corpus-inventory]]
 
 
 ## Entity
@@ -45,4 +46,3 @@ generated: 2026-05-05
 ## Task
 
 <!-- auto-populated by /wiki-ingest -->
-

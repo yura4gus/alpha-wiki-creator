@@ -26,6 +26,7 @@ This plan consolidates the key improvements discovered during Phase 0:
 | Lifecycle automation audit | done | `docs/alpha-wiki-lifecycle-automation-audit-2026-05-01.md`, lifecycle closure integration test. |
 | R0.7 doctor command | done | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor`, unit tests. |
 | R0.8 first-run checklist | done | `docs/quickstart.md`, README/docs index links, release smoke usage. |
+| Init source corpus audit | done | `tools/init_audit.py`, init skill/command workflow, source-manifest tests. |
 | R0.2 Graph QA exports | done | `tools/render_mermaid.py`, `tools/render_dot.py`, mixed-role cluster export tests. |
 | R0.6 trust report base | in-progress | Status/review now include cluster health, provenance score, freshness, open-question follow-up, and next actions. |
 | Trust-depth triad | done | `tools/contracts_check.py`, `tools/claims_check.py`, `tools/contradiction_detector.py`, unit tests, release-audit gate. |

@@ -115,8 +115,8 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Review gates | After interview (gate 1), after structure proposal (gate 2). |
 | Failure modes | Conflicting `CLAUDE.md`, `raw/` unparseable, Python 3.12+ missing, git not initialized. |
 | Rollback | Save state to `.claude/init-state.json` after each operation; on failure, skill resumes or rolls back via `git stash` of created files. |
-| Tools | `wiki_engine.py`, `lint.py`, new `tools/init_audit.py` for existing-repo migration. |
-| Tests | Pressure scenarios — empty repo, repo with existing wiki, repo with raw/ but no wiki, conflicting CLAUDE.md, hooks already installed. |
+| Tools | `wiki_engine.py`, `lint.py`, implemented `tools/init_audit.py` for existing-repo source corpus audit and migration planning. |
+| Tests | Pressure scenarios — empty repo, repo with existing wiki, repo with raw/ but no wiki, conflicting CLAUDE.md, hooks already installed; implemented unit tests for init source discovery, raw placement, and manifest output. |
 | Examples | (lives in skill body — positive: clean init; negative: re-init without migration mode) |
 | Integrations | If raw/ present, hands off to `ingest` for first sources; if AgentOps installed, surfaces this fact (does not auto-init AgentOps). |
 

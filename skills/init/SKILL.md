@@ -12,7 +12,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 ## Name Contract
 
-`init` means "establish the wiki runtime". It is not a content import skill. After bootstrap, hand content work to `/alpha-wiki:ingest`, health checks to `/alpha-wiki:status`, and graph/visual refresh to `/alpha-wiki:render`.
+`init` means "establish the wiki runtime and plan the first corpus migration". It is not a bulk content import skill. During bootstrap it must inspect the repo, identify existing durable documents, propose `raw/` placement, propose wiki structure, and produce a processing plan. After bootstrap, hand actual content conversion to `/alpha-wiki:ingest`, health checks to `/alpha-wiki:status`, and graph/visual refresh to `/alpha-wiki:render`.
 
 ## Operating Principles
 
@@ -39,8 +39,17 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
    - Detect code markers: `src/`, `package.json`, `pyproject.toml`, `go.mod`, etc.
    - Detect existing `wiki/`, `.wiki/`, `raw/`, `CLAUDE.md`, `.obsidian/`, `.claude/`, `.github/workflows/`.
    - If existing project files are present, plan safe-existing mode.
+   - Run or emulate `tools/init_audit.py --root <project> --wiki-dir <wiki_dir>` to enumerate durable source documents and exclude generated/runtime folders.
+   - Classify candidate docs into root contracts, architecture docs, ADRs, commands, skills, references, specs, API contracts, transcripts, and archives.
 
-2. Interview sequentially:
+2. Build the initial source corpus plan:
+   - Show candidate source files already present in the project.
+   - Propose whether each source should be copied under `raw/docs/` or referenced by a raw manifest when copying would duplicate live repo contracts.
+   - Propose the first wiki directories and page slots that will receive distilled mini-documents.
+   - Batch work so the user can approve Batch 1 first instead of trying to ingest the whole repo at once.
+   - Mark generated artifacts, previous wiki output, build folders, dependency folders, and raw snapshots as excluded from re-ingest.
+
+3. Interview sequentially:
    - Project name and one-line purpose.
    - Wiki dir, with `wiki/` for greenfield and `.wiki/` for existing codebase.
    - Preset and overlay.
@@ -48,33 +57,39 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
    - Hook mode: explain what each mode installs.
    - CI yes/no.
    - Schema evolution mode, with `gated` as the safer default.
+   - Source migration mode: `manifest-only`, `copy-to-raw`, or `mixed`.
+   - First processing scope: `Batch 1` or `all batches`.
 
-3. Show a proposed tree before writing:
+4. Show a proposed tree before writing:
    - Raw layer.
    - Wiki layer.
    - Graph layer.
    - Schema/runtime files.
    - Hooks and CI files.
    - Protected files that will be preserved.
+   - Source corpus report and first ingest queue.
 
-4. Run dry-run when protected files exist:
+5. Run dry-run when protected files exist:
    - Call bootstrap with `dry_run=True`.
    - Surface `.alpha-wiki/bootstrap-report.md` style conflicts.
    - Continue only when the user accepts preservation/merge behavior.
 
-5. Render the runtime:
+6. Render the runtime:
    - Call `scripts.bootstrap.bootstrap(target, config)`.
    - Confirm generated `CLAUDE.md` lists all active skills, including `review` and `rollup`.
    - Confirm generated hooks honor `wiki_dir` and selected hook mode.
+   - Write a raw source manifest when the user chose manifest or mixed mode.
 
-6. Verify immediately:
+7. Verify immediately:
+   - `tools/init_audit.py --root <project> --wiki-dir <wiki_dir>`
    - `tools/lint.py --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run`
    - `tools/wiki_engine.py rebuild-edges --wiki-dir <wiki_dir>`
    - `tools/wiki_engine.py rebuild-context-brief --wiki-dir <wiki_dir>`
    - `tools/wiki_engine.py rebuild-open-questions --wiki-dir <wiki_dir>`
+   - `tools/doctor.py --project-dir <project> --wiki-dir <wiki_dir> --platform both --refresh`
    - `/alpha-wiki:status` or `tools/status.py` equivalent.
 
-7. Teach the user the first three moves:
+8. Teach the user the first three moves:
    - Put source material in `raw/`.
    - Run `/alpha-wiki:ingest <path>`.
    - Use `/alpha-wiki:query <question>` and `/alpha-wiki:lint --fix`.
@@ -84,6 +99,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 - `CLAUDE.md` unless protected and preserved.
 - `<wiki_dir>/index.md`, `<wiki_dir>/log.md`, entity directories, `graph/*`.
 - `raw/` directories.
+- `raw/docs/source-manifest.md` or a date-stamped source manifest when existing repo sources are discovered.
 - `.alpha-wiki/config.yaml` and optional `.alpha-wiki/bootstrap-report.md`.
 - `.obsidian/*` if enabled.
 - `.claude/hooks/*` and `.claude/settings.local.json` according to hook mode.
@@ -105,6 +121,9 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 - Obsidian config exists when requested and uses the color legend semantics.
 - Lint runs.
 - Graph files exist.
+- Existing project sources were audited, and the user has a visible raw/wiki processing plan.
+- Source migration mode is recorded: manifest-only, copy-to-raw, or mixed.
+- Batch 1 ingest candidates are listed with target wiki slots.
 - `log.md` has a bootstrap entry.
 - User knows how to ingest the first source.
 

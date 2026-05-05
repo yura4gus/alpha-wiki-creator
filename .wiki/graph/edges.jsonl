@@ -2,6 +2,8 @@
 {"source": "codex-adapter-runtime", "target": "alpha-wiki-runtime", "relation": "implements"}
 {"source": "release-readiness-runtime", "target": "alpha-wiki-runtime", "relation": "belongs_to"}
 {"source": "release-readiness-runtime", "target": "alpha-wiki-runtime", "relation": "implements"}
+{"source": "source-corpus-inventory", "target": "alpha-wiki-runtime", "relation": "belongs_to"}
+{"source": "source-corpus-inventory", "target": "alpha-wiki-runtime", "relation": "implements"}
 {"source": "no-embeddings-mvp", "target": "alpha-wiki-runtime", "relation": "belongs_to"}
 {"source": "no-embeddings-mvp", "target": "alpha-wiki-runtime", "relation": "affects"}
 {"source": "graph-cluster-semantics", "target": "alpha-wiki-runtime", "relation": "belongs_to"}

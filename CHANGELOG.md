@@ -8,6 +8,7 @@ All notable Alpha-Wiki release changes are recorded here.
 
 - Claude Code plugin surface with 11 operations: `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, and `rollup`.
 - Codex adapter installer that writes prefixed `$alpha-wiki-*` skills.
+- Init source corpus audit that discovers existing project documents, proposes raw placement, target wiki slots, and gradual ingest batches.
 - Deterministic wiki engine for markdown/frontmatter parsing, graph rebuilds, context brief generation, and open-question extraction.
 - Deterministic lifecycle tools for doctor, ingest, query, lint, status, review, rollup, Mermaid/DOT graph export, static HTML export, release audit, and fresh-install smoke.
 - Trust-depth tools for contracts, claims, and contradictions.

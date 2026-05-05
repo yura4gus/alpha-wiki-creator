@@ -17,7 +17,7 @@ Reason: P0 packaging blockers are closed and the trust-depth triad now has deter
 | Codex path | pass with limitations | `scripts/install_codex.py`, prefixed skills, doctor platform check. |
 | Graph semantics | pass | Typed cluster links, Obsidian colors, Mermaid/DOT exports, Graph QA tests. |
 | Static read-only export | pass | `tools/render_html.py`. |
-| Test suite | pass | Latest recorded result: `120 passed`. |
+| Test suite | pass | Latest recorded result: `124 passed`. |
 | Quickstart | pass | `docs/quickstart.md`. |
 | Changelog | pass | `CHANGELOG.md`. |
 | Fresh install smoke | pass | `docs/release-smoke-2026-05-05.md`. |
@@ -42,7 +42,7 @@ Reason: P0 packaging blockers are closed and the trust-depth triad now has deter
 
 | Gate | Current State |
 |---|---|
-| Full test suite | pass: `120 passed` |
+| Full test suite | pass: `124 passed` |
 | Release readiness audit tool | pass: `tools/release_audit.py` exists |
 | Platform compatibility matrix | pass: `docs/platform-compatibility-matrix.md` |
 | Quickstart | pass: `docs/quickstart.md` |

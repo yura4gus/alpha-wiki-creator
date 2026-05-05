@@ -21,6 +21,7 @@ EXPECTED_COMMANDS = {
 EXPECTED_TOOLS = {
     "doctor.py",
     "ingest_pipeline.py",
+    "init_audit.py",
     "wiki_search.py",
     "lint.py",
     "status.py",

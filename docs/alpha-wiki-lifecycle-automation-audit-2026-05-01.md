@@ -20,7 +20,7 @@ install
 
 Current state: **partially closed and increasingly automated**.
 
-Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, query, graph rebuild, lint, status, review, render, rollup, hooks, CI templates, release smoke, release audit, and trust-depth checks for contracts/claims/contradictions. The remaining release risk is mainly publish-time tagging and deeper UX/automation polish.
+Alpha-Wiki now has the right deterministic spine: bootstrap, init source audit, doctor, ingest, query, graph rebuild, lint, status, review, render, rollup, hooks, CI templates, release smoke, release audit, and trust-depth checks for contracts/claims/contradictions. The remaining release risk is mainly publish-time tagging and deeper UX/automation polish.
 
 ## Rule-To-Automation Matrix
 
@@ -33,6 +33,7 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, que
 | Color labels role, not cluster | Obsidian legend, Mermaid/DOT exports, render skill, tests | Obsidian graph tests, Graph export tests | pass | Add visual-image snapshots later if needed. |
 | Static read-only export exists | `tools/render_html.py`, render skill | HTML export tests | pass | Keep visual polish minimal until dogfooding. |
 | `doctor` verifies install/runtime lifecycle | `tools/doctor.py`, `/alpha-wiki:doctor`, `skills/doctor` | Doctor unit tests, release smoke | pass | Keep smoke in release checklist. |
+| Existing repo corpus is audited before migration | `tools/init_audit.py`, init skill/command workflow | Init audit unit tests | pass | Add optional bootstrap auto-run flag after dogfooding. |
 | `ingest` updates pages/log/graph/lint | `tools/ingest_pipeline.py`, skill instructions | Ingest pipeline pressure tests | partial | Add conflicting-source/claim extraction after claims tooling. |
 | `query` reads brief/index/pages with citations | `tools/wiki_search.py`, skill instructions | Query helper tests | pass | Add contradiction-aware query pressure tests after claims tooling. |
 | `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
@@ -74,15 +75,16 @@ Automated:
 - Safe-existing protection exists for top-level files.
 - Custom wiki dir is propagated into hooks/workflows.
 - Obsidian config and graph seeds are generated.
+- `tools/init_audit.py` audits existing documents, proposes raw placement, target wiki slots, and batched ingest before migration.
 
 Gaps:
 
 - First-run checklist is still documentation-level.
-- Existing-repo migration audit is planned, not implemented as `tools/init_audit.py`.
+- Bootstrap does not yet auto-run the init audit; the skill/command must call it before rendering.
 
 Next automation:
 
-- Bootstrap should optionally run `doctor`, `lint`, `status`, and graph rebuild after init and print a first-run checklist.
+- Bootstrap should optionally run `init_audit`, `doctor`, `lint`, `status`, and graph rebuild after init and print a first-run checklist.
 
 ### 3. Ingest / Update
 
@@ -248,5 +250,6 @@ Additional lifecycle evidence:
 - `tests/unit/test_contracts_check.py`
 - `tests/unit/test_claims_check.py`
 - `tests/unit/test_contradiction_detector.py`
+- `tests/unit/test_init_audit.py`
 
-Latest result: `120 passed`.
+Latest result: `124 passed`.

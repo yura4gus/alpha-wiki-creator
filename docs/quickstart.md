@@ -45,6 +45,8 @@ Recommended first-run choices:
 - CI: enabled for GitHub projects.
 - Obsidian: enabled.
 
+During init, Alpha-Wiki first audits the current project. It should show candidate documents already in the repo, propose `raw/` placement or manifest-only references, propose the initial wiki structure, and split ingest into batches. For an existing repo, approve Batch 1 before trying to process the whole corpus.
+
 ## 3. Verify Runtime
 
 Claude:
