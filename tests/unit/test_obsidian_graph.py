@@ -9,25 +9,39 @@ def test_obsidian_graph_color_groups_match_semantic_contract():
     graph = json.loads((ROOT / "assets" / "obsidian" / "graph.json").read_text())
     groups = graph["colorGroups"]
 
+    assert graph["search"] == "path:.wiki/ OR path:wiki/"
+    assert graph["hideUnresolved"] is True
+    assert graph["showOrphans"] is False
+
     assert groups[0]["color"]["rgb"] == int("E94B43", 16)
+    assert "path:.wiki/services/" in groups[0]["query"]
+    assert "path:wiki/services/" in groups[0]["query"]
     assert "path:services/" in groups[0]["query"]
     assert "path:repos/" in groups[0]["query"]
 
     assert groups[1]["color"]["rgb"] == int("16A34A", 16)
+    assert "path:.wiki/modules/" in groups[1]["query"]
+    assert "path:wiki/modules/" in groups[1]["query"]
     assert "path:modules/" in groups[1]["query"]
     assert "path:domains/" in groups[1]["query"]
     assert "path:adapters/" in groups[1]["query"]
 
     assert groups[2]["color"]["rgb"] == int("2563EB", 16)
+    assert "path:.wiki/features/" in groups[2]["query"]
+    assert "path:wiki/features/" in groups[2]["query"]
     assert "path:features/" in groups[2]["query"]
     assert "path:flows/" in groups[2]["query"]
     assert "path:application/" in groups[2]["query"]
 
     assert groups[3]["color"]["rgb"] == int("111111", 16)
+    assert "path:.wiki/decisions/" in groups[3]["query"]
+    assert "path:wiki/decisions/" in groups[3]["query"]
     assert "path:decisions/" in groups[3]["query"]
     assert "path:papers/" in groups[3]["query"]
 
     assert groups[4]["color"]["rgb"] == int("F97316", 16)
+    assert "path:.wiki/contracts/" in groups[4]["query"]
+    assert "path:wiki/contracts/" in groups[4]["query"]
     assert "path:contracts/" in groups[4]["query"]
 
 
@@ -39,6 +53,7 @@ def test_obsidian_legend_explains_graph_grouping():
         "Module / domain",
         "Feature / function",
         "Document / evidence",
+        "Default graph filter",
         "Color is not cluster",
         "Grouping rule",
     ]:

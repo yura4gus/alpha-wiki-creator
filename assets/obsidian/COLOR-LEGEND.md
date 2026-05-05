@@ -2,6 +2,8 @@
 
 The default `graph.json` color groups for an Alpha-wiki vault:
 
+Default graph filter: `path:.wiki/ OR path:wiki/`. This keeps the global graph focused on maintained wiki pages when the whole repository is opened as an Obsidian vault. Raw sources, command manuals, skill source files, tests, and generated exports remain searchable in Obsidian, but they are not part of the default trust graph. Color groups match three layouts: root vault with `.wiki/...`, root vault with `wiki/...`, and a vault opened directly inside the wiki directory.
+
 | Color | Hex | Meaning | Paths matched |
 |---|---|---|---|
 | 🔴 Red | `#E94B43` | **Repo / service / top-level architectural unit** | `services/`, `repos/`, `repositories/`, `systems/`, `bounded-contexts/`, `applications/` |
@@ -20,6 +22,8 @@ The default `graph.json` color groups for an Alpha-wiki vault:
 - An **orange node bridging two red nodes** = a contract owned by one service and consumed by another
 - An **isolated red node** = a service with no documented decisions/specs yet (lint flags this as a maintenance gap)
 - A **black island** = a document that has not been attached to the architecture yet; link it or archive it.
+
+If the graph shows README/SKILL/source-manifest/old docs scattered everywhere, the graph filter is off or the vault was opened with an older `.obsidian/graph.json`. Restore the default search filter above and keep unresolved links hidden.
 
 ## Color is not cluster
 
