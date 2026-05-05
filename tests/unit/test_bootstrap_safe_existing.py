@@ -63,3 +63,16 @@ def test_upgrade_preserves_graph_artifacts(tmp_path: Path):
     assert "source" in (graph / "edges.jsonl").read_text()
     assert "Custom brief" in (graph / "context_brief.md").read_text()
     assert "Custom questions" in (graph / "open_questions.md").read_text()
+
+
+def test_bootstrap_can_run_when_plugin_tools_are_already_target_tools(tmp_path: Path, monkeypatch):
+    tools = tmp_path / "tools"
+    tools.mkdir()
+    (tools / "lint.py").write_text("# local tool\n")
+
+    monkeypatch.setattr("scripts.bootstrap.TOOLS", tools)
+
+    bootstrap(target=tmp_path, config=_cfg())
+
+    assert (tmp_path / "wiki" / "index.md").exists()
+    assert (tools / "lint.py").read_text() == "# local tool\n"

@@ -236,7 +236,10 @@ def _copy_tools(target: Path) -> None:
     tools_dst.mkdir(exist_ok=True)
     for f in TOOLS.iterdir():
         if f.is_file() and f.suffix == ".py":
-            shutil.copy(f, tools_dst / f.name)
+            dest = tools_dst / f.name
+            if f.resolve() == dest.resolve():
+                continue
+            shutil.copy(f, dest)
 
 
 def _hook_files_for_mode(mode: str) -> set[str]:

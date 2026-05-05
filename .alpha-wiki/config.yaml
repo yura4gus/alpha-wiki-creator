@@ -1,0 +1,134 @@
+name: software-project
+description: Default preset for software/engineering projects
+entity_types:
+- name: module
+  dir: modules
+  frontmatter_required:
+  - title
+  - slug
+  - status
+  frontmatter_optional:
+  - belongs_to
+  - owned_by
+  - depends_on
+  - dependents
+  - owner
+  - description
+  sections_required:
+  - Provides
+  - Consumes
+  - Decisions
+  - Active tasks
+- name: component
+  dir: components
+  frontmatter_required:
+  - title
+  - slug
+  - parent_module
+  frontmatter_optional:
+  - belongs_to
+  - owned_by
+  - status
+  - tests
+  sections_required:
+  - Specs
+- name: decision
+  dir: decisions
+  frontmatter_required:
+  - title
+  - slug
+  - status
+  - date
+  frontmatter_optional:
+  - belongs_to
+  - source
+  - affects
+  - supersedes
+  - superseded_by
+  sections_required:
+  - Context
+  - Decision
+  - Consequences
+- name: spec
+  dir: specs
+  frontmatter_required:
+  - title
+  - slug
+  - kind
+  - status
+  frontmatter_optional:
+  - belongs_to
+  - source
+  - implements
+  - version
+  sections_required:
+  - Entities
+  - Requirements
+- name: entity
+  dir: entities
+  frontmatter_required:
+  - title
+  - slug
+  - defined_in
+  sections_required:
+  - Used in contracts
+- name: contract
+  dir: contracts
+  transport_subdirs:
+  - rest
+  - graphql
+  - grpc
+  - events
+  - webhooks
+  - rpc
+  - data-models
+  frontmatter_required:
+  - title
+  - slug
+  - transport
+  - service
+  - version
+  - status
+  frontmatter_optional:
+  - consumers
+  - source_file
+  - breaking_changes
+  - date_updated
+  sections_required:
+  - Migration notes
+- name: person
+  dir: people
+  frontmatter_required:
+  - title
+  - slug
+  - role
+  frontmatter_optional:
+  - email
+  - github
+  - areas
+- name: task
+  dir: tasks
+  frontmatter_required:
+  - title
+  - slug
+  - status
+  - target_module
+  frontmatter_optional:
+  - assignee
+  - due
+  - blocked_by
+cross_ref_rules:
+- forward: 'modules/A: depends_on: [[module-B]]'
+  reverse: 'modules/B: dependents adds A'
+- forward: 'decisions/D: affects: [[module-A]]'
+  reverse: 'modules/A: ## Decisions adds D'
+- forward: 'specs/S: implements: [[component-C]]'
+  reverse: 'components/C: ## Specs adds S'
+- forward: 'tasks/T: target_module: [[module-A]]'
+  reverse: 'modules/A: ## Active tasks adds T'
+- forward: 'entities/E: defined_in: [[spec-S]]'
+  reverse: 'specs/S: ## Entities adds E'
+- forward: 'contracts/X: service: [[module-S]]'
+  reverse: 'modules/S: ## Provides adds X'
+- forward: 'modules/M: consumes: [[contract-X]]'
+  reverse: 'contracts/X: consumers adds M'

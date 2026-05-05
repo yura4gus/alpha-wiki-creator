@@ -1,0 +1,32 @@
+%% Alpha-Wiki graph export
+%% Clusters come from typed links; colors show node roles.
+flowchart LR
+  alpha_wiki_runtime["Alpha-Wiki Runtime"]
+  codex_adapter_runtime["Codex Adapter Runtime"]
+  codex_skill_adapter_contract["Codex Skill Adapter Contract"]
+  graph_cluster_semantics["Graph Cluster Semantics"]
+  no_embeddings_mvp["No Embeddings MVP"]
+  release_readiness_runtime["Release Readiness Runtime"]
+  alpha_wiki_runtime --|"consumes"| codex_skill_adapter_contract
+  codex_adapter_runtime --|"belongs_to"| alpha_wiki_runtime
+  codex_adapter_runtime --|"implements"| alpha_wiki_runtime
+  codex_skill_adapter_contract --|"consumers"| alpha_wiki_runtime
+  codex_skill_adapter_contract --|"service"| alpha_wiki_runtime
+  graph_cluster_semantics --|"affects"| alpha_wiki_runtime
+  graph_cluster_semantics --|"belongs_to"| alpha_wiki_runtime
+  no_embeddings_mvp --|"affects"| alpha_wiki_runtime
+  no_embeddings_mvp --|"belongs_to"| alpha_wiki_runtime
+  release_readiness_runtime --|"belongs_to"| alpha_wiki_runtime
+  release_readiness_runtime --|"implements"| alpha_wiki_runtime
+  classDef service fill:#E94B43,stroke:#7f1d1d,color:#ffffff;
+  classDef module fill:#16A34A,stroke:#14532d,color:#ffffff;
+  classDef feature fill:#2563EB,stroke:#1e3a8a,color:#ffffff;
+  classDef document fill:#111111,stroke:#525252,color:#ffffff;
+  classDef contract fill:#F97316,stroke:#9a3412,color:#ffffff;
+  classDef other fill:#E5E7EB,stroke:#6B7280,color:#111111;
+  class alpha_wiki_runtime module;
+  class codex_adapter_runtime document;
+  class codex_skill_adapter_contract contract;
+  class graph_cluster_semantics document;
+  class no_embeddings_mvp document;
+  class release_readiness_runtime document;

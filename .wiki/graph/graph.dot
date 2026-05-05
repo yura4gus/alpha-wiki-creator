@@ -1,0 +1,11 @@
+digraph AlphaWiki {
+  graph [rankdir="LR", compound="true"];
+  node [shape="box", style="filled,rounded", fontname="Arial"];
+  edge [fontname="Arial"];
+  "alpha-wiki-runtime" [label="Alpha-Wiki Runtime", fillcolor="#16A34A", fontcolor="#FFFFFF"];
+  "codex-adapter-runtime" [label="Codex Adapter Runtime", fillcolor="#111111", fontcolor="#FFFFFF"];
+  "codex-skill-adapter-contract" [label="Codex Skill Adapter Contract", fillcolor="#F97316", fontcolor="#FFFFFF"];
+  "graph-cluster-semantics" [label="Graph Cluster Semantics", fillcolor="#111111", fontcolor="#FFFFFF"];
+  "no-embeddings-mvp" [label="No Embeddings MVP", fillcolor="#111111", fontcolor="#FFFFFF"];
+  "release-readiness-runtime" [label="Release Readiness Runtime", fillcolor="#111111", fontcolor="#FFFFFF"];
+}

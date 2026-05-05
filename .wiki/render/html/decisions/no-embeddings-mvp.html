@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>No Embeddings MVP</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>No Embeddings MVP</h1>
+<table class="frontmatter">
+<tr><th>affects</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date</th><td>2026-05-05</td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/ADR-003-no-embeddings-mvp.md, README.md</td></tr>
+<tr><th>slug</th><td>no-embeddings-mvp</td></tr>
+<tr><th>status</th><td>accepted</td></tr>
+<tr><th>title</th><td>No Embeddings MVP</td></tr>
+</table>
+<main>
+<h1>No Embeddings MVP</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/ADR-003-no-embeddings-mvp.md, README.md.</li>
+</ul>
+<h2>Context</h2>
+<p>Alpha-Wiki follows the Karpathy LLM-Wiki pattern: simple markdown memory, explicit index/brief files, and deterministic operations before any retrieval infrastructure.</p>
+<h2>Decision</h2>
+<p>The MVP uses plain markdown, frontmatter, wikilinks, graph artifacts, and deterministic search. It does not require embeddings or a vector store.</p>
+<h2>Consequences</h2>
+<ul>
+<li>Context remains inspectable and reviewable in git.</li>
+<li>Agents can cite exact pages and lines.</li>
+<li>Search quality can later improve with BM25 before any embedding backend is reconsidered.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

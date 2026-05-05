@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release Readiness Runtime</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Release Readiness Runtime</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2026-05-05.md, tools/release_audit.py</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>kind</th><td>release-gate</td></tr>
+<tr><th>slug</th><td>release-readiness-runtime</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Release Readiness Runtime</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>Release Readiness Runtime</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2026-05-05.md, tools/release_audit.py.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>Release audit gate.</li>
+<li>Fresh install smoke evidence.</li>
+<li>Version metadata alignment.</li>
+<li>Trust-depth triad.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>`tools/release_audit.py --root .` returns `READY`.</li>
+<li>Full unit/integration suite passes.</li>
+<li>Fresh install smoke evidence is recorded.</li>
+<li>Packaging docs exist: `CHANGELOG.md` and `docs/quickstart.md`.</li>
+<li>Trust-depth tools exist for contracts, claims, and contradictions.</li>
+</ul>
+<h2>Current Evidence</h2>
+<ul>
+<li>Latest recorded suite: `120 passed`.</li>
+<li>Latest release audit: `READY`, 8 pass, 0 warn, 0 fail.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

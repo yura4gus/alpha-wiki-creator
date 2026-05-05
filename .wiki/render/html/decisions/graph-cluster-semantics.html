@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Graph Cluster Semantics</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Graph Cluster Semantics</h1>
+<table class="frontmatter">
+<tr><th>affects</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date</th><td>2026-05-05</td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>docs/final-release-hardening-plan.md, README.md, assets/obsidian/COLOR-LEGEND.md</td></tr>
+<tr><th>slug</th><td>graph-cluster-semantics</td></tr>
+<tr><th>status</th><td>accepted</td></tr>
+<tr><th>title</th><td>Graph Cluster Semantics</td></tr>
+</table>
+<main>
+<h1>Graph Cluster Semantics</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: docs/final-release-hardening-plan.md, README.md, assets/obsidian/COLOR-LEGEND.md.</li>
+</ul>
+<h2>Context</h2>
+<p>The graph must help both operator and AI understand project structure quickly. Documents should not scatter randomly by color.</p>
+<h2>Decision</h2>
+<p>Clusters are formed by typed links such as `belongs_to`, `service`, `implements`, `affects`, `owned_by`, and `defined_in`. Colors identify node roles inside clusters.</p>
+<h2>Consequences</h2>
+<ul>
+<li>A healthy cluster can contain mixed colors.</li>
+<li>Red means repo/service boundary, green module/domain, blue feature/flow, black document/evidence, orange contract.</li>
+<li>Color-only grouping is treated as a modeling mistake.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>
