@@ -25,9 +25,9 @@ Phase 1a can start with confirmed repo facts, not assumptions.
 | GitHub workflows | Present | Repo CI has only `.github/workflows/plugin-ci.yml` for tests and coverage. Generated target-project workflow templates live under `assets/workflows/`. |
 | Skills | 11 present | `init`, `doctor`, `ingest`, `query`, `lint`, `evolve`, `status`, `spawn-agent`, `render`, `review`, `rollup`. |
 | Commands | 11 present | One command file per existing skill under `commands/`. |
-| Deterministic tools | 16 Python modules | `_env.py`, `_models.py`, `classify.py`, `doctor.py`, `ingest_pipeline.py`, `lint.py`, `release_audit.py`, `release_smoke.py`, `render_dot.py`, `render_html.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
+| Deterministic tools | 19 Python modules | `_env.py`, `_models.py`, `claims_check.py`, `classify.py`, `contracts_check.py`, `contradiction_detector.py`, `doctor.py`, `ingest_pipeline.py`, `lint.py`, `release_audit.py`, `release_smoke.py`, `render_dot.py`, `render_html.py`, `render_mermaid.py`, `status.py`, `wiki_engine.py`, `wiki_search.py`, `review.py`, `rollup.py`. |
 | Scripts | 3 Python modules | `bootstrap.py`, `interview.py`, `add_entity_type.py`. |
-| Tests | 45 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, ingest pipeline, query helper, release audit, release smoke, status, review, rollup, wiki engine, and templates. |
+| Tests | 48 test files | Unit + integration coverage exists for bootstrap, hooks/runtime assets, skill docs, lint, classify, doctor, graph exports, ingest pipeline, query helper, contracts/claims/contradictions, release audit, release smoke, status, review, rollup, wiki engine, and templates. |
 | References | Present | Presets, overlays, classifier, schema evolution, hooks, cross-reference docs, examples. |
 | Assets | Present | Frontmatter templates, hooks, workflows, Obsidian config, README/CLAUDE/pyproject templates. |
 
@@ -74,6 +74,9 @@ Missing Phase 1a skills:
 | Module | Verified responsibilities |
 |---|---|
 | `tools/wiki_engine.py` | Markdown/frontmatter parsing, wikilink extraction, edge rebuild, context brief rebuild, open questions rebuild, `add-edge` CLI. |
+| `tools/contracts_check.py` | Contract trust checks: service owner, consumer reverse consistency, version/migration-note gaps. |
+| `tools/claims_check.py` | Claim trust checks: provenance, freshness, explicit contradiction target validation. |
+| `tools/contradiction_detector.py` | Deterministic contradiction detection from explicit links and opposing claim stances. |
 | `tools/doctor.py` | Install/runtime lifecycle verification: Python, uv, imports, config, wiki dir, graph artifacts, lint, hooks, CI, platform hints. |
 | `tools/ingest_pipeline.py` | Deterministic local-file ingest: page write, provenance, optional cluster link, log, graph rebuild, lint summary, resume state. |
 | `tools/lint.py` | Broken wikilinks, missing reverse links, orphans, required frontmatter, duplicate slugs, dependency rules, safe missing-reverse fixes. |
@@ -95,14 +98,11 @@ Missing Phase 1a skills:
 
 Confirmed missing deterministic tools from Phase 1a target:
 
-- `tools/contradiction_detector.py`
 - `tools/status_report.py`
-- `tools/contracts_check.py`
-- `tools/claims_check.py`
 
 ## Tests Inventory
 
-Verified test files: 45.
+Verified test files: 48.
 
 Coverage areas:
 
@@ -115,6 +115,7 @@ Coverage areas:
 - Lint checks and CLI.
 - Wiki engine parsing, edges, context brief, open questions, CLI.
 - Classifier and LLM fallback stub.
+- Contract, claim, and contradiction trust-depth checks.
 - Release audit final gate and CLI exit behavior.
 - Release smoke on a fresh temporary project.
 - Status report.

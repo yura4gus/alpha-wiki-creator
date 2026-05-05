@@ -129,4 +129,4 @@ Plugin maintainers should run:
 .venv/bin/python -m pytest
 ```
 
-Expected current release-audit verdict: `READY_WITH_WARNINGS` until semantic claim/contract/contradiction tools are implemented or explicitly deferred in release notes.
+Expected current release-audit verdict: `READY`.

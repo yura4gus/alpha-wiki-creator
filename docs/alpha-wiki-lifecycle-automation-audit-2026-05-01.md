@@ -20,7 +20,7 @@ install
 
 Current state: **partially closed and increasingly automated**.
 
-Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, query, graph rebuild, lint, status, review, render, rollup, hooks, CI templates, release smoke, and release audit. The remaining release risk is semantic trust tooling for claims/contracts/contradictions, plus the final publish-time tag.
+Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, query, graph rebuild, lint, status, review, render, rollup, hooks, CI templates, release smoke, release audit, and trust-depth checks for contracts/claims/contradictions. The remaining release risk is mainly publish-time tagging and deeper UX/automation polish.
 
 ## Rule-To-Automation Matrix
 
@@ -37,7 +37,10 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, doctor, ingest, que
 | `query` reads brief/index/pages with citations | `tools/wiki_search.py`, skill instructions | Query helper tests | pass | Add contradiction-aware query pressure tests after claims tooling. |
 | `lint` blocks structural decay | `tools/lint.py`, pre-commit, CI template | Unit/integration tests | pass | Split checks into modules and add full release check set. |
 | `status` exposes gaps | `tools/status.py` | Status tests | pass | Health scoring can be refined after ingest/query are deterministic. |
-| `review` produces trust report | `tools/review.py` | Review/rollup tests | pass | Add deeper semantic contradiction checks after query/claims tooling. |
+| `review` produces trust report | `tools/review.py` | Review/rollup tests | pass | Integrate trust-depth tool summaries into review scoring later. |
+| `contracts-check` validates service contracts | `tools/contracts_check.py` | Contract check unit tests | pass | Add slash command/skill wrapper if promoted to first-class operation. |
+| `claims-check` validates claim provenance/freshness | `tools/claims_check.py` | Claims check unit tests | pass | Add richer extraction from ingest after dogfooding. |
+| `contradiction-detector` finds explicit/opposing claims | `tools/contradiction_detector.py` | Contradiction detector unit tests | pass | Add citation-rich review integration later. |
 | `rollup` summarizes activity | `tools/rollup.py`, CI template | Rollup tests | pass | Add unresolved gap and decision summary. |
 | Claude hooks keep graph fresh | `assets/hooks/*` | Hook mode/runtime asset tests | pass | Hooks are Claude-specific; Codex needs explicit/manual workflow or adapter. |
 | CI checks wiki health | `assets/workflows/*` | Runtime asset tests | partial | CI lint template runs; review/rollup depend on headless Claude and secrets. |
@@ -216,10 +219,10 @@ Next automation:
 ## Key Findings
 
 1. The lifecycle is **structurally closed** for graph/status/lint/review once pages exist.
-2. The lifecycle is **mostly closed** for ingest/query at the deterministic backend level; claim extraction and contradiction handling remain.
+2. The lifecycle is **mostly closed** for ingest/query at the deterministic backend level; deeper claim extraction from ingest can still improve quality.
 3. Cluster semantics are now partially automated through lint/status and Graph QA exports, but release needs richer review.
 4. Claude automation is significantly stronger than Codex automation.
-5. P0 release blockers are closed; final hardening should prioritize deeper semantic trust checks.
+5. P0 release blockers and trust-depth audit warning are closed; final hardening should prioritize unified scoring and platform automation polish.
 
 ## Evidence Commands
 
@@ -242,5 +245,8 @@ Additional lifecycle evidence:
 - `tests/unit/test_wiki_engine_edges.py`
 - `tests/unit/test_release_audit.py`
 - `tests/unit/test_release_smoke.py`
+- `tests/unit/test_contracts_check.py`
+- `tests/unit/test_claims_check.py`
+- `tests/unit/test_contradiction_detector.py`
 
-Latest result: `114 passed`.
+Latest result: `120 passed`.

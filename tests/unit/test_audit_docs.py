@@ -84,8 +84,9 @@ def test_final_release_readiness_audit_names_release_blockers():
     text = (ROOT / "docs" / "final-release-readiness-audit-2026-05-04.md").read_text()
 
     for phrase in [
-        "READY_WITH_WARNINGS",
+        "Current verdict: **READY**",
         "P0 release blockers are closed",
+        "Trust-depth triad",
         "Quickstart",
         "Changelog",
         "Fresh install smoke",
@@ -120,7 +121,8 @@ def test_changelog_and_smoke_evidence_cover_release_limits():
         "11 operations",
         "Codex is supported",
         "Gemini is not packaged",
-        "Semantic trust tools",
+        "Trust-depth tools",
+        "Semantic trust tools now cover",
     ]:
         assert phrase in changelog
 

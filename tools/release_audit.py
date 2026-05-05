@@ -31,6 +31,9 @@ EXPECTED_TOOLS = {
     "render_dot.py",
     "render_html.py",
     "release_smoke.py",
+    "claims_check.py",
+    "contracts_check.py",
+    "contradiction_detector.py",
 }
 
 RELEASE_DOCS = {

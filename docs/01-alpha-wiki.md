@@ -135,7 +135,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Review gates | If schema-evolve triggered: gate before adding new entity type (per ADR for schema changes); else no gate. |
 | Failure modes | Source unparseable; no slot fits and user rejects schema-evolve; cross-reference target missing; provenance metadata cannot be attached. |
 | Rollback | Atomic per-page commit; failed ingest leaves `raw/` untouched and rolls back partial wiki writes. |
-| Tools | `wiki_engine.py` for graph ops; `tools/ingest_pipeline.py` implemented for local-file MVP; new `tools/contradiction_detector.py` planned for stale-claim flagging. |
+| Tools | `wiki_engine.py` for graph ops; `tools/ingest_pipeline.py` implemented for local-file MVP; `tools/contradiction_detector.py` implemented for deterministic contradiction checks. |
 | Tests | PDF mixed content, OpenAPI YAML, transcript, ADR markdown, contradicting claim, oversized file, file with no parseable structure. |
 | Pipeline | Implemented MVP: source validation → provenance capture → classification → page create → optional cluster link → risk/open-question extraction → graph rebuild → post-ingest lint → log entry → resumable state. Planned: chunking → entity extraction → claim extraction → contradiction detection → stale-claim flagging → schema-evolve trigger. |
 | Integrations | Triggers `evolve` if no slot fits. Updates `index/*` indexes. Writes log.md entry consumed by `status`. |
@@ -251,7 +251,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Outputs | Severity-tagged list: contracts without service, consumers missing, version-bump-without-migration, contract pages overlapping by definition. |
 | Files read | `wiki/contracts/**/*.md`, `wiki/modules/**/*.md`. |
 | Files written | None unless `--fix`. |
-| Tools | New `tools/contracts_check.py`. |
+| Tools | `tools/contracts_check.py` implemented. |
 | Tests | Contract with no consumers when modules reference it; contract version bump without migration notes; new contract overlapping existing. |
 | Integrations | Invoked by pre-commit hook for contract changes; called by `cto-review` when AgentOps present. |
 
@@ -265,7 +265,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Outputs | Contradicting claim pairs with citations; stale claims by frontmatter date; claims missing provenance metadata. |
 | Files read | All pages with claim-bearing frontmatter or content. |
 | Files written | None unless `--fix` adds `stale: true` markers. |
-| Tools | New `tools/claims_check.py`. |
+| Tools | `tools/claims_check.py` implemented. |
 | Tests | Contradicting claims across pages; claim referenced as stale via frontmatter; claim with no provenance. |
 | Integrations | Called by `cto-review` when AgentOps present; user-invokable. |
 
@@ -297,11 +297,11 @@ Pure-Python, deterministic, no LLM. Tested fully.
 | `tools/init_audit.py` (new) | Existing-repo audit for `init` migration mode. |
 | `tools/ingest_pipeline.py` (implemented) | Ingest orchestration MVP (validation, classification, page-write, provenance, graph rebuild, lint, resume state). |
 | `tools/classifier.py` (new) | Category detection (11 raw artifact categories). |
-| `tools/contradiction_detector.py` (new) | Stale-claim and contradiction detection. |
+| `tools/contradiction_detector.py` (implemented) | Explicit contradiction and opposing-stance detection. |
 | `tools/wiki_search.py` (implemented) | Wiki search (deterministic markdown ranking + line citations; BM25 only if Phase 6). |
 | `tools/status_report.py` (new) | Health score, suggested next actions. |
-| `tools/contracts_check.py` (new) | Contract-specific lint. |
-| `tools/claims_check.py` (new) | Claim consistency. |
+| `tools/contracts_check.py` (implemented) | Contract-specific lint. |
+| `tools/claims_check.py` (implemented) | Claim consistency. |
 | `tools/render_html.py` (implemented) | Static read-only HTML output. |
 | `tools/render_mermaid.py` (implemented) | Mermaid output with typed clusters and role colors. |
 | `tools/render_dot.py` (implemented) | DOT output with typed clusters and role colors. |

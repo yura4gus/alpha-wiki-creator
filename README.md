@@ -236,7 +236,7 @@ Run the deterministic final-release gate:
 .venv/bin/python tools/release_audit.py --root .
 ```
 
-Current expected release-audit verdict: `READY_WITH_WARNINGS`. The remaining warning is semantic trust depth: claims/contracts/contradiction tooling is deferred and called out in release notes.
+Current expected release-audit verdict: `READY`.
 
 ## License
 

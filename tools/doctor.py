@@ -28,6 +28,9 @@ TOOL_MODULES = [
     "tools.review",
     "tools.rollup",
     "tools.classify",
+    "tools.claims_check",
+    "tools.contracts_check",
+    "tools.contradiction_detector",
 ]
 
 GRAPH_ARTIFACTS = [

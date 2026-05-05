@@ -17,16 +17,17 @@ def test_release_audit_reports_current_release_gates():
     assert by_gate["packaging"].status == "PASS"
     assert by_gate["fresh-install-smoke"].status == "PASS"
     assert by_gate["version-metadata"].status == "PASS"
-    assert by_gate["trust-depth"].status == "WARN"
+    assert by_gate["trust-depth"].status == "PASS"
 
 
-def test_release_audit_report_is_ready_with_warnings_until_trust_tools_exist():
+def test_release_audit_report_is_ready_when_trust_tools_exist():
     report = release_audit_report(ROOT)
 
-    assert "Verdict: READY_WITH_WARNINGS" in report
+    assert "Verdict: READY" in report
     assert "quickstart and changelog exist" in report
     assert "fresh-install-smoke" in report
     assert "version-metadata" in report
+    assert "claim/contract/contradiction tools exist" in report
 
 
 def test_release_audit_cli_exits_zero_when_only_warnings_remain():
