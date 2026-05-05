@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alpha-Wiki Query Operation</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Alpha-Wiki Query Operation</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>commands/query.md, skills/query/SKILL.md, tools/wiki_search.py</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-product-spec.html">[[alpha-wiki-product-spec]]</a></td></tr>
+<tr><th>kind</th><td>operation-spec</td></tr>
+<tr><th>slug</th><td>alpha-wiki-query-operation</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Alpha-Wiki Query Operation</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>Alpha-Wiki Query Operation</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: commands/query.md.</li>
+<li>Source: skills/query/SKILL.md.</li>
+<li>Tool source: tools/wiki_search.py.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>Operation: `/alpha-wiki:query` / `$alpha-wiki-query`.</li>
+<li>Read path: `context_brief.md`, `index.md`, deterministic search, targeted page reads.</li>
+<li>Output: cited answer with truth status.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>Answer from maintained wiki evidence, not the open web.</li>
+<li>Start from graph context and index before targeted search.</li>
+<li>Cite wiki pages, slugs, and paths when precision matters.</li>
+<li>Distinguish accepted facts, assumptions, risks, open questions, and stale material.</li>
+<li>Do not mutate the wiki unless the user explicitly asks to save a reusable output.</li>
+<li>If knowledge is missing, route to <a href="../alpha-wiki-ingest-operation.html">[[alpha-wiki-ingest-operation]]</a> instead of inventing memory.</li>
+</ul>
+<h2>Gates</h2>
+<ul>
+<li>Conflicting evidence must be surfaced.</li>
+<li>Reusable synthesis is saved only on explicit request.</li>
+<li>Query answers should recommend ingest, lint, evolve, review, or no action.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

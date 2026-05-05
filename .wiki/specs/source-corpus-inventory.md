@@ -52,10 +52,15 @@ Already represented in `.wiki`:
 - [[state-backend-abstraction]]
 - [[marketplace-topology-deferred]]
 - [[spawn-agent-boundary]]
+- [[alpha-wiki-init-operation]]
+- [[alpha-wiki-ingest-operation]]
+- [[alpha-wiki-query-operation]]
+- [[alpha-wiki-lint-operation]]
+- [[alpha-wiki-status-operation]]
+- [[alpha-wiki-review-operation]]
 
 Not yet fully represented as individual wiki pages:
 
-- Command manuals.
-- Skill manuals.
+- Remaining non-core command/skill manuals: doctor, evolve, spawn-agent, render, rollup.
 - Reference docs.
 - Superpowers archive.

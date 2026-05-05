@@ -34,6 +34,12 @@ generated: 2026-05-05
 - [[ecosystem-plugin-architecture]]
 - [[alpha-wiki-product-spec]]
 - [[state-backend-contract]]
+- [[alpha-wiki-init-operation]]
+- [[alpha-wiki-ingest-operation]]
+- [[alpha-wiki-query-operation]]
+- [[alpha-wiki-lint-operation]]
+- [[alpha-wiki-status-operation]]
+- [[alpha-wiki-review-operation]]
 
 
 ## Entity

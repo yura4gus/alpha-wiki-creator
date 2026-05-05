@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alpha-Wiki Init Operation</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Alpha-Wiki Init Operation</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>commands/init.md, skills/init/SKILL.md</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-product-spec.html">[[alpha-wiki-product-spec]]</a></td></tr>
+<tr><th>kind</th><td>operation-spec</td></tr>
+<tr><th>slug</th><td>alpha-wiki-init-operation</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Alpha-Wiki Init Operation</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>Alpha-Wiki Init Operation</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: commands/init.md.</li>
+<li>Source: skills/init/SKILL.md.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>Operation: `/alpha-wiki:init` / `$alpha-wiki-init`.</li>
+<li>Runtime output: `raw/`, `.wiki/` or `wiki/`, `CLAUDE.md`, graph artifacts, optional hooks, CI, and Obsidian config.</li>
+<li>Deterministic tool: `tools/init_audit.py`.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>Use init only when durable project memory should be established.</li>
+<li>Inspect the existing repo before writing files.</li>
+<li>Produce a source corpus plan: candidate documents, raw placement, wiki structure, and ingest batches.</li>
+<li>Preserve protected project files unless the user explicitly approves merge behavior.</li>
+<li>Verify immediately with init audit, lint, graph rebuild, doctor, and status.</li>
+<li>Hand content conversion to <a href="../alpha-wiki-ingest-operation.html">[[alpha-wiki-ingest-operation]]</a> after bootstrap.</li>
+</ul>
+<h2>Gates</h2>
+<ul>
+<li>User confirms preset, overlay, wiki dir, hooks, CI, schema evolution mode, and source migration mode.</li>
+<li>Existing protected files trigger safe-existing mode.</li>
+<li>Schema changes remain gated.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

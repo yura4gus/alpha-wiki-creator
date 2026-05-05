@@ -2,8 +2,14 @@
 %% Clusters come from typed links; colors show node roles.
 flowchart LR
   alpha_wiki_agentops_boundary["Alpha-Wiki AgentOps Boundary"]
+  alpha_wiki_ingest_operation["Alpha-Wiki Ingest Operation"]
+  alpha_wiki_init_operation["Alpha-Wiki Init Operation"]
+  alpha_wiki_lint_operation["Alpha-Wiki Lint Operation"]
   alpha_wiki_product_spec["Alpha-Wiki Product Spec"]
+  alpha_wiki_query_operation["Alpha-Wiki Query Operation"]
+  alpha_wiki_review_operation["Alpha-Wiki Review Operation"]
   alpha_wiki_runtime["Alpha-Wiki Runtime"]
+  alpha_wiki_status_operation["Alpha-Wiki Status Operation"]
   claude_plugin_marketplace_contract["Claude Plugin Marketplace Contract"]
   codex_adapter_runtime["Codex Adapter Runtime"]
   codex_skill_adapter_contract["Codex Skill Adapter Contract"]
@@ -19,10 +25,22 @@ flowchart LR
   superpowers_adapter_not_fork["Superpowers Adapter Not Fork"]
   alpha_wiki_agentops_boundary --|"affects"| alpha_wiki_runtime
   alpha_wiki_agentops_boundary --|"belongs_to"| alpha_wiki_runtime
+  alpha_wiki_ingest_operation --|"implements"| alpha_wiki_product_spec
+  alpha_wiki_ingest_operation --|"belongs_to"| alpha_wiki_runtime
+  alpha_wiki_init_operation --|"implements"| alpha_wiki_product_spec
+  alpha_wiki_init_operation --|"belongs_to"| alpha_wiki_runtime
+  alpha_wiki_lint_operation --|"implements"| alpha_wiki_product_spec
+  alpha_wiki_lint_operation --|"belongs_to"| alpha_wiki_runtime
   alpha_wiki_product_spec --|"belongs_to"| alpha_wiki_runtime
   alpha_wiki_product_spec --|"implements"| alpha_wiki_runtime
+  alpha_wiki_query_operation --|"implements"| alpha_wiki_product_spec
+  alpha_wiki_query_operation --|"belongs_to"| alpha_wiki_runtime
+  alpha_wiki_review_operation --|"implements"| alpha_wiki_product_spec
+  alpha_wiki_review_operation --|"belongs_to"| alpha_wiki_runtime
   alpha_wiki_runtime --|"consumes"| claude_plugin_marketplace_contract
   alpha_wiki_runtime --|"consumes"| codex_skill_adapter_contract
+  alpha_wiki_status_operation --|"implements"| alpha_wiki_product_spec
+  alpha_wiki_status_operation --|"belongs_to"| alpha_wiki_runtime
   claude_plugin_marketplace_contract --|"consumers"| alpha_wiki_runtime
   claude_plugin_marketplace_contract --|"service"| alpha_wiki_runtime
   codex_adapter_runtime --|"belongs_to"| alpha_wiki_runtime
@@ -56,8 +74,14 @@ flowchart LR
   classDef contract fill:#F97316,stroke:#9a3412,color:#ffffff;
   classDef other fill:#E5E7EB,stroke:#6B7280,color:#111111;
   class alpha_wiki_agentops_boundary document;
+  class alpha_wiki_ingest_operation document;
+  class alpha_wiki_init_operation document;
+  class alpha_wiki_lint_operation document;
   class alpha_wiki_product_spec document;
+  class alpha_wiki_query_operation document;
+  class alpha_wiki_review_operation document;
   class alpha_wiki_runtime module;
+  class alpha_wiki_status_operation document;
   class claude_plugin_marketplace_contract contract;
   class codex_adapter_runtime document;
   class codex_skill_adapter_contract contract;

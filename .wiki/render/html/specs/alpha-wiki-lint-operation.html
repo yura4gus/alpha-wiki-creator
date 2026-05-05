@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alpha-Wiki Lint Operation</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Alpha-Wiki Lint Operation</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>commands/lint.md, skills/lint/SKILL.md, tools/lint.py</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-product-spec.html">[[alpha-wiki-product-spec]]</a></td></tr>
+<tr><th>kind</th><td>operation-spec</td></tr>
+<tr><th>slug</th><td>alpha-wiki-lint-operation</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Alpha-Wiki Lint Operation</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>Alpha-Wiki Lint Operation</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: commands/lint.md.</li>
+<li>Source: skills/lint/SKILL.md.</li>
+<li>Tool source: tools/lint.py.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>Operation: `/alpha-wiki:lint` / `$alpha-wiki-lint`.</li>
+<li>Modes: `--dry-run`, `--suggest`, `--fix`, CI/pre-commit.</li>
+<li>Checks: broken links, missing frontmatter, duplicate slugs, missing reverse links, orphan pages, cluster gaps, dependency-rule violations.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>Lint protects graph integrity, not semantic truth.</li>
+<li>Errors block CI or commit; warnings require review or explanation.</li>
+<li>`--fix` may only apply deterministic safe repairs.</li>
+<li>Graph artifacts are rebuilt after fixes.</li>
+<li>Graph color issues should be diagnosed as type/path or typed-link problems, not visual-only problems.</li>
+</ul>
+<h2>Gates</h2>
+<ul>
+<li>Do not create semantic content automatically.</li>
+<li>Do not delete pages.</li>
+<li>Do not silently change status values.</li>
+<li>Users receive concrete next actions after findings.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

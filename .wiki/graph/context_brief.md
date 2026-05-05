@@ -8,11 +8,19 @@
 
 ## [2026-05-05] ingest | Batch 1 source corpus | pages=[[ecosystem-plugin-architecture]], [[alpha-wiki-product-spec]], [[state-backend-contract]], [[claude-plugin-marketplace-contract]], [[alpha-wiki-agentops-boundary]], [[superpowers-adapter-not-fork]], [[state-backend-abstraction]], [[marketplace-topology-deferred]], [[spawn-agent-boundary]]
 
+## [2026-05-05] ingest | Batch 2 core operations | pages=[[alpha-wiki-init-operation]], [[alpha-wiki-ingest-operation]], [[alpha-wiki-query-operation]], [[alpha-wiki-lint-operation]], [[alpha-wiki-status-operation]], [[alpha-wiki-review-operation]]
 
-## Active pages (15)
+
+## Active pages (21)
+- [[alpha-wiki-lint-operation]] — Alpha-Wiki Lint Operation
+- [[alpha-wiki-query-operation]] — Alpha-Wiki Query Operation
 - [[alpha-wiki-product-spec]] — Alpha-Wiki Product Spec
 - [[codex-adapter-runtime]] — Codex Adapter Runtime
+- [[alpha-wiki-ingest-operation]] — Alpha-Wiki Ingest Operation
 - [[release-readiness-runtime]] — Release Readiness Runtime
+- [[alpha-wiki-review-operation]] — Alpha-Wiki Review Operation
+- [[alpha-wiki-status-operation]] — Alpha-Wiki Status Operation
+- [[alpha-wiki-init-operation]] — Alpha-Wiki Init Operation
 - [[state-backend-contract]] — State Backend Contract
 - [[ecosystem-plugin-architecture]] — Ecosystem Plugin Architecture
 - [[no-embeddings-mvp]] — No Embeddings MVP

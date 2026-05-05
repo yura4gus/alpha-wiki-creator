@@ -31,10 +31,18 @@ evidence: docs/01-alpha-wiki.md
 - Graph artifacts are generated from markdown; users should not hand-edit `graph/*`.
 - Colors label node roles, while typed links form clusters.
 
+## Operation Pages
+
+- [[alpha-wiki-init-operation]]
+- [[alpha-wiki-ingest-operation]]
+- [[alpha-wiki-query-operation]]
+- [[alpha-wiki-lint-operation]]
+- [[alpha-wiki-status-operation]]
+- [[alpha-wiki-review-operation]]
+
 ## Links
 
 - Runtime module: [[alpha-wiki-runtime]]
 - Source migration: [[source-corpus-inventory]]
 - No embeddings decision: [[no-embeddings-mvp]]
 - Graph semantics decision: [[graph-cluster-semantics]]
-

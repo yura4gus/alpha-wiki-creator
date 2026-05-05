@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alpha-Wiki Ingest Operation</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Alpha-Wiki Ingest Operation</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>evidence</th><td>commands/ingest.md, skills/ingest/SKILL.md, tools/ingest_pipeline.py</td></tr>
+<tr><th>implements</th><td><a href="../alpha-wiki-product-spec.html">[[alpha-wiki-product-spec]]</a></td></tr>
+<tr><th>kind</th><td>operation-spec</td></tr>
+<tr><th>slug</th><td>alpha-wiki-ingest-operation</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Alpha-Wiki Ingest Operation</td></tr>
+<tr><th>version</th><td>v1</td></tr>
+</table>
+<main>
+<h1>Alpha-Wiki Ingest Operation</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: commands/ingest.md.</li>
+<li>Source: skills/ingest/SKILL.md.</li>
+<li>Tool source: tools/ingest_pipeline.py.</li>
+</ul>
+<h2>Entities</h2>
+<ul>
+<li>Operation: `/alpha-wiki:ingest` / `$alpha-wiki-ingest`.</li>
+<li>Inputs: durable sources such as PRDs, ADRs, specs, transcripts, API files, and research notes.</li>
+<li>Outputs: typed wiki pages, log entries, graph artifacts, lint summary.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>Preserve provenance and keep raw evidence immutable.</li>
+<li>Use existing schema first; route repeated no-fit cases to evolve.</li>
+<li>Write stable slugs, frontmatter, status, source metadata, and typed links.</li>
+<li>Attach pages to clusters through fields such as `belongs_to`, `affects`, `implements`, `service`, or `target_module`.</li>
+<li>Rebuild `edges.jsonl`, `context_brief.md`, and `open_questions.md` after writes.</li>
+<li>Stop and fix structural issues before continuing a batch.</li>
+</ul>
+<h2>Gates</h2>
+<ul>
+<li>Schema evolution is gated unless configured as auto.</li>
+<li>Ambiguous truth becomes assumption, risk, or open question.</li>
+<li>Duplicate pages are merged or updated rather than duplicated.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>
