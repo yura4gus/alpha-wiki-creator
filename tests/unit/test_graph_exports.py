@@ -36,7 +36,7 @@ def _mixed_cluster_wiki(tmp_path: Path) -> Path:
     _write_page(
         wiki / "decisions" / "auth-adr.md",
         "title: Auth ADR\nslug: auth-adr\nstatus: accepted\ndate_updated: 2026-05-04\nbelongs_to: '[[auth-service]]'\naffects: ['[[jwt-module]]']",
-        "# Auth ADR\n",
+        "# Auth ADR\nSee [[auth-service]], [[jwt-module|JWT]], and [[missing-page]].\n",
     )
     _write_page(
         wiki / "contracts" / "rest" / "auth-api.md",
@@ -105,9 +105,13 @@ def test_html_export_writes_static_read_only_site(tmp_path: Path):
     assert (out / "graph" / "graph.dot").exists()
     index = (out / "index.html").read_text()
     service = (out / "services" / "auth-service.html").read_text()
+    decision = (out / "decisions" / "auth-adr.html").read_text()
     assert "Alpha-Wiki Export" in index
     assert 'href="services/auth-service.html"' in index
     assert 'href="wiki/services/auth-service.html"' not in index
+    assert 'href="../services/auth-service.html"' in decision
+    assert 'href="../modules/jwt-module.html"' in decision
+    assert '<span class="missing-link">[[missing-page]]</span>' in decision
     assert "Auth Service" in service
     assert "Static read-only export" in index
 
@@ -120,3 +124,15 @@ def test_html_export_cli_writes_custom_output_dir(tmp_path: Path):
 
     assert result.exit_code == 0, result.output
     assert (out / "index.html").exists()
+
+
+def test_html_export_preserves_unrelated_custom_output_files(tmp_path: Path):
+    wiki = _mixed_cluster_wiki(tmp_path)
+    out = tmp_path / "site"
+    out.mkdir()
+    keep = out / "operator-note.txt"
+    keep.write_text("keep me\n")
+
+    render_html(wiki, out_dir=out)
+
+    assert keep.read_text() == "keep me\n"

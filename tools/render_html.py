@@ -16,9 +16,9 @@ from tools.wiki_engine import rebuild_context_brief, rebuild_edges, rebuild_open
 
 def render_html(wiki_dir: Path, out_dir: Path | None = None) -> Path:
     target = out_dir or wiki_dir / "render" / "html"
-    if target.exists():
-        if target.resolve() == wiki_dir.resolve():
-            raise ValueError("HTML output directory must not be the wiki source directory")
+    if target.resolve() == wiki_dir.resolve():
+        raise ValueError("HTML output directory must not be the wiki source directory")
+    if out_dir is None and target.exists():
         shutil.rmtree(target)
     target.mkdir(parents=True, exist_ok=True)
     graph_dir = target / "graph"
@@ -30,8 +30,9 @@ def render_html(wiki_dir: Path, out_dir: Path | None = None) -> Path:
     rebuild_open_questions(wiki_dir)
 
     pages = sorted(scan_wiki(wiki_dir), key=lambda page: page.slug)
+    hrefs = {page.slug: _page_href(wiki_dir, page) for page in pages}
     for page in pages:
-        _write_page(wiki_dir, target, page)
+        _write_page(wiki_dir, target, page, hrefs)
     _write_index(wiki_dir, target, pages)
     _write_style(target)
     return target
@@ -59,12 +60,12 @@ def _write_index(wiki_dir: Path, out_dir: Path, pages: list[Page]) -> None:
     (out_dir / "index.html").write_text(_layout("Alpha-Wiki Export", body))
 
 
-def _write_page(wiki_dir: Path, out_dir: Path, page: Page) -> None:
+def _write_page(wiki_dir: Path, out_dir: Path, page: Page, hrefs: dict[str, str]) -> None:
     rel = Path(page.path).relative_to(wiki_dir).with_suffix(".html")
     target = out_dir / rel
     target.parent.mkdir(parents=True, exist_ok=True)
     frontmatter = "\n".join(
-        f"<tr><th>{html.escape(str(key))}</th><td>{_link_wikilinks(html.escape(str(value)))}</td></tr>"
+        f"<tr><th>{html.escape(str(key))}</th><td>{_link_wikilinks(html.escape(str(value)), target, out_dir, hrefs)}</td></tr>"
         for key, value in sorted(page.frontmatter.items())
     )
     body = f"""
@@ -74,7 +75,7 @@ def _write_page(wiki_dir: Path, out_dir: Path, page: Page) -> None:
 {frontmatter}
 </table>
 <main>
-{_markdown(page.body)}
+{_markdown(page.body, target, out_dir, hrefs)}
 </main>
 """
     target.write_text(_layout(page.title, body, depth=len(rel.parts) - 1))
@@ -148,10 +149,11 @@ nav {
 }
 .muted { color: #6b7280; }
 .page-list li { margin: 8px 0; }
+.missing-link { color: #b91c1c; }
 """)
 
 
-def _markdown(text: str) -> str:
+def _markdown(text: str, target: Path, out_dir: Path, hrefs: dict[str, str]) -> str:
     lines = text.splitlines()
     out: list[str] = []
     in_code = False
@@ -174,12 +176,12 @@ def _markdown(text: str) -> str:
                 in_list = False
             level = min(len(line) - len(line.lstrip("#")), 6)
             label = line[level:].strip()
-            out.append(f"<h{level}>{_inline(label)}</h{level}>")
+            out.append(f"<h{level}>{_inline(label, target, out_dir, hrefs)}</h{level}>")
         elif line.startswith("- "):
             if not in_list:
                 out.append("<ul>")
                 in_list = True
-            out.append(f"<li>{_inline(line[2:].strip())}</li>")
+            out.append(f"<li>{_inline(line[2:].strip(), target, out_dir, hrefs)}</li>")
         elif not line:
             if in_list:
                 out.append("</ul>")
@@ -188,7 +190,7 @@ def _markdown(text: str) -> str:
             if in_list:
                 out.append("</ul>")
                 in_list = False
-            out.append(f"<p>{_inline(line)}</p>")
+            out.append(f"<p>{_inline(line, target, out_dir, hrefs)}</p>")
     if in_list:
         out.append("</ul>")
     if in_code:
@@ -196,18 +198,22 @@ def _markdown(text: str) -> str:
     return "\n".join(out)
 
 
-def _inline(text: str) -> str:
-    return _link_wikilinks(html.escape(text))
+def _inline(text: str, target: Path, out_dir: Path, hrefs: dict[str, str]) -> str:
+    return _link_wikilinks(html.escape(text), target, out_dir, hrefs)
 
 
-def _link_wikilinks(text: str) -> str:
-    return re.sub(r"\[\[([^]|]+)(?:\|([^]]+))?\]\]", _wikilink_repl, text)
+def _link_wikilinks(text: str, target: Path, out_dir: Path, hrefs: dict[str, str]) -> str:
+    return re.sub(r"\[\[([^]|]+)(?:\|([^]]+))?\]\]", lambda match: _wikilink_repl(match, target, out_dir, hrefs), text)
 
 
-def _wikilink_repl(match: re.Match) -> str:
+def _wikilink_repl(match: re.Match, target: Path, out_dir: Path, hrefs: dict[str, str]) -> str:
     slug = match.group(1)
     label = match.group(2) or slug
-    return f'<a href="../{html.escape(slug)}.html">[[{html.escape(label)}]]</a>'
+    href = hrefs.get(slug)
+    if href:
+        prefix = _relative_back(target, out_dir)
+        return f'<a href="{prefix}{html.escape(href)}">[[{html.escape(label)}]]</a>'
+    return f'<span class="missing-link">[[{html.escape(label)}]]</span>'
 
 
 def _page_href(wiki_dir: Path, page: Page) -> str:
