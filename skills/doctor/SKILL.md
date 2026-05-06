@@ -21,7 +21,7 @@ Give the operator and AI one reliable command that answers: "Is this Alpha-Wiki 
    - Fall back to `wiki/`.
 
 2. Run deterministic backend:
-   - `uv run python tools/doctor.py --project-dir .`
+   - `uv run python -m tools.doctor --project-dir .`
    - Add `--refresh` after init or after manual page edits.
    - Add `--strict` for release gates.
    - Add `--platform claude`, `--platform codex`, or `--platform both` when checking a specific runtime.
@@ -54,9 +54,9 @@ Always surface:
 Use this sequence for release smoke checks:
 
 ```bash
-uv run python tools/doctor.py --project-dir . --platform both --refresh --strict
-uv run python tools/lint.py --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run
-uv run python tools/review.py --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml
+uv run python -m tools.doctor --project-dir . --platform both --refresh --strict
+uv run python -m tools.lint --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run
+uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml
 ```
 
 ## Done Criteria

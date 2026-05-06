@@ -9,8 +9,8 @@ Mode: $ARGUMENTS (default: `obsidian`)
 
 For `obsidian`: refresh `<wiki_dir>/.obsidian/graph.json` colorGroups and `<wiki_dir>/.obsidian/community-plugins.json` to match semantic graph layers: red repos/services, green modules/domains, blue features/flows, black documents, orange contracts. Idempotent — safe to re-run.
 
-For `mermaid`: run `uv run python tools/render_mermaid.py --wiki-dir <wiki_dir>` and write `<wiki_dir>/graph/graph.mmd`.
+For `mermaid`: run `uv run python -m tools.render_mermaid --wiki-dir <wiki_dir>` and write `<wiki_dir>/graph/graph.mmd`.
 
-For `dot`: run `uv run python tools/render_dot.py --wiki-dir <wiki_dir>` and write `<wiki_dir>/graph/graph.dot`.
+For `dot`: run `uv run python -m tools.render_dot --wiki-dir <wiki_dir>` and write `<wiki_dir>/graph/graph.dot`.
 
-For `html`: run `uv run python tools/render_html.py --wiki-dir <wiki_dir>` and write `<wiki_dir>/render/html/index.html`. Use `--out <dir>` when the user wants a release/shareable bundle somewhere else.
+For `html`: run `uv run python -m tools.render_html --wiki-dir <wiki_dir>` and write `<wiki_dir>/render/html/index.html`. Use `--out <dir>` when the user wants a release/shareable bundle somewhere else.

@@ -49,7 +49,7 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 
 3. For each source:
    - Classify and write the first deterministic page with:
-     - `uv run python tools/ingest_pipeline.py --wiki-dir <wiki_dir> <source>`
+     - `uv run python -m tools.ingest_pipeline --wiki-dir <wiki_dir> <source>`
    - Use `--slot <dir>` when the target directory is obvious.
    - Use `--belongs-to <slug>` when attaching the page to a service/repo/module cluster.
    - Use `--resume` for interrupted batches; resume state lives in `<wiki_dir>/graph/ingest_state.json`.

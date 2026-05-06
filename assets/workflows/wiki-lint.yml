@@ -13,4 +13,4 @@ jobs:
       - name: sync deps
         run: uv sync --dev
       - name: run lint
-        run: uv run python tools/lint.py --wiki-dir wiki --dry-run
+        run: uv run python -m tools.lint --wiki-dir wiki --config .alpha-wiki/config.yaml --dry-run

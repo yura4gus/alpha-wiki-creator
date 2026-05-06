@@ -7,6 +7,6 @@ Invoke the `doctor` skill from the `alpha-wiki` plugin. Human meaning: run one d
 
 Flags from the user (if any): $ARGUMENTS
 
-Run: `uv run python tools/doctor.py --project-dir . $ARGUMENTS`
+Run: `uv run python -m tools.doctor --project-dir . $ARGUMENTS`
 
 Report PASS/WARN/FAIL checks. Treat FAIL as blocking. Treat WARN as non-blocking unless `--strict` was requested. If `--refresh` was used, mention that graph artifacts were rebuilt before verification.

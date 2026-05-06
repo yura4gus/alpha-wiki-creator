@@ -77,9 +77,9 @@ Color is not cluster. Do not build or describe one red cluster, one green cluste
    - Ensure color groups match current directory semantics.
    - Preserve user-local customizations when possible; report conflicts.
 4. For export modes:
-   - `mermaid`: run `uv run python tools/render_mermaid.py --wiki-dir <wiki_dir>`.
-   - `dot`: run `uv run python tools/render_dot.py --wiki-dir <wiki_dir>`.
-   - `html`: run `uv run python tools/render_html.py --wiki-dir <wiki_dir>`.
+   - `mermaid`: run `uv run python -m tools.render_mermaid --wiki-dir <wiki_dir>`.
+   - `dot`: run `uv run python -m tools.render_dot --wiki-dir <wiki_dir>`.
+   - `html`: run `uv run python -m tools.render_html --wiki-dir <wiki_dir>`.
 5. Run `/alpha-wiki:lint --suggest` if graph data changed.
 
 ## Done Criteria

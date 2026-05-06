@@ -55,3 +55,12 @@ def test_generated_readme_uses_alpha_wiki_ci_commands():
     assert "Color is not a cluster" in out
     assert "`wiki:review`" not in out
     assert "/wiki-review" not in out
+
+
+def test_generated_gitignore_ignores_obsidian_runtime_state():
+    out = _env().get_template("gitignore.j2").render(wiki_dir="wiki")
+
+    assert ".obsidian/" in out
+    assert "wiki/.obsidian/app.json" in out
+    assert "wiki/.obsidian/graph.json" in out
+    assert "wiki/.obsidian/workspace.json" in out

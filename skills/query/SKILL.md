@@ -43,7 +43,7 @@ Use this structure unless the user asked for something smaller:
 1. Detect wiki dir from `CLAUDE.md` or default to `wiki/`.
 2. Read `context_brief.md` and `index.md`.
 3. Search candidate pages by slug, title, directory, frontmatter, and body:
-   - `uv run python tools/wiki_search.py --wiki-dir <wiki_dir> --query "<question>"`
+   - `uv run python -m tools.wiki_search --wiki-dir <wiki_dir> --query "<question>"`
 4. Read candidate pages deeply enough to avoid shallow summary.
 5. Check for contradictions:
    - Conflicting statuses.

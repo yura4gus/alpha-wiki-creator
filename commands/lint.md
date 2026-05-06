@@ -7,6 +7,6 @@ Invoke the `lint` skill from the `alpha-wiki` plugin. Human meaning: check wheth
 
 Flags from the user (if any): $ARGUMENTS
 
-Run: `uv run python tools/lint.py --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml $ARGUMENTS`
+Run: `uv run python -m tools.lint --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml $ARGUMENTS`
 
 Surface findings grouped by severity (🔴 errors block; 🟡 warnings inform). If `--fix` was used, summarize what was auto-corrected. Suggest manual follow-ups for non-auto-fixable items.

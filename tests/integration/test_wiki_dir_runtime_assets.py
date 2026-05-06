@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from scripts.bootstrap import bootstrap
@@ -30,10 +31,15 @@ def test_custom_wiki_dir_is_rendered_into_hooks_and_workflows(tmp_path: Path):
         assert 'WIKI_DIR="${WIKI_DIR:-.wiki}"' in (tmp_path / ".claude" / "hooks" / hook).read_text()
 
     settings = (tmp_path / ".claude" / "settings.local.json").read_text()
-    assert '"path_glob": ".wiki/**"' in settings
+    settings_data = json.loads(settings)
+    assert "PreToolUse" in settings_data["hooks"]
+    assert settings_data["hooks"]["PreToolUse"][0]["matcher"] == "Write|Edit|MultiEdit"
+    assert settings_data["hooks"]["PostToolUse"][0]["matcher"] == "Write|Edit|MultiEdit"
+    assert "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-tool-use.sh" in settings
+    assert "path_glob" not in settings
 
     lint_workflow = (tmp_path / ".github" / "workflows" / "wiki-lint.yml").read_text()
-    assert "--wiki-dir .wiki --dry-run" in lint_workflow
+    assert "--wiki-dir .wiki --config .alpha-wiki/config.yaml --dry-run" in lint_workflow
     assert "--wiki-dir wiki" not in lint_workflow
 
     review_workflow = (tmp_path / ".github" / "workflows" / "wiki-review.yml").read_text()
@@ -65,6 +71,8 @@ def test_post_tool_hook_rebuilds_full_graph(tmp_path: Path):
 
     hook = (tmp_path / ".claude" / "hooks" / "post-tool-use.sh").read_text()
     assert 'WIKI_DIR="${WIKI_DIR:-.wiki}"' in hook
-    assert "rebuild-edges --wiki-dir \"$WIKI_DIR\"" in hook
-    assert "rebuild-context-brief --wiki-dir \"$WIKI_DIR\"" in hook
-    assert "rebuild-open-questions --wiki-dir \"$WIKI_DIR\"" in hook
+    assert "-m tools.wiki_engine rebuild-edges --wiki-dir \"$WIKI_DIR\"" in hook
+    assert "-m tools.wiki_engine rebuild-context-brief --wiki-dir \"$WIKI_DIR\"" in hook
+    assert "-m tools.wiki_engine rebuild-open-questions --wiki-dir \"$WIKI_DIR\"" in hook
+    assert "tool_input" in hook
+    assert ".venv/bin/python" in hook

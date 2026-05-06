@@ -2,7 +2,13 @@
 set -euo pipefail
 WIKI_DIR="${WIKI_DIR:-wiki}"
 
-uv run python tools/lint.py --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --fix
+if command -v uv >/dev/null 2>&1; then
+  uv run python -m tools.lint --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --fix
+elif [ -x ".venv/bin/python" ]; then
+  .venv/bin/python -m tools.lint --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --fix
+else
+  python3 -m tools.lint --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --fix
+fi
 RESULT=$?
 if [ $RESULT -eq 0 ]; then
   git add "$WIKI_DIR"

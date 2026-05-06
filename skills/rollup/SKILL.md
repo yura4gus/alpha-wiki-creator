@@ -24,7 +24,7 @@ Compress a period of wiki activity into a durable summary while preserving links
 1. Detect wiki dir.
 2. Determine period.
 3. Run backend:
-   - `uv run python tools/rollup.py --wiki-dir <wiki_dir> --period <week|month>`
+   - `uv run python -m tools.rollup --wiki-dir <wiki_dir> --period <week|month>`
    - Add `--write` when persistence is requested.
 4. Read generated report and improve presentation if needed without inventing facts.
 5. If written, ensure output path:

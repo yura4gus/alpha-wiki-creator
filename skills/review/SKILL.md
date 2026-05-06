@@ -33,7 +33,7 @@ Always consider:
 
 1. Detect wiki dir and config.
 2. Run deterministic backend:
-   - `uv run python tools/review.py --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml`
+   - `uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml`
 3. Inspect graph semantics:
    - Red nodes isolated.
    - Orange contracts missing consumers/owners.

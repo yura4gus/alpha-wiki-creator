@@ -39,7 +39,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
    - Detect code markers: `src/`, `package.json`, `pyproject.toml`, `go.mod`, etc.
    - Detect existing `wiki/`, legacy/custom `.wiki/`, `raw/`, `CLAUDE.md`, `wiki/.obsidian/`, legacy root `.obsidian/`, `.claude/`, `.github/workflows/`.
    - If existing project files are present, plan safe-existing mode.
-   - Run or emulate `tools/init_audit.py --root <project> --wiki-dir <wiki_dir>` to enumerate durable source documents and exclude generated/runtime folders.
+   - Run or emulate `uv run python -m tools.init_audit --root <project> --wiki-dir <wiki_dir>` to enumerate durable source documents and exclude generated/runtime folders.
    - Classify candidate docs into root contracts, architecture docs, ADRs, commands, skills, references, specs, API contracts, transcripts, and archives.
 
 2. Build the initial source corpus plan:
@@ -81,12 +81,12 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
    - Write a raw source manifest when the user chose manifest or mixed mode.
 
 7. Verify immediately:
-   - `tools/init_audit.py --root <project> --wiki-dir <wiki_dir>`
-   - `tools/lint.py --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run`
-   - `tools/wiki_engine.py rebuild-edges --wiki-dir <wiki_dir>`
-   - `tools/wiki_engine.py rebuild-context-brief --wiki-dir <wiki_dir>`
-   - `tools/wiki_engine.py rebuild-open-questions --wiki-dir <wiki_dir>`
-   - `tools/doctor.py --project-dir <project> --wiki-dir <wiki_dir> --platform both --refresh`
+   - `uv run python -m tools.init_audit --root <project> --wiki-dir <wiki_dir>`
+   - `uv run python -m tools.lint --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run`
+   - `uv run python -m tools.wiki_engine rebuild-edges --wiki-dir <wiki_dir>`
+   - `uv run python -m tools.wiki_engine rebuild-context-brief --wiki-dir <wiki_dir>`
+   - `uv run python -m tools.wiki_engine rebuild-open-questions --wiki-dir <wiki_dir>`
+   - `uv run python -m tools.doctor --project-dir <project> --wiki-dir <wiki_dir> --platform both --refresh`
    - `/alpha-wiki:status` or `tools/status.py` equivalent.
 
 8. Teach the user the first three moves:

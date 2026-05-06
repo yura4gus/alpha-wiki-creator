@@ -10,7 +10,7 @@ Arguments: $ARGUMENTS
 Run:
 
 ```bash
-uv run python tools/review.py --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml $ARGUMENTS
+uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml $ARGUMENTS
 ```
 
 Surface the generated markdown report. This is Alpha-Wiki structural review, not AgentOps `cto-review`.

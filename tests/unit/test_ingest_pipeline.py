@@ -28,6 +28,7 @@ def test_ingest_pipeline_writes_page_with_provenance_log_and_graph(tmp_path: Pat
     assert "source_file:" in text
     assert "belongs_to: [[auth-service]]" in text
     assert "Should login use JWT?" in text
+    assert "[[prd-auth]]" in (wiki / "index.md").read_text()
     assert "deterministic pipeline" in (wiki / "log.md").read_text()
     edges = {(edge.source, edge.target, edge.relation) for edge in read_edges(wiki / "graph" / "edges.jsonl")}
     assert ("prd-auth", "auth-service", "belongs_to") in edges
@@ -35,17 +36,24 @@ def test_ingest_pipeline_writes_page_with_provenance_log_and_graph(tmp_path: Pat
 
 def test_ingest_pipeline_cli_reports_written_page(tmp_path: Path):
     wiki = tmp_path / "wiki"
+    (wiki / "services").mkdir(parents=True)
     (wiki / "specs").mkdir(parents=True)
     (wiki / "graph").mkdir()
+    (wiki / "services" / "demo-service.md").write_text(
+        "---\ntitle: Demo Service\nslug: demo-service\nstatus: stable\ndate_updated: 2026-05-04\n---\n# Demo Service\n"
+    )
+    (wiki / "index.md").write_text("# Index\n\n- [[demo-service]]\n")
     source = tmp_path / "raw-note.md"
     source.write_text("# Raw Note\nDurable note.\n")
 
-    result = CliRunner().invoke(cli, ["--wiki-dir", str(wiki), str(source)])
+    result = CliRunner().invoke(cli, ["--wiki-dir", str(wiki), "--belongs-to", "demo-service", str(source)])
 
     assert result.exit_code == 0, result.output
     assert "# Wiki Ingest" in result.output
     assert "[[raw-note]]" in result.output
+    assert "lint: 0 error(s), 0 warning(s)" in result.output
     assert (wiki / "specs" / "raw-note.md").exists()
+    assert "[[raw-note]]" in (wiki / "index.md").read_text()
 
 
 def test_ingest_pipeline_routes_adr_to_decisions(tmp_path: Path):

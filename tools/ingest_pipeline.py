@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import re
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date
 from pathlib import Path
 
@@ -47,9 +47,14 @@ def ingest_files(
         if resume:
             completed.add(source_key)
             _write_state(wiki_dir, sorted(completed), failed=[])
+    _update_index(wiki_dir, results)
     rebuild_edges(wiki_dir)
     rebuild_context_brief(wiki_dir)
     rebuild_open_questions(wiki_dir)
+    findings = run_all_checks(wiki_dir, schema={}, dir_to_type={}, dependency_rules=[])
+    lint_errors = sum(1 for finding in findings if finding.severity == LintSeverity.ERROR)
+    lint_warnings = sum(1 for finding in findings if finding.severity == LintSeverity.WARNING)
+    results = [replace(result, lint_errors=lint_errors, lint_warnings=lint_warnings) for result in results]
     _append_log(wiki_dir, results)
     return results
 
@@ -93,15 +98,36 @@ def _ingest_one(wiki_dir: Path, source: Path, slot: str | None, belongs_to: str 
     page = wiki_dir / target_slot / f"{slug}.md"
     page.parent.mkdir(parents=True, exist_ok=True)
     page.write_text(_page_text(source, title, slug, target_slot, artifact.kind, belongs_to, body))
-    findings = run_all_checks(wiki_dir, schema={}, dir_to_type={}, dependency_rules=[])
     return IngestResult(
         source=source,
         page=page,
         slot=target_slot,
         slug=slug,
-        lint_errors=sum(1 for finding in findings if finding.severity == LintSeverity.ERROR),
-        lint_warnings=sum(1 for finding in findings if finding.severity == LintSeverity.WARNING),
+        lint_errors=0,
+        lint_warnings=0,
     )
+
+
+def _update_index(wiki_dir: Path, results: list[IngestResult]) -> None:
+    if not results:
+        return
+    index = wiki_dir / "index.md"
+    if index.exists():
+        text = index.read_text().rstrip()
+    else:
+        text = "---\nproject: alpha-wiki\ngenerated: unknown\n---\n# Index"
+    if "## Ingested Pages" not in text:
+        text += "\n\n## Ingested Pages\n"
+    existing = text
+    additions = []
+    for result in results:
+        link = f"[[{result.slug}]]"
+        if link in existing:
+            continue
+        additions.append(f"- {link} -> `{result.slot}/`")
+    if additions:
+        text += "\n" + "\n".join(additions)
+    index.write_text(text.rstrip() + "\n")
 
 
 def _page_text(source: Path, title: str, slug: str, slot: str, kind: str, belongs_to: str | None, body: str) -> str:

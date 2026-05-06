@@ -7,3 +7,9 @@ htmlcov/
 dist/
 *.egg-info/
 .DS_Store
+.obsidian/
+wiki/.obsidian/app.json
+wiki/.obsidian/appearance.json
+wiki/.obsidian/core-plugins.json
+wiki/.obsidian/graph.json
+wiki/.obsidian/workspace.json

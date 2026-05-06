@@ -99,6 +99,7 @@ def run_release_smoke(base_dir: Path | None = None) -> SmokeResult:
             "title: Smoke Module\nslug: smoke-module\nstatus: stable\ndate_updated: 2026-05-05\nbelongs_to: [[smoke-service]]\nsource: [[release-smoke]]",
             "# Smoke Module\n",
         )
+        _append_index_links(wiki, ["smoke-service", "smoke-module"])
         source = project / "raw" / "docs" / "release-smoke-prd.md"
         source.parent.mkdir(parents=True, exist_ok=True)
         source.write_text(
@@ -139,6 +140,14 @@ def _record(checks: list[tuple[str, str, str]], name: str, passed: bool, message
 def _write_page(path: Path, frontmatter: str, body: str) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(f"---\n{frontmatter.strip()}\n---\n{body}")
+
+
+def _append_index_links(wiki: Path, slugs: list[str]) -> None:
+    index = wiki / "index.md"
+    text = index.read_text() if index.exists() else "# Index\n"
+    additions = [f"- [[{slug}]]" for slug in slugs if f"[[{slug}]]" not in text]
+    if additions:
+        index.write_text(text.rstrip() + "\n\n## Smoke Fixtures\n" + "\n".join(additions) + "\n")
 
 
 @click.command()
