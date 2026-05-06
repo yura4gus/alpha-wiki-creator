@@ -8,6 +8,22 @@ A Claude Code plugin that turns Andrej Karpathy's LLM-Wiki sketch into a product
 
 ---
 
+## Release status
+
+Alpha-Wiki is ready as a **v0.1 release candidate** for real Claude Code and Codex pilots.
+
+Current verified gates:
+
+- Fresh install smoke: `init -> doctor -> ingest -> query -> status -> review -> render`
+- Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
+- Codex runtime: installed `$alpha-wiki-*` skill adapters
+- Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
+- Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
+- Release audit: expected verdict `READY`
+- Test suite: expected green state `127 passed`
+
+Remaining external prerequisite: install `uv` for the smoothest Claude/CI path (`pipx install uv`). Hooks can fall back to `.venv/bin/python` or `python3`, but `uv` is the supported release path.
+
 ## Why Alpha-wiki
 
 LLM agents forget. RAG hides what they remember. Embeddings drift silently and obscure why a retrieval landed. **Plain markdown with `[[wikilinks]]` doesn't have these problems** — but raw markdown alone is undisciplined: pages go stale, links rot, structure entropies.
@@ -49,6 +65,7 @@ Then in any project:
 
 ```
 /alpha-wiki:init
+/alpha-wiki:doctor --platform both --refresh
 ```
 
 ### Codex CLI (OpenAI)
@@ -124,7 +141,8 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 - **Schema evolution** — new entity types added through ingest, never preempted
 - **Auto-generated context** — `wiki/graph/context_brief.md` (≤8000 chars) loaded at every session start
 - **Obsidian-compatible** — `wiki/.obsidian/` config generated, so opening the `wiki/` folder as a vault works out of the box
-- **Deterministic engine** — `tools/doctor.py`, `tools/lint.py`, and `tools/wiki_engine.py` are pure Python, no LLM, fully tested
+- **Claude hook runtime** — official hook event names, JSON stdin parsing, wiki-path filtering, and graph rebuild after wiki writes
+- **Deterministic engine** — `tools.doctor`, `tools.lint`, and `tools.wiki_engine` are pure Python modules, no LLM, fully tested
 - **Schema-evolution gate** — every new entity type confirmed before added (or auto-mode if you trust)
 - **CI-ready** — weekly `/alpha-wiki:review`, monthly `/alpha-wiki:rollup` via headless Claude
 
@@ -184,6 +202,8 @@ Color is not a clustering mechanism. Clusters should emerge from typed links and
 
 Customize: edit `wiki/.obsidian/graph.json` → `colorGroups` array. Full legend at `wiki/.obsidian/COLOR-LEGEND.md` after bootstrap.
 
+Obsidian may rewrite `wiki/.obsidian/graph.json`, `workspace.json`, `app.json`, `appearance.json`, and `core-plugins.json` during normal use. Alpha-Wiki treats those as local runtime state and ignores them in git; the portable defaults live under `assets/obsidian/`.
+
 ## Documentation
 
 Current architecture set:
@@ -235,7 +255,7 @@ uv sync --dev
 Run the deterministic final-release gate:
 
 ```bash
-.venv/bin/python tools/release_audit.py --root .
+.venv/bin/python -m tools.release_audit --root .
 ```
 
 Current expected release-audit verdict: `READY`.
