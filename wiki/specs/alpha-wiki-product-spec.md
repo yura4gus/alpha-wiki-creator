@@ -19,7 +19,7 @@ evidence: docs/01-alpha-wiki.md
 
 - Runtime layers: `raw/`, wiki pages, graph artifacts, gated schema contract.
 - User operations: init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup.
-- Deterministic tools: wiki engine, lint, init audit, ingest pipeline, query/search, status/review/rollup, renderers, release audit, trust-depth checks.
+- Deterministic tools: wiki engine, lint, init audit, ingest pipeline, query/search, status/review/rollup, renderers, release audit, and contract/claim sanity checks.
 - Presentation layer: Obsidian config plus Mermaid, DOT, and static HTML exports.
 
 ## Requirements

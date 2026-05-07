@@ -15,8 +15,8 @@ This plan consolidates the key improvements discovered during Phase 0:
 | Release | Scope | Gate |
 |---|---|---|
 | Alpha-Wiki v1.0 | Standalone memory/wiki plugin: Claude Code + Codex adapter, typed markdown memory, graph discipline, lint/status/review/rollup, Obsidian + export layer. | Fresh install → init → ingest → query → lint → status → review works on a real project. |
-| AgentOps v1.0 | Separate operating-model plugin: project init, planning, execution, review, state files, optional Alpha-Wiki backend. | Fresh install → init-project → onboard → plan-slice → execute-slice → cto-review works without Alpha-Wiki. |
-| Combined v1.0 | Alpha-Wiki + AgentOps integration: AgentOps uses Alpha-Wiki as knowledge backend when present. | Combined smoke test routes state/wiki correctly and passes integration checks. |
+| AgentOps future | Adjacent/future product, not part of the Alpha-Wiki first-run or beta release gate. | Tracked separately. |
+| Combined future | Optional future integration, not part of the Alpha-Wiki first-run or beta release gate. | Tracked separately. |
 
 ## Implementation Progress
 
@@ -29,7 +29,7 @@ This plan consolidates the key improvements discovered during Phase 0:
 | Init source corpus audit | done | `tools/init_audit.py`, init skill/command workflow, source-manifest tests. |
 | R0.2 Graph QA exports | done | `tools/render_mermaid.py`, `tools/render_dot.py`, mixed-role cluster export tests. |
 | R0.6 trust report base | in-progress | Status/review now include cluster health, provenance score, freshness, open-question follow-up, and next actions. |
-| Trust-depth triad | done | `tools/contracts_check.py`, `tools/claims_check.py`, `tools/contradiction_detector.py`, unit tests, release-audit gate. |
+| Contract/claim sanity checks | done | `tools/contracts_check.py`, `tools/claims_check.py`, `tools/contradiction_detector.py`, unit tests, release-audit gate. These are deterministic checks, not semantic contradiction intelligence. |
 | R0.4 query helper | done | `tools/wiki_search.py`, query CLI, citation/ranking tests. |
 | R0.3 ingest pipeline MVP | in-progress | `tools/ingest_pipeline.py`, local-file ingest CLI, provenance/log/graph/lint/resume pressure tests. |
 | R1.10 static HTML export | done | `tools/render_html.py`, static read-only HTML bundle tests. |
@@ -140,8 +140,8 @@ Lint/review must detect:
 | Skill pressure tests | All P0 skills have pressure fixtures. |
 | Smoke: Alpha-Wiki only | Fresh project: install, init, ingest, query, lint, status, review. |
 | Smoke: Codex | Install Codex skills, run init/status/lint workflow manually. |
-| Smoke: AgentOps only | Fresh project: init-project, onboard, plan, execute, review. |
-| Smoke: Combined | AgentOps + Alpha-Wiki route state/wiki correctly. |
+| Smoke: AgentOps only | Future/adjacent; not part of Alpha-Wiki beta release. |
+| Smoke: Combined | Future/adjacent; not part of Alpha-Wiki beta release. |
 | Graph QA | Mixed-color clusters render and machine graph agrees with frontmatter links. |
 | Docs | README, quickstart, compatibility matrix, CHANGELOG, migration notes complete. |
 | Packaging | Plugin metadata, marketplace metadata, tags, release notes complete. |
@@ -157,6 +157,6 @@ Lint/review must detect:
 7. Codex adapter hardening and platform matrix.
 8. Release docs, changelog, packaging.
 9. Alpha-Wiki smoke test.
-10. AgentOps/combined smoke tests.
+10. Optional future AgentOps/combined smoke tests outside the Alpha-Wiki beta gate.
 
 This order keeps the knowledge graph trustworthy first. Everything else builds on that.

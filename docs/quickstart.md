@@ -2,6 +2,8 @@
 
 Goal: get from install to a useful, queryable markdown wiki in about 10 minutes.
 
+Shortest path: install, init, doctor, ingest one file, query, status, render HTML. Everything else is optional hardening.
+
 ## 1. Install
 
 Claude Code:
@@ -105,14 +107,19 @@ Use $alpha-wiki-review.
 
 The status report must always show a `Gap Check`. Treat gaps as work routing, not as failure noise.
 
-## 6. Read The Graph
+## 6. Render HTML And Graph
 
-Open the generated `wiki/` folder itself in Obsidian or render exports:
+Render a read-only HTML snapshot first:
+
+```text
+/alpha-wiki:render html
+```
+
+Optional graph exports:
 
 ```text
 /alpha-wiki:render mermaid
 /alpha-wiki:render dot
-/alpha-wiki:render html
 ```
 
 Graph rule:

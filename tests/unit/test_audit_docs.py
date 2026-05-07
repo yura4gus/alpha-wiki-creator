@@ -86,7 +86,7 @@ def test_final_release_readiness_audit_names_release_blockers():
     for phrase in [
         "Current verdict: **READY**",
         "P0 release blockers are closed",
-        "Trust-depth triad",
+        "Contract/claim sanity checks",
         "Quickstart",
         "Changelog",
         "Fresh install smoke",
@@ -105,7 +105,7 @@ def test_quickstart_covers_first_run_operator_path():
         "Verify Runtime",
         "Ingest First Durable Source",
         "Query And Check Status",
-        "Read The Graph",
+        "Render HTML And Graph",
         "Color is node role",
         "Cluster is typed relationship",
     ]:
@@ -121,8 +121,8 @@ def test_changelog_and_smoke_evidence_cover_release_limits():
         "11 operations",
         "Codex is supported",
         "Gemini is not packaged",
-        "Trust-depth tools",
-        "Semantic trust tools now cover",
+        "Deterministic sanity-check tools",
+        "not semantic truth resolution",
     ]:
         assert phrase in changelog
 

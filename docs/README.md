@@ -2,6 +2,8 @@
 
 This folder contains the current project design package for Alpha-Wiki and the related AgentOps/Superpowers integration model.
 
+For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers/` folder is historical design archive and future context, not part of the Alpha-Wiki beta first-run path.
+
 ## Architecture Set
 
 - [`00-architecture.md`](00-architecture.md) — ecosystem boundaries, ownership, plugin topology, integration matrix
@@ -24,6 +26,8 @@ This folder contains the current project design package for Alpha-Wiki and the r
 - [`platform-compatibility-matrix.md`](platform-compatibility-matrix.md) — Claude/Codex/Gemini support matrix and release language
 - [`final-release-readiness-audit-2026-05-04.md`](final-release-readiness-audit-2026-05-04.md) — deterministic final-release readiness audit and blocking gaps
 - [`release-smoke-2026-05-05.md`](release-smoke-2026-05-05.md) — fresh-project Claude/Codex release smoke evidence
+- [`generated-artifacts-policy.md`](generated-artifacts-policy.md) — tracked/generated graph and HTML snapshot policy
+- [`examples/`](examples/) — small API, code, and feature contract examples
 
 ## ADRs
 
@@ -37,5 +41,5 @@ This folder contains the current project design package for Alpha-Wiki and the r
 ## Supporting Material
 
 - [`_references.md`](_references.md) — source links and references for the design package
-- [`files.zip`](files.zip) — original uploaded document bundle
-- [`superpowers/`](superpowers/) — earlier design and implementation-plan materials
+- [`files.zip`](files.zip) — original uploaded document bundle kept as historical source material; it is release noise and can be removed in a later cleanup if no longer needed
+- [`superpowers/`](superpowers/) — archived earlier design and implementation-plan materials, not first-run docs

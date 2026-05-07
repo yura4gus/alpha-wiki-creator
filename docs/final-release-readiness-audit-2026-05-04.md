@@ -1,12 +1,14 @@
 # Final Release Readiness Audit — 2026-05-04
 
-Goal: independently check whether Alpha-Wiki is ready for a final public release.
+Goal: independently check whether Alpha-Wiki is ready for a final packaged release candidate.
 
 ## Verdict
 
-Current verdict: **READY** for the current packaged release.
+Current verdict: **READY** for the current local packaged release candidate.
 
-Reason: P0 packaging blockers are closed and the trust-depth triad now has deterministic tools for contracts, claims, and contradictions.
+Reason: P0 packaging blockers are closed and deterministic sanity checks now exist for contracts, claims, and explicit contradictions.
+
+Public release note: this verdict applies to the audited local tree. Public install is ready only after the audited commits are pushed to `origin/main` or published as a tagged release.
 
 ## What Is Release-Strong
 
@@ -17,12 +19,12 @@ Reason: P0 packaging blockers are closed and the trust-depth triad now has deter
 | Codex path | pass with limitations | `scripts/install_codex.py`, prefixed skills, doctor platform check. |
 | Graph semantics | pass | Typed cluster links, Obsidian colors, Mermaid/DOT exports, Graph QA tests. |
 | Static read-only export | pass | `tools/render_html.py`. |
-| Test suite | pass | Latest recorded result: `124 passed`. |
+| Test suite | pass | Latest verified result: `129 passed`. |
 | Quickstart | pass | `docs/quickstart.md`. |
 | Changelog | pass | `CHANGELOG.md`. |
 | Fresh install smoke | pass | `docs/release-smoke-2026-05-05.md`. |
 | Packaging/version metadata | pass | `pyproject.toml`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, and changelog entry are aligned. |
-| Trust-depth triad | pass | `tools/contracts_check.py`, `tools/claims_check.py`, `tools/contradiction_detector.py`. |
+| Contract/claim sanity checks | pass | `tools/contracts_check.py`, `tools/claims_check.py`, `tools/contradiction_detector.py`. These are deterministic checks, not semantic truth resolution. |
 
 ## Blocking Gaps
 
@@ -42,13 +44,13 @@ Reason: P0 packaging blockers are closed and the trust-depth triad now has deter
 
 | Gate | Current State |
 |---|---|
-| Full test suite | pass: `124 passed` |
+| Full test suite | pass: `129 passed` |
 | Release readiness audit tool | pass: `tools/release_audit.py` exists |
 | Platform compatibility matrix | pass: `docs/platform-compatibility-matrix.md` |
 | Quickstart | pass: `docs/quickstart.md` |
 | Changelog | pass: `CHANGELOG.md` |
 | Fresh install smoke | pass: `docs/release-smoke-2026-05-05.md` |
-| Trust-depth triad | pass: contracts, claims, and contradiction tools exist |
+| Contract/claim sanity checks | pass: contract, claim, and explicit contradiction tools exist |
 | Plugin metadata/version/tag | pass for metadata/version; tag should be created at publish time |
 
 ## Recommended Next Work

@@ -17,7 +17,7 @@ Claude Code is the primary supported runtime. Codex is supported through prefixe
 | Deterministic tools | Supported | Supported | Possible manually, not packaged |
 | Session hooks | Supported through `.claude/hooks` | Not supported; run explicit commands | Not supported |
 | Git pre-commit hook | Supported when generated | Supported if project installs generated git hook manually | Not supported |
-| CI templates | GitHub Actions templates use Claude headless commands | Lint/tool-only workflows can be adapted manually | Not supported |
+| CI templates | Generated GitHub Actions run deterministic Alpha-Wiki tools (`tools.lint`, `tools.review`, `tools.rollup`) | Same deterministic tools can be run manually or in user-wired CI | Not supported |
 | Doctor check | `tools/doctor.py --platform claude` | `tools/doctor.py --platform codex` | No platform check |
 | Ingest/query/lint/status/review | Supported | Supported via prefixed skills and tools | Manual tools only |
 | Render Obsidian/Mermaid/DOT/HTML | Supported | Supported via tools | Manual tools only |

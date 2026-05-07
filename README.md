@@ -2,7 +2,7 @@
 
 > **Agent memory that compounds — in plain markdown, in your repo.**
 
-A Claude Code plugin that turns Andrej Karpathy's LLM-Wiki sketch into a production runtime. Agents read, write, and grow a typed, lint-enforced markdown knowledge base across sessions. No embeddings. No vector store. No drift. Just files your team can read, diff, and review.
+A Claude Code plugin that turns Andrej Karpathy's LLM-Wiki sketch into repo-native markdown memory. Agents read, write, and grow a typed, lint-enforced markdown knowledge base across sessions. No embeddings. No vector store. Deterministic drift checks. Just files your team can read, diff, and review.
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![CI](https://github.com/yura4gus/alpha-wiki-creator/actions/workflows/plugin-ci.yml/badge.svg)](https://github.com/yura4gus/alpha-wiki-creator/actions)
 
@@ -10,7 +10,7 @@ A Claude Code plugin that turns Andrej Karpathy's LLM-Wiki sketch into a product
 
 ## Release status
 
-Alpha-Wiki is ready as a **v0.1 release candidate** for real Claude Code and Codex pilots.
+Alpha-Wiki is locally ready as a **v0.1 release candidate** for real Claude Code and Codex pilots. Public install readiness requires the audited branch to be published to `origin/main` or a tagged release.
 
 Current verified gates:
 
@@ -19,8 +19,8 @@ Current verified gates:
 - Codex runtime: installed `$alpha-wiki-*` skill adapters
 - Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
 - Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
-- Release audit: expected verdict `READY`
-- Test suite: expected green state `127 passed`
+- Release audit: expected verdict `READY` on the audited local tree
+- Test suite: verified green state `129 passed`
 
 Remaining external prerequisite: install `uv` for the smoothest Claude/CI path (`pipx install uv`). Hooks can fall back to `.venv/bin/python` or `python3`, but `uv` is the supported release path.
 
@@ -28,13 +28,13 @@ Remaining external prerequisite: install `uv` for the smoothest Claude/CI path (
 
 LLM agents forget. RAG hides what they remember. Embeddings drift silently and obscure why a retrieval landed. **Plain markdown with `[[wikilinks]]` doesn't have these problems** — but raw markdown alone is undisciplined: pages go stale, links rot, structure entropies.
 
-Alpha-wiki gives the wiki a **runtime contract** — typed entities, required frontmatter, bidirectional links the lint enforces, automated hooks that load compressed context at session start and run lint at session end. The result: **agent memory that compounds week-over-week instead of decaying.**
+Alpha-wiki gives the wiki a **runtime contract** — typed entities, required frontmatter, bidirectional links the lint enforces, automated hooks that load compressed context at session start and run lint at session end. The result: **agent memory that can compound week-over-week with visible drift checks.**
 
 Use it for engineering projects (decisions, modules, contracts, ADRs), research (papers, claims, experiments), product (features, personas, flows), or as a personal knowledge base. Five domain presets plus four architectural overlays (clean / hexagonal / DDD / layered) ship out of the box, and the schema **evolves through ingest** — new entity types are proposed, not preempted.
 
 ## What's different from Karpathy's LLM-Wiki
 
-Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) sketched the idea in ~80 lines: three layers (raw / wiki / CLAUDE.md), three operations (ingest / query / lint), two service files (index.md / log.md). It is a beautiful sketch. Alpha-wiki is the production extension.
+Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11519de94f) sketched the idea in ~80 lines: three layers (raw / wiki / CLAUDE.md), three operations (ingest / query / lint), two service files (index.md / log.md). It is a beautiful sketch. Alpha-wiki is a pragmatic repo-native extension.
 
 | Karpathy's gist (sketch) | Alpha-wiki (runtime) |
 |---|---|
@@ -48,7 +48,7 @@ Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11
 | One-shot setup | **Schema evolution** — `/alpha-wiki:evolve` adds new entity types through ingest, gates them by default, logs every schema change |
 | You write the subagents | **Subagent slot** — `/alpha-wiki:spawn-agent` generates wiki-aware Claude Code subagents that honor the mutability matrix |
 
-In one line: **Karpathy gave the idea, Alpha-wiki gives the runtime.**
+In one line: **Karpathy gave the idea, Alpha-wiki gives a small deterministic runtime around it.**
 
 ## Install
 
@@ -148,6 +148,18 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 
 ## Workflow
 
+Shortest first-run path:
+
+```text
+install -> /alpha-wiki:init -> /alpha-wiki:doctor --refresh
+-> /alpha-wiki:ingest raw/docs/project-brief.md
+-> /alpha-wiki:query "what is this project building?"
+-> /alpha-wiki:status
+-> /alpha-wiki:render html
+```
+
+Full command surface:
+
 ```
 1. /alpha-wiki:init           Audit corpus → plan raw/wiki migration → bootstrap
 2. /alpha-wiki:doctor         Verify install/runtime/wiki health
@@ -224,6 +236,8 @@ Current architecture set:
 - [`docs/platform-compatibility-matrix.md`](docs/platform-compatibility-matrix.md) — Claude/Codex/Gemini support and limitation matrix
 - [`docs/final-release-readiness-audit-2026-05-04.md`](docs/final-release-readiness-audit-2026-05-04.md) — final-release gate audit and blocking gaps
 - [`docs/release-smoke-2026-05-05.md`](docs/release-smoke-2026-05-05.md) — fresh-project Claude/Codex release smoke evidence
+- [`docs/examples/`](docs/examples/) — small API, code, and feature contract examples
+- [`docs/generated-artifacts-policy.md`](docs/generated-artifacts-policy.md) — policy for tracked generated graph/HTML snapshots
 
 Decision records:
 
@@ -234,7 +248,7 @@ Decision records:
 - [`docs/ADR-005-marketplace-topology-deferred.md`](docs/ADR-005-marketplace-topology-deferred.md)
 - [`docs/ADR-006-spawn-agent-boundary.md`](docs/ADR-006-spawn-agent-boundary.md)
 
-Original design materials:
+Archived design materials:
 
 - [`docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md`](docs/superpowers/specs/2026-04-28-wiki-creator-skill-design.md)
 - [`docs/superpowers/plans/2026-04-28-wiki-creator-implementation.md`](docs/superpowers/plans/2026-04-28-wiki-creator-implementation.md)
@@ -258,7 +272,7 @@ Run the deterministic final-release gate:
 .venv/bin/python -m tools.release_audit --root .
 ```
 
-Current expected release-audit verdict: `READY`.
+Current expected local release-audit verdict: `READY`.
 
 ## License
 

@@ -20,7 +20,7 @@ evidence: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2
 - Release audit gate.
 - Fresh install smoke evidence.
 - Version metadata alignment.
-- Trust-depth triad.
+- Contract/claim sanity checks.
 
 ## Requirements
 
@@ -28,9 +28,9 @@ evidence: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2
 - Full unit/integration suite passes.
 - Fresh install smoke evidence is recorded.
 - Packaging docs exist: `CHANGELOG.md` and `docs/quickstart.md`.
-- Trust-depth tools exist for contracts, claims, and contradictions.
+- Deterministic sanity-check tools exist for contracts, claims, and explicit contradictions.
 
 ## Current Evidence
 
-- Latest recorded suite: `120 passed`.
+- Latest verified suite: `129 passed`.
 - Latest release audit: `READY`, 8 pass, 0 warn, 0 fail.

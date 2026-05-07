@@ -117,7 +117,7 @@ Coverage areas:
 - Wiki engine parsing, edges, context brief, open questions, CLI.
 - Classifier and LLM fallback stub.
 - Existing-project init audit and source-manifest generation.
-- Contract, claim, and contradiction trust-depth checks.
+- Contract, claim, and explicit-contradiction deterministic sanity checks.
 - Release audit final gate and CLI exit behavior.
 - Release smoke on a fresh temporary project.
 - Status report.

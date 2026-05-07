@@ -26,7 +26,7 @@ This applies to both Alpha-Wiki query operations and AgentOps onboard/plan opera
 
 1. **Karpathy's analysis stands.** For project knowledge bases up to ~100 sources, embedding retrieval introduces opaque ranking decisions, drift over time, and loss of provenance. Plain markdown with explicit indexes scales further than commonly assumed.
 2. **Markdown is auditable.** Every retrieval path is a file path. Every fact is a line in a file. Diffs work. Code review works. Embeddings give none of this.
-3. **No drift.** Re-indexing is an explicit operation, not a silent decay.
+3. **Visible drift checks.** Re-indexing is an explicit operation, not a silent decay.
 4. **No infrastructure.** No vector database to operate, no embedding model to version, no pipeline to maintain.
 5. **Cheaper to verify.** Tests assert on file content, not on similarity scores.
 6. **MVP scope discipline.** Adding embeddings now would expand Phase 1 by an order of magnitude with marginal benefit.
