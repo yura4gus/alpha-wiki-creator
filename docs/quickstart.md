@@ -133,6 +133,9 @@ Graph rule:
 Plugin maintainers should run:
 
 ```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -U pip
+.venv/bin/python -m pip install -e ".[dev]"
 .venv/bin/python -m tools.release_smoke
 .venv/bin/python -m tools.release_audit --root .
 .venv/bin/python -m pytest

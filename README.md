@@ -266,6 +266,15 @@ uv sync --dev
 .venv/bin/python -m pytest
 ```
 
+Without `uv`, use Python 3.12+ and install the declared dev extra:
+
+```bash
+python3.12 -m venv .venv
+.venv/bin/python -m pip install -U pip
+.venv/bin/python -m pip install -e ".[dev]"
+.venv/bin/python -m pytest
+```
+
 Run the deterministic final-release gate:
 
 ```bash
