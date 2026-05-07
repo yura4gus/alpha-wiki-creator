@@ -21,9 +21,10 @@ Alpha-Wiki is published as a public beta for real Claude Code and Codex pilots.
 Current public beta:
 
 - Branch: `main`
-- Latest public docs/publishing commit: `81e3a13` or later
+- Latest release: [`v0.1.0-beta.2`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.1.0-beta.2)
 - Release channel: `v0.1.0-beta.x`
 - Status: public beta, not v1.0
+- Live docs: https://yura4gus.github.io/alpha-wiki-creator/
 
 Current verified gates:
 
@@ -31,13 +32,11 @@ Current verified gates:
 - Fresh install smoke: `PASS`
 - Release audit: `READY`
 - Test suite: `129 passed`
-- Docs Pages workflow: configured and triggered
+- Docs Pages: live at https://yura4gus.github.io/alpha-wiki-creator/
 - Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
 - Codex runtime: installed `$alpha-wiki-*` skill adapters
 - Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
 - Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
-
-GitHub Pages may require repository Settings -> Pages -> Source: GitHub Actions before the deployed docs URL becomes available.
 
 Beta scope: repo-native markdown memory, deterministic tools, Claude commands, Codex skills, Obsidian graph settings, Mermaid/DOT graph exports, static HTML export, release smoke, and release audit.
 
@@ -335,3 +334,7 @@ Current expected release-audit verdict: `READY`.
 ## License
 
 MIT
+
+---
+
+Created by RateXAI — https://ratex.ai
