@@ -41,13 +41,18 @@ def test_custom_wiki_dir_is_rendered_into_hooks_and_workflows(tmp_path: Path):
     lint_workflow = (tmp_path / ".github" / "workflows" / "wiki-lint.yml").read_text()
     assert "--wiki-dir .wiki --config .alpha-wiki/config.yaml --dry-run" in lint_workflow
     assert "--wiki-dir wiki" not in lint_workflow
+    assert "contents: read" in lint_workflow
 
     review_workflow = (tmp_path / ".github" / "workflows" / "wiki-review.yml").read_text()
-    assert 'claude -p "/alpha-wiki:review" > review.md' in review_workflow
+    assert "uv run python -m tools.review --wiki-dir .wiki --config .alpha-wiki/config.yaml --out review.md" in review_workflow
+    assert "claude -p" not in review_workflow
+    assert "issues: write" in review_workflow
     assert "/wiki-review" not in review_workflow
 
     rollup_workflow = (tmp_path / ".github" / "workflows" / "wiki-rollup.yml").read_text()
-    assert 'claude -p "/alpha-wiki:rollup month --write"' in rollup_workflow
+    assert "uv run python -m tools.rollup --wiki-dir .wiki --period month --write" in rollup_workflow
+    assert "claude -p" not in rollup_workflow
+    assert "contents: write" in rollup_workflow
     assert "git add .wiki/rollups/ || true" in rollup_workflow
     assert "/wiki-rollup" not in rollup_workflow
     assert "git add wiki/rollups/" not in rollup_workflow

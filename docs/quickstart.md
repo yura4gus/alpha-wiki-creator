@@ -126,8 +126,8 @@ Graph rule:
 Plugin maintainers should run:
 
 ```bash
-.venv/bin/python tools/release_smoke.py
-.venv/bin/python tools/release_audit.py --root .
+.venv/bin/python -m tools.release_smoke
+.venv/bin/python -m tools.release_audit --root .
 .venv/bin/python -m pytest
 ```
 

@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: '0 9 1 * *'  # 1st of month, 09:00 UTC
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   rollup:
     runs-on: ubuntu-latest
@@ -11,11 +13,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install uv && uv sync
-      - run: npm install -g @anthropic/claude-code
-      - name: run /alpha-wiki:rollup
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: claude -p "/alpha-wiki:rollup month --write"
+      - name: run deterministic wiki rollup
+        run: uv run python -m tools.rollup --wiki-dir wiki --period month --write
       - name: commit rollup
         run: |
           git config user.name "wiki-rollup-bot"

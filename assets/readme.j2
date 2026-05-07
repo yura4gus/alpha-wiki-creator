@@ -47,7 +47,7 @@ node kind.
 - **Session start** loads compressed context for the agent.
 - **Session end** runs lint and appends a log entry.
 - **Pre-commit** runs `lint --fix` and blocks on errors.
-{% if ci %}- **CI** runs `/alpha-wiki:lint` on every push; weekly `/alpha-wiki:review` posts an issue; monthly `/alpha-wiki:rollup` writes a rollup.
+{% if ci %}- **CI** runs deterministic backend tools on every push, weekly review, and monthly rollup. Interactive Claude/Codex commands remain `/alpha-wiki:review`, `$alpha-wiki-review`, `/alpha-wiki:rollup`, and `$alpha-wiki-rollup`.
 {% endif %}
 
 ## Generated

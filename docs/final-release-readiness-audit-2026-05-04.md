@@ -54,5 +54,5 @@ Reason: P0 packaging blockers are closed and the trust-depth triad now has deter
 ## Recommended Next Work
 
 1. Create the git tag only when publishing the release artifact.
-2. Re-run `.venv/bin/python tools/release_audit.py --root .` immediately before tagging.
+2. Re-run `.venv/bin/python -m tools.release_audit --root .` immediately before tagging.
 3. Improve unified health scoring and Codex automation parity in the next hardening pass.

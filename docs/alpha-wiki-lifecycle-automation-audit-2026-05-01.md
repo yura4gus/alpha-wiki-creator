@@ -44,7 +44,7 @@ Alpha-Wiki now has the right deterministic spine: bootstrap, init source audit, 
 | `contradiction-detector` finds explicit/opposing claims | `tools/contradiction_detector.py` | Contradiction detector unit tests | pass | Add citation-rich review integration later. |
 | `rollup` summarizes activity | `tools/rollup.py`, CI template | Rollup tests | pass | Add unresolved gap and decision summary. |
 | Claude hooks keep graph fresh | `assets/hooks/*` | Hook mode/runtime asset tests | pass | Hooks are Claude-specific; Codex needs explicit/manual workflow or adapter. |
-| CI checks wiki health | `assets/workflows/*` | Runtime asset tests | partial | CI lint template runs; review/rollup depend on headless Claude and secrets. |
+| CI checks wiki health | `assets/workflows/*` | Runtime asset tests | closed | CI lint/review/rollup templates run deterministic backend tools without Claude secrets. |
 | Codex path exists | `scripts/install_codex.py`, docs | Codex installer tests | partial | No Codex-native hooks/automation yet. |
 
 ## Lifecycle Closure Analysis

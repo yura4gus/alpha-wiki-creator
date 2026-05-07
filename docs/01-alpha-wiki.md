@@ -321,8 +321,8 @@ Same set as already shipped, with extensions where Phase 1a hardens.
 | session-end | Session end | `lint --suggest`; append `log.md` entry; surface stale pages |
 | pre-commit | Before git commit | `lint --fix --pre-commit` (block 🔴) |
 | CI: `wiki-lint.yml` | On push / PR | Full lint, fail if 🔴 |
-| CI: `wiki-review.yml` | Weekly cron | Backed wiki-level review via `/alpha-wiki:review` |
-| CI: `wiki-rollup.yml` | Monthly cron | Backed wiki-level rollup via `/alpha-wiki:rollup month --write` |
+| CI: `wiki-review.yml` | Weekly cron | Deterministic wiki-level review via `python -m tools.review` |
+| CI: `wiki-rollup.yml` | Monthly cron | Deterministic wiki-level rollup via `python -m tools.rollup --write` |
 
 ---
 

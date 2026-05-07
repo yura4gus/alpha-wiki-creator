@@ -3,6 +3,9 @@ on:
   schedule:
     - cron: '0 9 * * 1'  # Mon 09:00 UTC
   workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
 jobs:
   review:
     runs-on: ubuntu-latest
@@ -11,12 +14,8 @@ jobs:
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
       - run: pip install uv && uv sync
-      - name: install Claude Code
-        run: npm install -g @anthropic/claude-code
-      - name: run /alpha-wiki:review
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: claude -p "/alpha-wiki:review" > review.md
+      - name: run deterministic wiki review
+        run: uv run python -m tools.review --wiki-dir wiki --config .alpha-wiki/config.yaml --out review.md
       - name: post issue
         uses: peter-evans/create-issue-from-file@v5
         with:

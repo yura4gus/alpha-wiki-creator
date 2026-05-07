@@ -378,11 +378,11 @@ Installed by `assets/install-hooks.sh` (run once during bootstrap if user opted 
 
 | Workflow | Trigger | Action |
 |---|---|---|
-| `wiki-lint.yml` | push, pull_request | `uv run python tools/lint.py` — fail PR if 🔴; post 🟡 as PR comment |
-| `wiki-review.yml` | weekly cron `0 9 * * 1` | Headless `claude -p "/wiki-review"` → publishes findings as GitHub issue tagged `wiki-review` |
-| `wiki-rollup.yml` | monthly cron `0 9 1 * *` | Headless `claude -p "/wiki-rollup month"` → commits `<wiki_dir>/rollups/<YYYY-MM>.md` |
+| `wiki-lint.yml` | push, pull_request | `uv run python -m tools.lint` — fail PR if 🔴; post 🟡 as PR comment |
+| `wiki-review.yml` | weekly cron `0 9 * * 1` | Deterministic `python -m tools.review` → publishes findings as GitHub issue tagged `wiki-review` |
+| `wiki-rollup.yml` | monthly cron `0 9 1 * *` | Deterministic `python -m tools.rollup --write` → commits `<wiki_dir>/rollups/<YYYY-MM>.md` |
 
-CI workflows require `ANTHROPIC_API_KEY` secret. Bootstrap does not configure secrets — README has a section "Enable CI workflows" with setup instructions.
+Default CI workflows do not require `ANTHROPIC_API_KEY`; LLM-assisted CI can be added later as an explicit extension.
 
 ## 10. Testing strategy
 

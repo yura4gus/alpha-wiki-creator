@@ -145,8 +145,8 @@ Missing Phase 1a pressure-test suites:
 | Finding | Evidence | Phase 1a implication |
 |---|---|---|
 | Repo CI only runs tests | `.github/workflows/plugin-ci.yml` | Generated target-project workflows are not tested as live repo workflows. |
-| Target CI templates include lint/review/rollup | `assets/workflows/wiki-lint.yml`, `wiki-review.yml`, `wiki-rollup.yml` | Templates exist and are now backed by skills/commands/tools. |
-| Generated review/rollup templates use alpha namespace | `claude -p "/alpha-wiki:review"` and `claude -p "/alpha-wiki:rollup month --write"` | Old `/wiki-*` namespace mismatch resolved. |
+| Target CI templates include lint/review/rollup | `assets/workflows/wiki-lint.yml`, `wiki-review.yml`, `wiki-rollup.yml` | Templates exist and run deterministic backend tools. |
+| Generated review/rollup templates are fresh-runner safe | `python -m tools.review` and `python -m tools.rollup` | Old `/wiki-*` namespace mismatch resolved; CI no longer depends on installed Claude slash commands or Anthropic secrets. |
 | Generated workflow wiki dir | `scripts/bootstrap.py` rewrites `--wiki-dir wiki` to the configured `wiki_dir` | Closed for generated projects; source asset remains the default template. |
 | Hook mode selection | `_hook_files_for_mode()` splits `session`, `git`, `all`, and `none` | Closed. |
 | Generated hook wiki dir | `_render_runtime_asset()` rewrites `WIKI_DIR="${WIKI_DIR:-wiki}"` to the configured `wiki_dir` | Closed for generated projects. |
@@ -172,7 +172,7 @@ P0:
 3. Make upgrade graph initialization non-destructive. Done: upgrade mode preserves existing `edges.jsonl`, `context_brief.md`, and `open_questions.md`.
 4. Honor hook selection mode (`session`, `git`, `all`, `none`). Done: `session` installs only Claude session/tool hooks plus settings, `git` installs only git hook helpers, `all` installs both, and `none` installs no hooks/settings.
 5. Rebuild the full graph after wiki writes: edges, context brief, open questions. Done: `post-tool-use.sh` now runs `rebuild-edges`, `rebuild-context-brief`, and `rebuild-open-questions` together.
-6. Resolve `review` / `rollup` mismatch: either implement backed skills/commands or remove generated workflows from default CI path. Done: backed `review` and `rollup` skills/commands/tools exist, and generated workflows now call `/alpha-wiki:review` and `/alpha-wiki:rollup month --write`.
+6. Resolve `review` / `rollup` mismatch: either implement backed skills/commands or remove generated workflows from default CI path. Done: backed `review` and `rollup` skills/commands/tools exist, and generated workflows now call deterministic `tools.review` / `tools.rollup` backends.
 
 P1:
 

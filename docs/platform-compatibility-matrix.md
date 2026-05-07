@@ -49,7 +49,7 @@ Then ask Codex to use:
 - Codex has no native session-start/session-end hook equivalent in this repo.
 - Codex review/rollup automation is manual unless a user wires their own scheduler around deterministic tools.
 - Gemini packaging is deferred; do not claim Gemini support in release notes.
-- Headless Claude CI workflows require the user's Claude credentials/secrets and must fail clearly when absent.
+- Generated CI review/rollup workflows use deterministic backend tools by default; Claude credentials are not required for release smoke.
 
 ## Release Position
 

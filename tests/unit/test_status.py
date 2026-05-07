@@ -1,6 +1,10 @@
 from pathlib import Path
 from datetime import date, timedelta
+
+from click.testing import CliRunner
+
 from tools.wiki_engine import read_edges
+from tools.status import cli as status_cli
 from tools.status import status_report
 
 def test_status_report_includes_stats(sample_wiki: Path):
@@ -98,3 +102,24 @@ def test_status_report_includes_trust_sections(tmp_path: Path):
     assert "Missing provenance: [[auth-adr]]" in r
     assert "## Open Question Follow-Up" in r
     assert "Missing owner/timebox: 0" in r
+
+
+def test_status_cli_prints_report(sample_wiki: Path):
+    result = CliRunner().invoke(status_cli, ["--wiki-dir", str(sample_wiki / "wiki")])
+
+    assert result.exit_code == 0, result.output
+    assert "# Wiki Status Report" in result.output
+    assert "Gap Check" in result.output
+
+
+def test_status_cli_writes_report(sample_wiki: Path, tmp_path: Path):
+    out = tmp_path / "status.md"
+
+    result = CliRunner().invoke(status_cli, [
+        "--wiki-dir", str(sample_wiki / "wiki"),
+        "--out", str(out),
+    ])
+
+    assert result.exit_code == 0, result.output
+    assert "wrote" in result.output
+    assert "# Wiki Status Report" in out.read_text()

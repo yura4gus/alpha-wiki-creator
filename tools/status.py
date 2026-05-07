@@ -2,6 +2,9 @@
 from __future__ import annotations
 from datetime import date as _date
 from pathlib import Path
+
+import click
+
 from tools.wiki_engine import (
     cluster_gaps,
     page_role,
@@ -235,3 +238,20 @@ def _suggested_next_actions(
     if not actions:
         actions.append("- No immediate maintenance action required.")
     return actions
+
+
+@click.command()
+@click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
+@click.option("--out", type=click.Path(path_type=Path), help="Optional report output path.")
+def cli(wiki_dir: Path, out: Path | None) -> None:
+    report = status_report(wiki_dir)
+    if out:
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(report)
+        click.echo(f"wrote {out}")
+        return
+    click.echo(report)
+
+
+if __name__ == "__main__":
+    cli()

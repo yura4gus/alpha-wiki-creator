@@ -144,7 +144,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 - **Claude hook runtime** — official hook event names, JSON stdin parsing, wiki-path filtering, and graph rebuild after wiki writes
 - **Deterministic engine** — `tools.doctor`, `tools.lint`, and `tools.wiki_engine` are pure Python modules, no LLM, fully tested
 - **Schema-evolution gate** — every new entity type confirmed before added (or auto-mode if you trust)
-- **CI-ready** — weekly `/alpha-wiki:review`, monthly `/alpha-wiki:rollup` via headless Claude
+- **CI-ready** — deterministic GitHub Actions run `tools.lint`, `tools.review`, and `tools.rollup` without Claude secrets
 
 ## Workflow
 
