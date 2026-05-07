@@ -8,21 +8,59 @@ A Claude Code plugin that turns Andrej Karpathy's LLM-Wiki sketch into repo-nati
 
 ---
 
-## Release status
+## What Alpha-Wiki Is
 
-Alpha-Wiki is locally ready as a **v0.1 release candidate** for real Claude Code and Codex pilots. Public install readiness requires the audited branch to be published to `origin/main` or a tagged release.
+Alpha-Wiki is repo-native markdown memory for AI agents, developers, and project teams. It keeps project context, architecture notes, decisions, contracts, risks, status, and lightweight graph links in files your team can read, diff, and review.
+
+It is for teams that want a new Claude Code or Codex session to quickly answer: what is this project, what must not break, what is stale, and where are the gaps.
+
+## Release Status
+
+Alpha-Wiki is published as public **v0.1.0-beta.1** for Claude Code and Codex pilots. It is not v1.0.
 
 Current verified gates:
 
-- Fresh install smoke: `init -> doctor -> ingest -> query -> status -> review -> render`
+- Public clone validation: passed from GitHub HEAD `417a741`
+- Fresh install smoke: `PASS` for `init -> doctor -> ingest -> query -> status -> review -> render`
 - Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
 - Codex runtime: installed `$alpha-wiki-*` skill adapters
 - Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
 - Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
-- Release audit: expected verdict `READY` on the audited local tree
-- Test suite: verified green state `129 passed`
+- Release audit: `READY`
+- Test suite: `129 passed`
+
+Beta scope: repo-native markdown memory, deterministic tools, Claude commands, Codex skills, Obsidian graph settings, Mermaid/DOT graph exports, static HTML export, release smoke, and release audit.
+
+Not included in beta: embeddings, RAG, semantic search, PDF/DOCX/web crawlers, SaaS UI, multi-user permissions, or automatic truth resolution.
 
 Remaining external prerequisite: install `uv` for the smoothest Claude/CI path (`pipx install uv`). Hooks can fall back to `.venv/bin/python` or `python3`, but `uv` is the supported release path.
+
+## Quick Start
+
+Claude Code install:
+
+```bash
+claude plugins marketplace add yura4gus/alpha-wiki-creator
+claude plugins install alpha-wiki
+```
+
+Codex adapter install:
+
+```bash
+git clone https://github.com/yura4gus/alpha-wiki-creator
+cd alpha-wiki-creator
+python3 scripts/install_codex.py
+```
+
+First workflow:
+
+```text
+install -> /alpha-wiki:init -> /alpha-wiki:doctor --refresh
+-> /alpha-wiki:ingest raw/docs/project-brief.md
+-> /alpha-wiki:query "what is this project building?"
+-> /alpha-wiki:status
+-> /alpha-wiki:render html
+```
 
 ## Why Alpha-wiki
 
@@ -238,6 +276,7 @@ Current architecture set:
 - [`docs/release-smoke-2026-05-05.md`](docs/release-smoke-2026-05-05.md) — fresh-project Claude/Codex release smoke evidence
 - [`docs/examples/`](docs/examples/) — small API, code, and feature contract examples
 - [`docs/generated-artifacts-policy.md`](docs/generated-artifacts-policy.md) — policy for tracked generated graph/HTML snapshots
+- [`docs/docs-publishing.md`](docs/docs-publishing.md) — GitHub Pages and generated HTML publishing note
 
 Decision records:
 
@@ -281,7 +320,7 @@ Run the deterministic final-release gate:
 .venv/bin/python -m tools.release_audit --root .
 ```
 
-Current expected local release-audit verdict: `READY`.
+Current expected release-audit verdict: `READY`.
 
 ## License
 

@@ -8,7 +8,7 @@ Current verdict: **READY** for the current local packaged release candidate.
 
 Reason: P0 packaging blockers are closed and deterministic sanity checks now exist for contracts, claims, and explicit contradictions.
 
-Public release note: this verdict applies to the audited local tree. Public install is ready only after the audited commits are pushed to `origin/main` or published as a tagged release.
+Historical note: at the time of this audit, public install depended on pushing the audited commits. That follow-up is now closed: public `origin/main` contains the audited state and tag `v0.1.0-beta.1` is published.
 
 ## What Is Release-Strong
 

@@ -27,6 +27,7 @@ For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers
 - [`final-release-readiness-audit-2026-05-04.md`](final-release-readiness-audit-2026-05-04.md) — deterministic final-release readiness audit and blocking gaps
 - [`release-smoke-2026-05-05.md`](release-smoke-2026-05-05.md) — fresh-project Claude/Codex release smoke evidence
 - [`generated-artifacts-policy.md`](generated-artifacts-policy.md) — tracked/generated graph and HTML snapshot policy
+- [`docs-publishing.md`](docs-publishing.md) — GitHub Pages deployment and generated HTML publishing note
 - [`examples/`](examples/) — small API, code, and feature contract examples
 
 ## ADRs
