@@ -115,6 +115,25 @@ Then in any project:
 /alpha-wiki:doctor --platform both --refresh
 ```
 
+### Updating
+
+The marketplace source tracks `main`, so refresh the marketplace clone and reinstall to pull the latest release:
+
+```bash
+claude plugin marketplace update alpha
+claude plugin uninstall alpha-wiki@alpha
+claude plugin install alpha-wiki@alpha
+```
+
+Restart Claude Code, then verify the fresh version is active:
+
+```bash
+claude plugin list                                    # alpha-wiki -> current version
+ls ~/.claude/plugins/cache/alpha/alpha-wiki/*/skills/  # init, ingest, lint, query, render, evolve, status, spawn-agent, doctor, review, rollup
+```
+
+Why `uninstall` + `install` instead of `update`: a plain `claude plugin update` compares version strings. If a release forgets to bump `version`, the updater treats the cached build as current and serves a stale copy. The reinstall path forces a fresh clone of `main`. Every release **must** bump the version (see the release checklist in [docs/docs-publishing.md](docs/docs-publishing.md)) so plain `update` stays reliable.
+
 ### Codex CLI (OpenAI)
 
 Install and sign in to Codex, then install Alpha-Wiki's Codex skill adapters:

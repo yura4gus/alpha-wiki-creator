@@ -41,3 +41,28 @@ This repository uses a minimal GitHub Pages workflow that:
 GitHub Release objects are optional for Alpha-Wiki beta. The release tag is useful; a GitHub Release page is not required.
 
 If Pages is not enabled yet, use repository Settings -> Pages -> Source: GitHub Actions, then run the `docs-pages` workflow.
+
+## Release Checklist
+
+Every release **must** bump the version. The marketplace source tracks `main`, and `claude plugin update` compares version strings — if the version does not change, installed clients keep serving a stale build even after commits land on `main`.
+
+1. **Bump the version** in all three manifests so they agree:
+   - `.claude-plugin/plugin.json` -> `version`
+   - `.claude-plugin/marketplace.json` -> `metadata.version` and the `plugins[].version` entry
+   - `pyproject.toml` -> `version`
+2. **Update `CHANGELOG.md`** with a new `## [x.y.z]` section (keep prior sections; `tests/unit/test_audit_docs.py` asserts historical entries stay present).
+3. **Run the gates:**
+   ```bash
+   uv run pytest -q
+   uv run python -m tools.release_audit   # expect: Verdict READY, 0 fail
+   claude plugin validate .
+   ```
+4. **Commit, tag, push:**
+   ```bash
+   git add .
+   git commit -m "release: cut vX.Y.Z"
+   git tag vX.Y.Z
+   git push origin main --tags
+   ```
+5. **Optional:** publish a GitHub Release for the tag (the tag alone is enough for the marketplace; a Release page is only for human-facing notes).
+6. **Consumers update** with the reinstall flow documented in the README "Updating" section.
