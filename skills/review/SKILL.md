@@ -28,6 +28,17 @@ Always consider:
 8. Is any source material still only in `raw/` and not ingested?
 9. Did schema evolve recently, and did migration complete?
 10. What are the next three maintenance actions?
+11. Is the **active scope** recorded (`raw/docs/source-manifest.md`), and is anything out-of-scope creeping in?
+12. Is **security memory** captured (auth/session, secrets/env, release/custody gates), or only placeholders?
+
+## Scope And Security
+
+The deterministic backend now emits `## Scope`, `## Security Memory`, and a
+`## Release Readiness` verdict. Treat a review as **NOT READY** when active scope
+is unrecorded, critical security pages (auth-session, secrets-env,
+release-security-gates) are missing, or structural errors remain. Scaffold empty
+security slots with `uv run python -m tools.security --wiki-dir <wiki_dir> --scaffold`
+— placeholders only; never invent security facts without a source.
 
 ## Workflow
 

@@ -81,10 +81,10 @@ Every spawned wiki agent must know:
 Every agent file this skill writes must be a *bounded* prompt. Include all seven
 elements so the spawned agent stays trustworthy and does not drift:
 
-1. **Scope** — the one recurring wiki job it owns, and nothing wider.
+1. **Scope** — the one recurring wiki job it owns, plus the **active product scope** and the **out-of-scope / deferred modules** from `raw/docs/source-manifest.md`. State both so the agent cannot drift onto deferred work (e.g. if active scope is Web Wallet, it must not start on Launchpad/dApp/DeFi).
 2. **Constraints** — the mutability matrix: `raw/` read-only, `graph/` generated, `CLAUDE.md` is the contract, frontmatter + reverse links required.
-3. **Relevant context** — required first read `<wiki_dir>/graph/context_brief.md`, plus the specific index/pages for its domain.
-4. **Forbidden actions** — no `raw/` writes, no hand-edits to `graph/`, no schema changes without `/alpha-wiki:evolve`, no AgentOps team-role behavior.
+3. **Relevant context** — required first read `<wiki_dir>/graph/context_brief.md`, plus the specific index/pages, relevant ADRs, contracts/API/enums, and any `security/` pages for its domain.
+4. **Forbidden actions** — no `raw/` writes, no hand-edits to `graph/`, no schema changes without `/alpha-wiki:evolve`, no AgentOps team-role behavior, and **no work on out-of-scope/deferred modules**. Carry forward any recorded **security constraints** (auth/session/secrets/custody freezes) as hard limits.
 5. **Gates to run** — graph rebuild + `/alpha-wiki:lint` after edits; stop if lint reports errors.
 6. **Output format** — what the agent returns (edited pages, a lint summary, a proposed batch) so its result is reviewable.
 7. **Handoff requirement** — append a `## [YYYY-MM-DD] spawn-agent | <name> | ...` log entry and state the next safe action for the human or next agent.

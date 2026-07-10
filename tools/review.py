@@ -7,8 +7,28 @@ import click
 
 from tools._models import LintFinding, LintSeverity
 from tools.lint import _load_config, run_all_checks
+from tools.security import security_release_blockers, security_review_section
 from tools.status import status_report
 from tools.wiki_engine import cluster_gaps, page_role, rebuild_edges, scan_wiki
+
+
+def _scope_status(wiki_dir: Path) -> tuple[bool, str]:
+    """Read active scope from the init source manifest, if present.
+
+    Returns (recorded, detail). The manifest lives at `<project>/raw/docs/
+    source-manifest.md` relative to the wiki directory's parent.
+    """
+    manifest = wiki_dir.parent / "raw" / "docs" / "source-manifest.md"
+    if not manifest.exists():
+        return False, "no source manifest (`raw/docs/source-manifest.md`) — run `/alpha-wiki:init`"
+    for line in manifest.read_text().splitlines():
+        stripped = line.strip()
+        if stripped.startswith("- Active scope:"):
+            value = stripped.split(":", 1)[1].strip()
+            if value and "not set" not in value and "_(" not in value:
+                return True, value
+            return False, "source manifest has no active scope recorded"
+    return False, "source manifest missing an Active scope line"
 
 
 def review_report(wiki_dir: Path, config_path: Path | None = None) -> str:
@@ -23,6 +43,9 @@ def review_report(wiki_dir: Path, config_path: Path | None = None) -> str:
     errors = [f for f in findings if f.severity == LintSeverity.ERROR]
     warnings = [f for f in findings if f.severity == LintSeverity.WARNING]
     trust = _trust_checks(wiki_dir)
+    scope_recorded, scope_detail = _scope_status(wiki_dir)
+    sec_blockers = security_release_blockers(wiki_dir)
+    ready_blockers = _release_readiness_blockers(errors, scope_recorded, sec_blockers)
 
     parts = [
         "# Wiki Review",
@@ -32,6 +55,17 @@ def review_report(wiki_dir: Path, config_path: Path | None = None) -> str:
         f"- Errors: {len(errors)}",
         f"- Warnings: {len(warnings)}",
         f"- Total findings: {len(findings)}",
+        f"- Release readiness: {'READY' if not ready_blockers else 'NOT READY'}",
+        "",
+        "## Scope",
+        "",
+        f"- Active scope: {scope_detail if scope_recorded else '**not recorded** — ' + scope_detail}",
+        "",
+        security_review_section(wiki_dir).strip(),
+        "",
+        "## Release Readiness",
+        "",
+        *([f"- Blocked: {reason}" for reason in ready_blockers] or ["- No release-readiness blockers detected."]),
         "",
         "## Health Snapshot",
         "",
@@ -68,10 +102,26 @@ def review_report(wiki_dir: Path, config_path: Path | None = None) -> str:
         parts.append("- Add provenance fields to pages that lack source/evidence metadata.")
     if trust["missing_date_updated"]:
         parts.append("- Add `date_updated` while refreshing stale or ownerless pages.")
+    if not scope_recorded:
+        parts.append("- Record active scope and out-of-scope modules in `raw/docs/source-manifest.md`.")
+    if sec_blockers:
+        parts.append("- Capture missing security decisions before a security-relevant release (see Security Memory).")
     if not findings:
         parts.append("- No immediate structural action required.")
     parts.append("- Run `/alpha-wiki:status` for the regular health dashboard.")
     return "\n".join(parts).rstrip() + "\n"
+
+
+def _release_readiness_blockers(errors: list, scope_recorded: bool, sec_blockers: list[str]) -> list[str]:
+    """A review is NOT ready when scope is missing, security memory is incomplete,
+    or structural errors remain. Deterministic; no wall-clock coupling."""
+    reasons: list[str] = []
+    if errors:
+        reasons.append(f"{len(errors)} structural error(s) unresolved")
+    if not scope_recorded:
+        reasons.append("active scope not recorded")
+    reasons.extend(sec_blockers)
+    return reasons
 
 
 def _trust_checks(wiki_dir: Path) -> dict[str, int]:

@@ -257,6 +257,17 @@ Make Alpha-Wiki the **first context source** every session, before Claude or Cod
 
 Query the wiki *before* coding so the agent inherits project canons, ownership boundaries, review rules, and test gates instead of re-deriving them. Run `/alpha-wiki:review` before any larger change, and `/alpha-wiki:rollup` when you want a retrospective or a compact record of recent progress.
 
+A new agent entering the project should be able to answer these before writing a line of code:
+
+- **What is the active scope?** (from `raw/docs/source-manifest.md`)
+- **What is out of scope / deferred?** — do not start work there.
+- **What are the canons?** — architecture principles, standards, SOLID/Clean/Hexagonal/DDD rules.
+- **What is frozen?** — money/custody/auth flows and other safety-gated areas (`wiki/security/`).
+- **What must be checked before coding?** — release gates, test gates, known blockers, security blockers.
+- **What is the next safe action?** — from `/alpha-wiki:status` and open questions.
+
+If any of these is unanswerable, the wiki has a gap — capture it before coding, not after.
+
 ### Recommended lifecycle
 
 ```text

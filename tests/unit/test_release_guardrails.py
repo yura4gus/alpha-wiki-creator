@@ -77,6 +77,13 @@ def test_readme_documents_reinstall_flow():
         assert phrase in readme, f"README is missing the reinstall/update instruction: {phrase!r}"
 
 
+def test_spawn_agent_contract_includes_scope_and_security():
+    skill = (ROOT / "skills" / "spawn-agent" / "SKILL.md").read_text().lower()
+    assert "active product scope" in skill, "spawn-agent must carry active scope into generated prompts"
+    assert "out-of-scope" in skill, "spawn-agent must carry out-of-scope modules so agents don't drift"
+    assert "security constraint" in skill, "spawn-agent must carry security constraints as hard limits"
+
+
 def test_docs_publishing_has_release_checklist():
     docs = (ROOT / "docs" / "docs-publishing.md").read_text()
     assert "Release Checklist" in docs, "docs/docs-publishing.md is missing the Release Checklist section."
