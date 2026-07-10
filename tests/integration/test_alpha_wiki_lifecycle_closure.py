@@ -1,3 +1,4 @@
+from datetime import date as _date
 from pathlib import Path
 
 from scripts.bootstrap import bootstrap
@@ -81,6 +82,8 @@ def test_alpha_wiki_lifecycle_is_closed_for_clustered_pages(tmp_path: Path):
     assert "# Wiki Review" in review
     assert "cluster-link-gap" not in review
 
-    label, rollup = rollup_report(wiki, period="month")
+    # Pin `today` to the cluster's activity window so the rollup is deterministic
+    # regardless of the wall-clock date the suite runs on.
+    label, rollup = rollup_report(wiki, period="month", today=_date(2026, 5, 15))
     assert label
     assert "auth cluster" in rollup

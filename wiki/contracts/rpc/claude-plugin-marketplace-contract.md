@@ -18,7 +18,7 @@ evidence: .claude-plugin/plugin.json, .claude-plugin/marketplace.json
 
 ## Contract
 
-The package exposes one Claude Code plugin named `alpha-wiki`, version `0.1.0`, with repository and homepage pointing to `yura4gus/alpha-wiki-creator`.
+The package exposes one Claude Code plugin named `alpha-wiki`, version `0.2.0`, with repository and homepage pointing to `yura4gus/alpha-wiki-creator`.
 
 The marketplace entry describes Alpha-Wiki as an LLM-maintained wiki bootstrap with 11 skills, typed cross-links, schema evolution, and Obsidian-compatible graph support.
 

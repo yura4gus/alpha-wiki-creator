@@ -21,8 +21,8 @@ Alpha-Wiki is published as a public beta for real Claude Code and Codex pilots.
 Current public beta:
 
 - Branch: `main`
-- Latest release: [`v0.1.0-beta.2`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.1.0-beta.2)
-- Release channel: `v0.1.0-beta.x`
+- Latest release: [`v0.2.0-beta.1`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.2.0-beta.1)
+- Release channel: `v0.2.0-beta.x`
 - Status: public beta, not v1.0
 - Live docs: https://yura4gus.github.io/alpha-wiki-creator/
 

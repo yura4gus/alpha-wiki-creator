@@ -2,6 +2,18 @@
 
 All notable Alpha-Wiki release changes are recorded here.
 
+## [0.2.0] - 2026-07-10
+
+### Fixed
+
+- Made the clustered-lifecycle rollup integration test deterministic by pinning the rollup period to the activity window instead of depending on the wall-clock date the suite runs on.
+
+### Changed
+
+- Bumped plugin, marketplace, and package version to `0.2.0` so `claude plugin update` reliably detects and pulls the release. Version was stuck at `0.1.0` across 39 commits, which caused installs to serve a stale build without the `doctor`, `review`, and `rollup` skills.
+- Scoped Obsidian graph colors to wiki paths and made the wiki folder the Obsidian vault root.
+- Hardened static HTML export links and the release-process audit path.
+
 ## [0.1.0] - 2026-05-05
 
 ### Added
