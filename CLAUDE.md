@@ -126,6 +126,7 @@ Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stu
 - `/alpha-wiki:status`
 - `/alpha-wiki:review`
 - `/alpha-wiki:rollup`
+- `/alpha-wiki:audit-project`
 
 
 ## Python environment

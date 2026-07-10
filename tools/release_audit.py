@@ -15,13 +15,15 @@ FAIL = "FAIL"
 
 EXPECTED_COMMANDS = {
     "init", "doctor", "ingest", "query", "lint", "evolve",
-    "status", "spawn-agent", "render", "review", "rollup",
+    "status", "spawn-agent", "render", "review", "rollup", "audit-project",
 }
 
 EXPECTED_TOOLS = {
     "doctor.py",
     "ingest_pipeline.py",
     "init_audit.py",
+    "project_audit.py",
+    "security.py",
     "wiki_search.py",
     "lint.py",
     "status.py",
@@ -195,11 +197,11 @@ def _version_check(root: Path) -> AuditFinding:
         )
 
     description = listed.get("description", "")
-    if "11 skills" not in description and "11 slash commands" not in description:
+    if "12 skills" not in description and "12 slash commands" not in description:
         return AuditFinding(
             "version-metadata",
             FAIL,
-            "marketplace description does not mention the current 11-command surface",
+            "marketplace description does not mention the current 12-command surface",
             "Update marketplace metadata so users see the full command set.",
         )
 

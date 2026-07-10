@@ -6,13 +6,13 @@
     "url": "https://github.com/yura4gus"
   },
   "metadata": {
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "plugins": [
     {
       "name": "alpha-wiki",
-      "version": "0.3.0",
-      "description": "Bootstraps an LLM-maintained wiki into any project: 11 skills (init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup), typed cross-links, schema evolution, Obsidian-compatible.",
+      "version": "0.4.0",
+      "description": "Bootstraps an LLM-maintained wiki into any project: 12 skills (init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup, audit-project), typed cross-links, schema evolution, Obsidian-compatible.",
       "source": "./",
       "author": {
         "name": "yura4gus",

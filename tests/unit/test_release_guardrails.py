@@ -24,6 +24,7 @@ EXPECTED_SKILLS = {
     "doctor",
     "review",
     "rollup",
+    "audit-project",
 }
 
 

@@ -86,7 +86,7 @@ Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11
 | Karpathy's gist (sketch) | Alpha-wiki (runtime) |
 |---|---|
 | 3 untyped layers | Same 3 layers, made explicit as **mutability contracts** + 5 domain presets + 4 architectural overlays |
-| 3 operations (ingest, query, lint) | **11 skills + 11 slash commands** — init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup |
+| 3 operations (ingest, query, lint) | **12 skills + 12 slash commands** — init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup, audit-project |
 | No frontmatter rules | **Required frontmatter per entity type**, lint-blocked on violations |
 | Manual cross-links | **Bidirectional enforcement** — every forward link gets a reverse, written automatically by the engine |
 | No automation | **Three-layer hooks** — session-start loads `context_brief.md`, post-tool-use rebuilds the graph, session-end runs lint and appends a log entry, pre-commit blocks 🔴 errors, weekly CI review |
@@ -238,6 +238,7 @@ Full command surface:
 9. /alpha-wiki:render         Refresh Obsidian config or generate static HTML
 10. /alpha-wiki:review        Weekly structural review — status + lint + next actions
 11. /alpha-wiki:rollup        Weekly/monthly activity summary
+12. /alpha-wiki:audit-project Read-only delivery-readiness audit (git/docs/tests/deploy/security/providers/tech-debt)
 ```
 
 The `session-start` hook auto-loads `context_brief.md` so the agent has compressed context for free.
@@ -301,6 +302,7 @@ The point is durable operational memory: what was decided, what was already chec
 | `/alpha-wiki:render` | Refresh Obsidian config or render static HTML |
 | `/alpha-wiki:review` | Wiki-level structural review — status snapshot, lint findings, next actions |
 | `/alpha-wiki:rollup` | Weekly/monthly wiki activity rollup |
+| `/alpha-wiki:audit-project` | Read-only delivery-readiness audit — git/docs/tests/deploy/security/providers/tech-debt → structured status report |
 
 ## Reading the Obsidian graph
 

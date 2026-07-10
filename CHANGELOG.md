@@ -2,6 +2,20 @@
 
 All notable Alpha-Wiki release changes are recorded here.
 
+## [0.4.0] - 2026-07-10
+
+### Added
+
+- **`/alpha-wiki:audit-project`** — a read-only delivery-readiness audit skill (the 12th) backed by `tools/project_audit.py`. It standardizes the delivery-audit process so any Claude/Codex session can start or end with an evidence-first project status report spanning git, docs, tests, deploy, security, providers, and tech debt.
+- The deterministic backend guarantees report **structure and invariants**: all 17 sections in order, the exact status-label legend (🟢 🟡 ⚪ 🔴 🔵), an always-present Security Review section for software projects, provider-coverage and SDK+backend business-case tables, a read-only git inventory per repository (multi-repo aware), and `not confirmed` defaults for every unproven cell (no invented readiness or blockers).
+- `docs/project-audit.md` explaining when and how to run the audit at session start/end, plus the read-only guarantee and the relationship to `receiving-code-review` (keep it separate; the audit references it, does not replace it).
+- Tests: `tests/unit/test_project_audit.py` (17-section structure/order, verbatim status labels, security always present, provider/business tables, missing-evidence = `not confirmed`, multi-repo git blocks, read-only git inventory on a real temp repo, CLI).
+
+### Changed
+
+- Command/skill surface is now **12** (added `audit-project`): updated `release_audit` gate, marketplace description, README, CLAUDE.md, and the Codex adapter skill set.
+- Version bump `0.3.0` -> `0.4.0`.
+
 ## [0.3.0] - 2026-07-10
 
 Operational-hardening release driven by the first real-world use (Zamio / ZamWallet workspace), where `init` proposed 253 candidate files dominated by `repos/*/vendor/**` noise. No breaking changes to existing skills or wiki architecture.
