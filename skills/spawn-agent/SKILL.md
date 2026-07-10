@@ -76,6 +76,22 @@ Every spawned wiki agent must know:
 - No AgentOps coupling.
 - Wiki graph discipline is explicit.
 
+## Generated Agent Prompt Contract
+
+Every agent file this skill writes must be a *bounded* prompt. Include all seven
+elements so the spawned agent stays trustworthy and does not drift:
+
+1. **Scope** — the one recurring wiki job it owns, and nothing wider.
+2. **Constraints** — the mutability matrix: `raw/` read-only, `graph/` generated, `CLAUDE.md` is the contract, frontmatter + reverse links required.
+3. **Relevant context** — required first read `<wiki_dir>/graph/context_brief.md`, plus the specific index/pages for its domain.
+4. **Forbidden actions** — no `raw/` writes, no hand-edits to `graph/`, no schema changes without `/alpha-wiki:evolve`, no AgentOps team-role behavior.
+5. **Gates to run** — graph rebuild + `/alpha-wiki:lint` after edits; stop if lint reports errors.
+6. **Output format** — what the agent returns (edited pages, a lint summary, a proposed batch) so its result is reviewable.
+7. **Handoff requirement** — append a `## [YYYY-MM-DD] spawn-agent | <name> | ...` log entry and state the next safe action for the human or next agent.
+
+This is a checklist for the generated prompt, not a new subsystem. Do not expand
+spawn-agent beyond producing these bounded helpers.
+
 ## References
 
 - `docs/ADR-006-spawn-agent-boundary.md`

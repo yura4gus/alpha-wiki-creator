@@ -2,6 +2,18 @@
 
 All notable Alpha-Wiki release changes are recorded here.
 
+## [0.2.1] - 2026-07-10
+
+### Added
+
+- Version-drift guardrail test (`tests/unit/test_release_guardrails.py`) that fails when `plugin.json`, `marketplace.json`, and `pyproject.toml` versions disagree, or when the reinstall docs, release checklist, or the 11 expected skills go missing. Prevents the 0.1.0 stale-plugin class of bug from recurring.
+- README "Daily agent start" and "Recommended lifecycle" guidance so Alpha-Wiki is used as the first context source before Claude/Codex begins coding.
+- spawn-agent "Generated Agent Prompt Contract" section documenting the seven required elements of a bounded subagent prompt (scope, constraints, context, forbidden actions, gates, output format, handoff).
+
+### Changed
+
+- Version bump `0.2.0` -> `0.2.1` (operational-hardening release; no behavior or schema changes).
+
 ## [0.2.0] - 2026-07-10
 
 ### Fixed

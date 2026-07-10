@@ -245,6 +245,36 @@ The `session-end` hook runs lint and appends a log entry. Most users never invok
 
 On existing projects, `init` first audits the repo: it enumerates current durable documents, proposes which ones belong in `raw/` or a source manifest, proposes target wiki slots, and creates a batch plan so the first wiki pages are small, linked, and reviewable.
 
+### Daily agent start
+
+Make Alpha-Wiki the **first context source** every session, before Claude or Codex starts writing code:
+
+```text
+/alpha-wiki:status                 # where the project stopped, stale pages, blockers, gaps
+/alpha-wiki:doctor --refresh       # only when hooks/CI/setup feel broken or after an update
+/alpha-wiki:query "<what you need>"  # canons, architecture, contracts, APIs, enums, known gotchas, prior decisions
+```
+
+Query the wiki *before* coding so the agent inherits project canons, ownership boundaries, review rules, and test gates instead of re-deriving them. Run `/alpha-wiki:review` before any larger change, and `/alpha-wiki:rollup` when you want a retrospective or a compact record of recent progress.
+
+### Recommended lifecycle
+
+```text
+# once per project
+/alpha-wiki:init                                   # bootstrap + corpus audit
+/alpha-wiki:ingest raw/docs/*.md                   # ADRs, specs, PRDs, standards, notes
+/alpha-wiki:status  ·  /alpha-wiki:doctor          # confirm health
+
+# every working session
+/alpha-wiki:query "..."                            # retrieve canon before coding
+... do the work ...
+/alpha-wiki:review                                 # before larger changes
+/alpha-wiki:ingest raw/handoff-YYYY-MM-DD.md       # persist handoff / retro / release notes
+/alpha-wiki:rollup                                 # summarize progress
+```
+
+The point is durable operational memory: what was decided, what was already checked, where development stopped, and what the next safe action is — all surfaced on demand instead of lost between sessions.
+
 ## Skills
 
 | Slash command | Purpose |
