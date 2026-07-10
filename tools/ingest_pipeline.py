@@ -59,6 +59,38 @@ def ingest_files(
     return results
 
 
+def _out_of_scope_terms(wiki_dir: Path) -> list[str]:
+    """Out-of-scope modules recorded in the init source manifest, if any."""
+    manifest = wiki_dir.parent / "raw" / "docs" / "source-manifest.md"
+    if not manifest.exists():
+        return []
+    for line in manifest.read_text().splitlines():
+        stripped = line.strip()
+        if stripped.startswith("- Out of scope:"):
+            value = stripped.split(":", 1)[1].strip()
+            if not value or value.startswith("_(") or "none recorded" in value:
+                return []
+            return [term.strip() for term in value.replace(";", ",").split(",") if term.strip()]
+    return []
+
+
+def scope_warnings(wiki_dir: Path, sources: list[Path]) -> list[str]:
+    """Warning-only: flag sources whose path matches an out-of-scope module.
+
+    Never blocks ingest — records active scope discipline so an agent does not
+    silently pull deferred modules (e.g. Launchpad when scope is Web Wallet).
+    """
+    terms = _out_of_scope_terms(wiki_dir)
+    warnings: list[str] = []
+    for source in sources:
+        low = str(source).lower()
+        for term in terms:
+            if term.lower() and term.lower() in low:
+                warnings.append(f"`{source}` matches out-of-scope module '{term}' — confirm before ingesting")
+                break
+    return warnings
+
+
 def ingest_report(
     wiki_dir: Path,
     sources: list[Path],
@@ -66,10 +98,16 @@ def ingest_report(
     belongs_to: str | None = None,
     resume: bool = False,
 ) -> str:
+    warnings = scope_warnings(wiki_dir, sources)
     results = ingest_files(wiki_dir, sources, slot=slot, belongs_to=belongs_to, resume=resume)
     lines = ["# Wiki Ingest", ""]
     if resume:
         lines.append("- Resume mode: enabled")
+        lines.append("")
+    if warnings:
+        lines.append("## Scope Warnings")
+        lines.append("")
+        lines.extend(f"- ⚠️ {warning}" for warning in warnings)
         lines.append("")
     for result in results:
         lines.append(f"- `{result.source}` -> `{result.page.relative_to(wiki_dir)}` slot={result.slot}")

@@ -16,14 +16,14 @@ It is for teams that want a new Claude Code or Codex session to quickly answer: 
 
 ## Release Status
 
-Alpha-Wiki is published as a public beta for real Claude Code and Codex pilots.
+Alpha-Wiki is published for real Claude Code and Codex use on active projects.
 
-Current public beta:
+Current release:
 
 - Branch: `main`
-- Latest release: [`v0.2.0-beta.1`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.2.0-beta.1)
-- Release channel: `v0.2.0-beta.x`
-- Status: public beta, not v1.0
+- Latest release: [`v0.5.0`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.5.0)
+- Status: stable milestone for daily project use, not v1.0
+- Skills: **12** (init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup, audit-project)
 - Live docs: https://yura4gus.github.io/alpha-wiki-creator/
 
 Current verified gates:
@@ -31,7 +31,7 @@ Current verified gates:
 - Public clone validation: passed
 - Fresh install smoke: `PASS`
 - Release audit: `READY`
-- Test suite: `129 passed`
+- Test suite: `169 passed`
 - Docs Pages: live at https://yura4gus.github.io/alpha-wiki-creator/
 - Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
 - Codex runtime: installed `$alpha-wiki-*` skill adapters

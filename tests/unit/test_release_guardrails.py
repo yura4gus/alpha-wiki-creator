@@ -78,6 +78,21 @@ def test_readme_documents_reinstall_flow():
         assert phrase in readme, f"README is missing the reinstall/update instruction: {phrase!r}"
 
 
+def test_no_stale_skill_count_or_beta_release_references():
+    readme = (ROOT / "README.md").read_text()
+    marketplace = (ROOT / ".claude-plugin" / "marketplace.json").read_text()
+    claude_md = (ROOT / "CLAUDE.md").read_text()
+    for stale in ("11 skills", "11 slash commands", "11 skills + 11 slash"):
+        assert stale not in readme, f"stale skill count in README: {stale!r}"
+        assert stale not in marketplace, f"stale skill count in marketplace: {stale!r}"
+    # audit-project must be visible in the primary surfaces.
+    assert "audit-project" in readme
+    assert "audit-project" in claude_md
+    assert "audit-project" in marketplace
+    # README must not advertise an old beta tag as the latest release.
+    assert "Latest release: [`v0.2.0-beta.1`]" not in readme
+
+
 def test_spawn_agent_contract_includes_scope_and_security():
     skill = (ROOT / "skills" / "spawn-agent" / "SKILL.md").read_text().lower()
     assert "active product scope" in skill, "spawn-agent must carry active scope into generated prompts"

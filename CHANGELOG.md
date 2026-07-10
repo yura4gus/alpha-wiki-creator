@@ -2,6 +2,24 @@
 
 All notable Alpha-Wiki release changes are recorded here.
 
+## [0.5.0] - 2026-07-10
+
+Stabilization + dogfood milestone: Alpha-Wiki is now positioned for daily real-project use. No new large features; no memory-architecture redesign; no breaking changes to existing skills.
+
+### Added
+
+- **Warning-only scope enforcement in ingest** (`tools/ingest_pipeline.scope_warnings`): closes the v0.3 tail. `/alpha-wiki:ingest` now surfaces a non-blocking `## Scope Warnings` section when a source matches an out-of-scope module recorded in the source manifest (e.g. Launchpad when scope is Web Wallet). Never blocks ingest.
+- Regression guards: `tests/unit/test_ingest_scope.py` and a doc-drift guard (`test_no_stale_skill_count_or_beta_release_references`) that fails on stale "11 skills" text, a missing `audit-project` surface, or an old beta tag advertised as the latest release.
+
+### Changed
+
+- **README Release Status** refreshed: v0.5.0, 12-skill surface, current gates (was stale at v0.2.0-beta.1 / "129 passed"). Repositioned from "public beta" to "stable milestone for daily project use, not v1.0".
+- Version bump `0.4.0` -> `0.5.0`.
+
+### Verified (dogfood)
+
+- Ran the read-only delivery audit against the real Zamio / ZamWallet workspace (two GitLab repos: `wallet-trade-v2`, `zamwallet-web`). Multi-repo git inventory, all 17 sections, always-present security section, and provider/business-coverage tables all rendered correctly; no target-project writes. Full suite green; release audit READY; version metadata aligned across all manifests.
+
 ## [0.4.0] - 2026-07-10
 
 ### Added
