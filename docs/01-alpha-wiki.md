@@ -1,6 +1,9 @@
 # 01 — Alpha-Wiki
 
-> Specification for the Alpha-Wiki plugin. Persistent memory layer. Standalone product. Does not import AgentOps. Does not import Superpowers.
+> Core specification for the Alpha-Wiki memory layer. Core remains standalone.
+> ADR-007 adds a small optional AgentOps control namespace without changing the
+> first-run path; older standalone AgentOps details in this document are
+> historical.
 
 References: `00-architecture.md` for boundaries, `_references.md` for source patterns, `adr/ADR-001`, `adr/ADR-003`, `adr/ADR-006`.
 

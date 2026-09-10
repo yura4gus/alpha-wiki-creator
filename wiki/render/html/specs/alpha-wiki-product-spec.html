@@ -13,7 +13,7 @@
 <h1>Alpha-Wiki Product Spec</h1>
 <table class="frontmatter">
 <tr><th>belongs_to</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
-<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>date_updated</th><td>2026-09-08</td></tr>
 <tr><th>evidence</th><td>docs/01-alpha-wiki.md</td></tr>
 <tr><th>implements</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
 <tr><th>kind</th><td>product-spec</td></tr>
@@ -31,13 +31,13 @@
 <h2>Entities</h2>
 <ul>
 <li>Runtime layers: `raw/`, wiki pages, graph artifacts, gated schema contract.</li>
-<li>User operations: init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup.</li>
+<li>User operations: 12 core workflows plus optional orchestrate, backlog, handoff, and release-check.</li>
 <li>Deterministic tools: wiki engine, lint, init audit, ingest pipeline, query/search, status/review/rollup, renderers, release audit, and contract/claim sanity checks.</li>
 <li>Presentation layer: Obsidian config plus Mermaid, DOT, and static HTML exports.</li>
 </ul>
 <h2>Requirements</h2>
 <ul>
-<li>Alpha-Wiki is standalone and must not import AgentOps or Superpowers.</li>
+<li>Alpha-Wiki core is standalone; the optional <a href="../specs/agentops-control-layer.html">[[agentops-control-layer]]</a> is isolated under `wiki/agentops/`.</li>
 <li>Wiki pages use typed frontmatter, stable slugs, provenance, and wikilinks.</li>
 <li>`ingest`, `query`, and `lint` remain the core Karpathy operations.</li>
 <li>`init` must audit the existing source corpus before migration.</li>

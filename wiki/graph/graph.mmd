@@ -1,6 +1,7 @@
 %% Alpha-Wiki graph export
 %% Clusters come from typed links; colors show node roles.
 flowchart LR
+  agentops_control_layer["AgentOps Control Layer"]
   alpha_wiki_agentops_boundary["Alpha-Wiki AgentOps Boundary"]
   alpha_wiki_ingest_operation["Alpha-Wiki Ingest Operation"]
   alpha_wiki_init_operation["Alpha-Wiki Init Operation"]
@@ -10,21 +11,32 @@ flowchart LR
   alpha_wiki_review_operation["Alpha-Wiki Review Operation"]
   alpha_wiki_runtime["Alpha-Wiki Runtime"]
   alpha_wiki_status_operation["Alpha-Wiki Status Operation"]
+  api_boundaries["API Trust Boundaries"]
+  auth_session["Auth and Session Model"]
   claude_plugin_marketplace_contract["Claude Plugin Marketplace Contract"]
   codex_adapter_runtime["Codex Adapter Runtime"]
   codex_skill_adapter_contract["Codex Skill Adapter Contract"]
   ecosystem_plugin_architecture["Ecosystem Plugin Architecture"]
   graph_cluster_semantics["Graph Cluster Semantics"]
+  identity_permissions["Identity and Permissions"]
+  known_security_blockers["Known Security Blockers"]
   marketplace_topology_deferred["Marketplace Topology Deferred"]
   no_embeddings_mvp["No Embeddings MVP"]
+  optional_agentops_control_layer["Optional AgentOps Control Layer"]
   release_readiness_runtime["Release Readiness Runtime"]
+  release_security_gates["Release Security Gates"]
+  secrets_env["Secrets and Environment"]
+  security_overview["Security Overview"]
   source_corpus_inventory["Source Corpus Inventory"]
   spawn_agent_boundary["Spawn Agent Boundary"]
   state_backend_abstraction["State Backend Abstraction"]
   state_backend_contract["State Backend Contract"]
   superpowers_adapter_not_fork["Superpowers Adapter Not Fork"]
+  agentops_control_layer --|"belongs_to"| alpha_wiki_runtime
+  agentops_control_layer --|"implements"| alpha_wiki_runtime
   alpha_wiki_agentops_boundary --|"affects"| alpha_wiki_runtime
   alpha_wiki_agentops_boundary --|"belongs_to"| alpha_wiki_runtime
+  alpha_wiki_agentops_boundary --|"superseded_by"| optional_agentops_control_layer
   alpha_wiki_ingest_operation --|"implements"| alpha_wiki_product_spec
   alpha_wiki_ingest_operation --|"belongs_to"| alpha_wiki_runtime
   alpha_wiki_init_operation --|"implements"| alpha_wiki_product_spec
@@ -41,6 +53,8 @@ flowchart LR
   alpha_wiki_runtime --|"consumes"| codex_skill_adapter_contract
   alpha_wiki_status_operation --|"implements"| alpha_wiki_product_spec
   alpha_wiki_status_operation --|"belongs_to"| alpha_wiki_runtime
+  api_boundaries --|"belongs_to"| alpha_wiki_runtime
+  auth_session --|"belongs_to"| alpha_wiki_runtime
   claude_plugin_marketplace_contract --|"consumers"| alpha_wiki_runtime
   claude_plugin_marketplace_contract --|"service"| alpha_wiki_runtime
   codex_adapter_runtime --|"belongs_to"| alpha_wiki_runtime
@@ -51,12 +65,20 @@ flowchart LR
   ecosystem_plugin_architecture --|"implements"| alpha_wiki_runtime
   graph_cluster_semantics --|"affects"| alpha_wiki_runtime
   graph_cluster_semantics --|"belongs_to"| alpha_wiki_runtime
+  identity_permissions --|"belongs_to"| alpha_wiki_runtime
+  known_security_blockers --|"belongs_to"| alpha_wiki_runtime
   marketplace_topology_deferred --|"affects"| alpha_wiki_runtime
   marketplace_topology_deferred --|"belongs_to"| alpha_wiki_runtime
   no_embeddings_mvp --|"affects"| alpha_wiki_runtime
   no_embeddings_mvp --|"belongs_to"| alpha_wiki_runtime
+  optional_agentops_control_layer --|"supersedes"| alpha_wiki_agentops_boundary
+  optional_agentops_control_layer --|"affects"| alpha_wiki_runtime
+  optional_agentops_control_layer --|"belongs_to"| alpha_wiki_runtime
   release_readiness_runtime --|"belongs_to"| alpha_wiki_runtime
   release_readiness_runtime --|"implements"| alpha_wiki_runtime
+  release_security_gates --|"belongs_to"| alpha_wiki_runtime
+  secrets_env --|"belongs_to"| alpha_wiki_runtime
+  security_overview --|"belongs_to"| alpha_wiki_runtime
   source_corpus_inventory --|"belongs_to"| alpha_wiki_runtime
   source_corpus_inventory --|"implements"| alpha_wiki_runtime
   spawn_agent_boundary --|"affects"| alpha_wiki_runtime
@@ -73,6 +95,7 @@ flowchart LR
   classDef document fill:#111111,stroke:#525252,color:#ffffff;
   classDef contract fill:#F97316,stroke:#9a3412,color:#ffffff;
   classDef other fill:#E5E7EB,stroke:#6B7280,color:#111111;
+  class agentops_control_layer document;
   class alpha_wiki_agentops_boundary document;
   class alpha_wiki_ingest_operation document;
   class alpha_wiki_init_operation document;
@@ -82,14 +105,22 @@ flowchart LR
   class alpha_wiki_review_operation document;
   class alpha_wiki_runtime module;
   class alpha_wiki_status_operation document;
+  class api_boundaries other;
+  class auth_session other;
   class claude_plugin_marketplace_contract contract;
   class codex_adapter_runtime document;
   class codex_skill_adapter_contract contract;
   class ecosystem_plugin_architecture document;
   class graph_cluster_semantics document;
+  class identity_permissions other;
+  class known_security_blockers other;
   class marketplace_topology_deferred document;
   class no_embeddings_mvp document;
+  class optional_agentops_control_layer document;
   class release_readiness_runtime document;
+  class release_security_gates other;
+  class secrets_env other;
+  class security_overview other;
   class source_corpus_inventory document;
   class spawn_agent_boundary document;
   class state_backend_abstraction document;

@@ -6,13 +6,13 @@
     "url": "https://github.com/yura4gus"
   },
   "metadata": {
-    "version": "0.5.0"
+    "version": "0.6.0"
   },
   "plugins": [
     {
       "name": "alpha-wiki",
-      "version": "0.5.0",
-      "description": "Bootstraps an LLM-maintained wiki into any project: 12 skills (init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup, audit-project), typed cross-links, schema evolution, Obsidian-compatible.",
+      "version": "0.6.0",
+      "description": "Repo-native markdown memory with 16 skills: core init/doctor/ingest/query/lint/evolve/status/render/review/rollup/audit-project/spawn-agent plus optional AgentOps orchestration, backlog, handoffs, and project release checks.",
       "source": "./",
       "author": {
         "name": "yura4gus",

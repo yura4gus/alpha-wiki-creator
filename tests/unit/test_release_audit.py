@@ -18,6 +18,7 @@ def test_release_audit_reports_current_release_gates():
     assert by_gate["fresh-install-smoke"].status == "PASS"
     assert by_gate["version-metadata"].status == "PASS"
     assert by_gate["trust-depth"].status == "PASS"
+    assert by_gate["platform"].status == "PASS"
 
 
 def test_release_audit_report_is_ready_when_trust_tools_exist():

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import os
 import re
 import shutil
@@ -21,6 +22,7 @@ WARN = "WARN"
 FAIL = "FAIL"
 
 TOOL_MODULES = [
+    "scripts.bootstrap_cli",
     "tools.doctor",
     "tools.init_audit",
     "tools.wiki_engine",
@@ -32,6 +34,10 @@ TOOL_MODULES = [
     "tools.claims_check",
     "tools.contracts_check",
     "tools.contradiction_detector",
+    "tools.orchestrate",
+    "tools.backlog",
+    "tools.handoff",
+    "tools.release_check",
 ]
 
 GRAPH_ARTIFACTS = [
@@ -39,6 +45,24 @@ GRAPH_ARTIFACTS = [
     "context_brief.md",
     "open_questions.md",
 ]
+CODEX_SKILLS = {
+    "audit-project",
+    "doctor",
+    "evolve",
+    "ingest",
+    "init",
+    "lint",
+    "query",
+    "render",
+    "review",
+    "rollup",
+    "spawn-agent",
+    "status",
+    "orchestrate",
+    "backlog",
+    "handoff",
+    "release-check",
+}
 
 
 @dataclass(frozen=True)
@@ -103,9 +127,9 @@ def run_doctor(
     checks: list[DoctorCheck] = []
 
     checks.extend(_check_python_and_tools())
-    checks.extend(_check_project_config(project))
-    checks.extend(_check_wiki(project, wiki, refresh=refresh))
-    checks.extend(_check_lint(project, wiki))
+    checks.extend(_check_project_config(project, platform))
+    checks.extend(_check_wiki(project, wiki, refresh=refresh, platform=platform))
+    checks.extend(_check_lint(project, wiki, platform))
     checks.extend(_check_platform(project, platform))
 
     return DoctorResult(project_dir=project, wiki_dir=wiki, platform=platform, checks=checks)
@@ -151,10 +175,10 @@ def _check_python_and_tools() -> list[DoctorCheck]:
     return checks
 
 
-def _check_project_config(project_dir: Path) -> list[DoctorCheck]:
+def _check_project_config(project_dir: Path, platform: str) -> list[DoctorCheck]:
     config = project_dir / ".alpha-wiki" / "config.yaml"
     if not config.exists():
-        return [DoctorCheck("config", FAIL, ".alpha-wiki/config.yaml is missing", "Run /alpha-wiki:init or restore the generated config.")]
+        return [DoctorCheck("config", FAIL, ".alpha-wiki/config.yaml is missing", f"Run {_operation_hint(platform, 'init')} or restore the generated config.")]
     try:
         data = yaml.safe_load(config.read_text()) or {}
     except yaml.YAMLError as exc:
@@ -163,10 +187,10 @@ def _check_project_config(project_dir: Path) -> list[DoctorCheck]:
     return [DoctorCheck("config", PASS, f".alpha-wiki/config.yaml loaded ({entity_count} entity type(s))")]
 
 
-def _check_wiki(project_dir: Path, wiki_dir: Path, refresh: bool) -> list[DoctorCheck]:
+def _check_wiki(project_dir: Path, wiki_dir: Path, refresh: bool, platform: str) -> list[DoctorCheck]:
     checks: list[DoctorCheck] = []
     if not wiki_dir.exists():
-        return [DoctorCheck("wiki directory", FAIL, f"{wiki_dir} does not exist", "Run /alpha-wiki:init first.")]
+        return [DoctorCheck("wiki directory", FAIL, f"{wiki_dir} does not exist", f"Run {_operation_hint(platform, 'init')} first.")]
 
     for name in ("index.md", "log.md"):
         path = wiki_dir / name
@@ -188,31 +212,31 @@ def _check_wiki(project_dir: Path, wiki_dir: Path, refresh: bool) -> list[Doctor
     if graph_dir.exists():
         checks.append(DoctorCheck("graph directory", PASS, f"{_display_path(graph_dir, project_dir)} exists"))
     else:
-        checks.append(DoctorCheck("graph directory", WARN, f"{_display_path(graph_dir, project_dir)} is missing", "Run doctor --refresh or /alpha-wiki:status."))
+        checks.append(DoctorCheck("graph directory", WARN, f"{_display_path(graph_dir, project_dir)} is missing", f"Run doctor --refresh or {_operation_hint(platform, 'status')}."))
 
     for artifact in GRAPH_ARTIFACTS:
         path = graph_dir / artifact
         if path.exists():
             checks.append(DoctorCheck(f"graph/{artifact}", PASS, f"{_display_path(path, project_dir)} exists"))
         else:
-            checks.append(DoctorCheck(f"graph/{artifact}", WARN, f"{_display_path(path, project_dir)} is missing", "Run doctor --refresh or /alpha-wiki:status."))
+            checks.append(DoctorCheck(f"graph/{artifact}", WARN, f"{_display_path(path, project_dir)} is missing", f"Run doctor --refresh or {_operation_hint(platform, 'status')}."))
 
     pages = scan_wiki(wiki_dir)
     if pages:
         checks.append(DoctorCheck("wiki pages", PASS, f"{len(pages)} source page(s) detected"))
     else:
-        checks.append(DoctorCheck("wiki pages", WARN, "no durable wiki pages detected yet", "Run /alpha-wiki:ingest on the first durable source."))
+        checks.append(DoctorCheck("wiki pages", WARN, "no durable wiki pages detected yet", f"Run {_operation_hint(platform, 'ingest')} on the first durable source."))
 
     obsidian = wiki_dir / ".obsidian" / "graph.json"
     legend = wiki_dir / ".obsidian" / "COLOR-LEGEND.md"
     if obsidian.exists() and legend.exists():
         checks.append(DoctorCheck("obsidian graph config", PASS, "wiki .obsidian graph config and color legend exist"))
     else:
-        checks.append(DoctorCheck("obsidian graph config", WARN, "Obsidian graph config or color legend is missing", "Run /alpha-wiki:init with Obsidian enabled or /alpha-wiki:render."))
+        checks.append(DoctorCheck("obsidian graph config", WARN, "Obsidian graph config or color legend is missing", f"Run {_operation_hint(platform, 'init')} with Obsidian enabled or {_operation_hint(platform, 'render')}."))
     return checks
 
 
-def _check_lint(project_dir: Path, wiki_dir: Path) -> list[DoctorCheck]:
+def _check_lint(project_dir: Path, wiki_dir: Path, platform: str) -> list[DoctorCheck]:
     if not wiki_dir.exists():
         return []
     config = _load_lint_config(project_dir / ".alpha-wiki" / "config.yaml")
@@ -220,9 +244,9 @@ def _check_lint(project_dir: Path, wiki_dir: Path) -> list[DoctorCheck]:
     errors = [finding for finding in findings if finding.severity == LintSeverity.ERROR]
     warnings = [finding for finding in findings if finding.severity == LintSeverity.WARNING]
     if errors:
-        return [DoctorCheck("lint", FAIL, f"{len(errors)} error(s), {len(warnings)} warning(s)", "Run /alpha-wiki:lint --fix, then handle remaining errors.")]
+        return [DoctorCheck("lint", FAIL, f"{len(errors)} error(s), {len(warnings)} warning(s)", f"Run {_operation_hint(platform, 'lint')} with fix enabled, then handle remaining errors.")]
     if warnings:
-        return [DoctorCheck("lint", WARN, f"0 error(s), {len(warnings)} warning(s)", "Run /alpha-wiki:lint --suggest for repair guidance.")]
+        return [DoctorCheck("lint", WARN, f"0 error(s), {len(warnings)} warning(s)", f"Run {_operation_hint(platform, 'lint')} with suggestions enabled.")]
     return [DoctorCheck("lint", PASS, "0 error(s), 0 warning(s)")]
 
 
@@ -241,7 +265,7 @@ def _check_platform(project_dir: Path, platform: str) -> list[DoctorCheck]:
     if "claude" in selected:
         checks.extend(_check_claude(project_dir))
     if "codex" in selected:
-        checks.extend(_check_codex())
+        checks.extend(_check_codex(project_dir))
     return checks
 
 
@@ -250,7 +274,10 @@ def _check_claude(project_dir: Path) -> list[DoctorCheck]:
     hooks = project_dir / ".claude" / "hooks"
     if hooks.exists():
         hook_count = len(list(hooks.glob("*.sh")))
-        checks.append(DoctorCheck("claude hooks", PASS, f"{hook_count} hook script(s) installed"))
+        if hook_count:
+            checks.append(DoctorCheck("claude hooks", PASS, f"{hook_count} hook script(s) installed"))
+        else:
+            checks.append(DoctorCheck("claude hooks", WARN, ".claude/hooks exists but contains no hook scripts", "Rerun init with session or all hooks enabled."))
     else:
         checks.append(DoctorCheck("claude hooks", WARN, ".claude/hooks is missing", "Install hooks via /alpha-wiki:init or rerun init with hooks enabled."))
 
@@ -271,13 +298,190 @@ def _check_claude(project_dir: Path) -> list[DoctorCheck]:
     return checks
 
 
-def _check_codex() -> list[DoctorCheck]:
-    codex_home = Path(os.environ.get("CODEX_HOME", Path.home() / ".codex")).expanduser()
-    skills_dir = codex_home / "skills"
-    expected = skills_dir / "alpha-wiki-init" / "SKILL.md"
-    if expected.exists():
-        return [DoctorCheck("codex skills", PASS, f"Alpha-Wiki Codex skills detected in {skills_dir}")]
-    return [DoctorCheck("codex skills", WARN, f"Alpha-Wiki Codex skills not detected in {skills_dir}", "Run python3 scripts/install_codex.py from the plugin repository.")]
+def _check_codex(project_dir: Path) -> list[DoctorCheck]:
+    checks: list[DoctorCheck] = []
+    home = Path.home()
+    skills_dir = Path(os.environ.get("ALPHA_WIKI_CODEX_SKILLS_DIR", home / ".agents" / "skills")).expanduser()
+    plugin_dir = Path(os.environ.get("ALPHA_WIKI_CODEX_PLUGIN_DIR", home / "plugins" / "alpha-wiki")).expanduser()
+    marketplace_path = Path(
+        os.environ.get("ALPHA_WIKI_CODEX_MARKETPLACE", home / ".agents" / "plugins" / "marketplace.json")
+    ).expanduser()
+    legacy_dir = Path(os.environ.get("CODEX_HOME", home / ".codex")).expanduser() / "skills"
+
+    codex_cli = shutil.which("codex")
+    if codex_cli:
+        checks.append(DoctorCheck("codex cli", PASS, f"Codex CLI detected at {codex_cli}"))
+    else:
+        checks.append(DoctorCheck("codex cli", WARN, "Codex CLI is not on PATH", "Install with npm install -g @openai/codex@latest."))
+
+    plugin_manifest = plugin_dir / ".codex-plugin" / "plugin.json"
+    plugin_skills = {path.parent.name for path in (plugin_dir / "skills").glob("*/SKILL.md")}
+    plugin_ready = plugin_manifest.exists() and plugin_skills == CODEX_SKILLS
+    if plugin_ready:
+        try:
+            plugin = json.loads(plugin_manifest.read_text())
+            version = plugin.get("version", "unknown")
+            checks.append(DoctorCheck("codex plugin package", PASS, f"Alpha-Wiki {version} with {len(plugin_skills)} skill(s) in {plugin_dir}"))
+        except json.JSONDecodeError as exc:
+            checks.append(DoctorCheck("codex plugin package", FAIL, f"invalid plugin manifest: {exc}"))
+    else:
+        checks.append(
+            DoctorCheck(
+                "codex plugin package",
+                WARN,
+                f"current Alpha-Wiki plugin package not detected in {plugin_dir}",
+                "Run python3 scripts/install_codex.py --upgrade.",
+            )
+        )
+
+    standalone = {
+        path.parent.name.removeprefix("alpha-wiki-")
+        for path in skills_dir.glob("alpha-wiki-*/SKILL.md")
+    }
+    missing_standalone = sorted(CODEX_SKILLS - standalone)
+    if plugin_ready and not standalone:
+        checks.append(
+            DoctorCheck(
+                "codex skill surface",
+                PASS,
+                "plugin-only mode; no standalone Alpha-Wiki duplicates detected",
+            )
+        )
+    elif plugin_ready:
+        checks.append(
+            DoctorCheck(
+                "codex skill surface",
+                WARN,
+                f"plugin plus {len(standalone)} standalone Alpha-Wiki skill(s) detected",
+                "Run python3 scripts/install_codex.py --upgrade --remove-standalone.",
+            )
+        )
+    elif not missing_standalone:
+        checks.append(
+            DoctorCheck(
+                "codex skill surface",
+                PASS,
+                f"standalone compatibility mode with {len(standalone)} skill(s) in {skills_dir}",
+            )
+        )
+    else:
+        checks.append(
+            DoctorCheck(
+                "codex skill surface",
+                WARN,
+                f"plugin unavailable and {len(standalone)}/{len(CODEX_SKILLS)} standalone skill(s) detected",
+                "Run python3 scripts/install_codex.py --upgrade, or add --standalone for compatibility mode.",
+            )
+        )
+
+    if plugin_ready and (plugin_dir / "commands").exists():
+        checks.append(
+            DoctorCheck(
+                "codex plugin command migration",
+                WARN,
+                "commands/ is packaged alongside plugin skills and may create duplicate migrated skills",
+                "Run python3 scripts/install_codex.py --upgrade to rebuild the plugin-only skill surface.",
+            )
+        )
+    elif plugin_ready:
+        checks.append(
+            DoctorCheck(
+                "codex plugin command migration",
+                PASS,
+                "commands/ is excluded from the Codex package",
+            )
+        )
+
+    if _marketplace_has_alpha_wiki(marketplace_path):
+        checks.append(DoctorCheck("codex marketplace", PASS, f"Alpha-Wiki entry exists in {marketplace_path}"))
+    else:
+        checks.append(
+            DoctorCheck(
+                "codex marketplace",
+                WARN,
+                f"Alpha-Wiki entry not detected in {marketplace_path}",
+                "Run python3 scripts/install_codex.py --upgrade.",
+            )
+        )
+
+    agents_md = project_dir / "AGENTS.md"
+    if agents_md.exists() and "Alpha-Wiki" in agents_md.read_text():
+        checks.append(DoctorCheck("codex project instructions", PASS, "AGENTS.md contains the Alpha-Wiki operating contract"))
+    else:
+        checks.append(
+            DoctorCheck(
+                "codex project instructions",
+                WARN,
+                "AGENTS.md is missing the Alpha-Wiki operating contract",
+                "Rerun init/upgrade and merge the generated Alpha-Wiki section into an existing AGENTS.md.",
+            )
+        )
+
+    hooks_json = project_dir / ".codex" / "hooks.json"
+    hook_script = project_dir / ".codex" / "hooks" / "alpha_wiki_hook.py"
+    if hooks_json.exists() and hook_script.exists():
+        try:
+            hook_data = json.loads(hooks_json.read_text())
+        except json.JSONDecodeError as exc:
+            checks.append(DoctorCheck("codex project hooks", FAIL, f"invalid .codex/hooks.json: {exc}"))
+        else:
+            required_events = {
+                "SessionStart",
+                "SubagentStart",
+                "PreToolUse",
+                "PostToolUse",
+                "SessionEnd",
+            }
+            configured_events = set(hook_data.get("hooks", {}))
+            missing_events = sorted(required_events - configured_events)
+            if missing_events:
+                checks.append(
+                    DoctorCheck(
+                        "codex project hooks",
+                        WARN,
+                        f"Codex hooks are missing: {', '.join(missing_events)}",
+                        "Rerun init/upgrade, then review the refreshed hooks with /hooks.",
+                    )
+                )
+            else:
+                checks.append(
+                    DoctorCheck(
+                        "codex project hooks",
+                        PASS,
+                        ".codex hooks cover session, subagent, tool, and session-end lifecycle",
+                    )
+                )
+    else:
+        checks.append(
+            DoctorCheck(
+                "codex project hooks",
+                WARN,
+                "Codex project hooks are incomplete",
+                "Rerun init with session hooks enabled, then review them with /hooks in Codex.",
+            )
+        )
+
+    legacy = list(legacy_dir.glob("alpha-wiki-*/SKILL.md")) if legacy_dir != skills_dir else []
+    if legacy:
+        checks.append(
+            DoctorCheck(
+                "codex legacy skills",
+                WARN,
+                f"{len(legacy)} legacy adapter(s) remain in {legacy_dir}",
+                "Run python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone to avoid stale duplicate skills.",
+            )
+        )
+    return checks
+
+
+def _marketplace_has_alpha_wiki(path: Path) -> bool:
+    if not path.exists():
+        return False
+    try:
+        data = json.loads(path.read_text())
+    except json.JSONDecodeError:
+        return False
+    return any(plugin.get("name") == "alpha-wiki" for plugin in data.get("plugins", []))
 
 
 def _display_path(path: Path, project_dir: Path) -> str:
@@ -285,6 +489,14 @@ def _display_path(path: Path, project_dir: Path) -> str:
         return str(path.relative_to(project_dir))
     except ValueError:
         return str(path)
+
+
+def _operation_hint(platform: str, operation: str) -> str:
+    if platform == "codex":
+        return f"$alpha-wiki:{operation}"
+    if platform == "claude":
+        return f"/alpha-wiki:{operation}"
+    return f"/alpha-wiki:{operation} (Claude) or $alpha-wiki:{operation} (Codex)"
 
 
 @click.command()

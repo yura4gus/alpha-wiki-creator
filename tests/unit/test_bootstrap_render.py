@@ -11,6 +11,7 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
         hooks="none", ci=False, schema_evolve_mode="gated",
     )
     bootstrap(target=tmp_path, config=cfg)
+    assert (tmp_path / "AGENTS.md").exists()
     assert (tmp_path / "CLAUDE.md").exists()
     assert (tmp_path / "README.md").exists()
     assert (tmp_path / "wiki" / "index.md").exists()
@@ -29,6 +30,18 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
     assert "/alpha-wiki:doctor" in claude
     assert "/alpha-wiki:review" in claude
     assert "/alpha-wiki:rollup" in claude
+    assert "/alpha-wiki:audit-project" in claude
+    assert "/alpha-wiki:orchestrate" in claude
+    agents = (tmp_path / "AGENTS.md").read_text()
+    assert "$alpha-wiki:init" in agents
+    assert "wiki/graph/context_brief.md" in agents
+    assert "uv run python -m tools.doctor" in agents
+    assert "## Native Subagents" in agents
+    assert "pinned repository/SHA snapshot" in agents
+    assert "references/codex-subagent-orchestration.md" in agents
+    assert "$alpha-wiki:release-check" in agents
+    assert "references/agentops-control-layer.md" in agents
+    assert not (tmp_path / "wiki" / "agentops").exists()
 
 
 def test_bootstrap_overlay_hexagonal_creates_hex_dirs(tmp_path: Path):

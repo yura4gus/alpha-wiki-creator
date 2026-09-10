@@ -127,6 +127,14 @@ Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stu
 - `/alpha-wiki:review`
 - `/alpha-wiki:rollup`
 - `/alpha-wiki:audit-project`
+- `/alpha-wiki:orchestrate`
+- `/alpha-wiki:backlog`
+- `/alpha-wiki:handoff`
+- `/alpha-wiki:release-check`
+
+The last four operations are an optional AgentOps control layer for substantial
+multi-track delivery. Normal Alpha-Wiki initialization does not create
+`wiki/agentops/`.
 
 
 ## Python environment

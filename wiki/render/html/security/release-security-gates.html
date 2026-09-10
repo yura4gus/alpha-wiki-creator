@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Release Security Gates</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Release Security Gates</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-09-10</td></tr>
+<tr><th>evidence</th><td>tools/release_audit.py, tools/release_smoke.py, .github/workflows/plugin-ci.yml</td></tr>
+<tr><th>kind</th><td>security</td></tr>
+<tr><th>slug</th><td>release-security-gates</td></tr>
+<tr><th>status</th><td>stable</td></tr>
+<tr><th>title</th><td>Release Security Gates</td></tr>
+</table>
+<main>
+<h1>Release Security Gates</h1>
+<p>Before publishing Alpha-Wiki, validate a clean diff, scan changed files for</p>
+<p>committed credentials, run the full test suite, run release smoke and release</p>
+<p>audit, validate plugin metadata, and verify a clean public clone. Hooks and</p>
+<p>installer changes require explicit review because they execute with user</p>
+<p>permissions.</p>
+<p>Related: <a href="../specs/release-readiness-runtime.html">[[release-readiness-runtime]]</a>, <a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a>.</p>
+</main>
+
+  </div>
+</body>
+</html>

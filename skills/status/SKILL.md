@@ -102,6 +102,13 @@ Status should recommend concrete next steps:
 - Run `/alpha-wiki:render obsidian` if visual semantics look stale.
 - Run `/alpha-wiki:render mermaid` or `/alpha-wiki:render dot` to verify mixed-role clusters.
 
+## Codex Native Delegation
+
+Do not spawn subagents for status. Refresh derived graph files and run the
+deterministic backend once so counts and gaps come from one wiki state. Status
+may recommend a later parallel review or audit, but it must not fan out while
+measuring health.
+
 ## Done Criteria
 
 - Report is clear enough for a user to decide next action.
@@ -114,3 +121,4 @@ Status should recommend concrete next steps:
 - `tools/status.py`
 - `tools/review.py`
 - `tools/lint.py`
+- `references/codex-subagent-orchestration.md`

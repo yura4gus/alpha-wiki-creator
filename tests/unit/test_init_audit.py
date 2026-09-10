@@ -20,6 +20,10 @@ def test_init_audit_discovers_sources_and_excludes_wiki_raw(tmp_path: Path):
     (tmp_path / "raw" / "docs" / "old.md").write_text("# Raw\n")
     (tmp_path / "tests" / "fixtures").mkdir(parents=True)
     (tmp_path / "tests" / "fixtures" / "CLAUDE.md").write_text("# Fixture\n")
+    (tmp_path / ".claude" / "worktrees" / "old" / "docs").mkdir(parents=True)
+    (tmp_path / ".claude" / "worktrees" / "old" / "docs" / "copy.md").write_text("# Copy\n")
+    (tmp_path / ".codex" / "worktrees" / "old" / "docs").mkdir(parents=True)
+    (tmp_path / ".codex" / "worktrees" / "old" / "docs" / "copy.md").write_text("# Copy\n")
 
     sources = discover_sources(tmp_path)
     paths = {str(item.path) for item in sources}
@@ -31,6 +35,8 @@ def test_init_audit_discovers_sources_and_excludes_wiki_raw(tmp_path: Path):
     assert ".alpha-wiki/config.yaml" not in paths
     assert ".obsidian/graph.json" not in paths
     assert "raw/docs/old.md" not in paths
+    assert ".claude/worktrees/old/docs/copy.md" not in paths
+    assert ".codex/worktrees/old/docs/copy.md" not in paths
     fixture = next(item for item in sources if str(item.path) == "tests/fixtures/CLAUDE.md")
     assert fixture.reason == "markdown source"
 

@@ -101,10 +101,29 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 - Ambiguous truth: write as assumption/risk/open question with provenance.
 - Broken graph: stop and run `/alpha-wiki:lint --fix` before continuing.
 
+## Codex Native Delegation
+
+Use two-phase delegation only when multiple independent sources justify it:
+
+1. The controller pins the active scope and assigns each source or source batch
+   to a read-only analyzer.
+2. Analyzers return classification, durable facts, provenance, proposed target
+   page, candidate links, conflicts, unknowns, and status. They do not edit
+   `raw/**`, wiki pages, service files, config, or graph artifacts.
+3. The controller rejects duplicate page proposals and schema assumptions.
+4. One curator writer applies the accepted batch. A shared page, `index.md`, and
+   `log.md` have one writer per wave.
+5. The controller runs the deterministic ingest pipeline, graph rebuild, lint,
+   and status once after integration.
+
+For one source or one tightly connected document set, stay single-agent. Follow
+`references/codex-subagent-orchestration.md`.
+
 ## References
 
 - `references/classifier.md`
 - `references/schema-evolution.md`
 - `references/cross-reference-rules.md`
 - `references/concept.md`
+- `references/codex-subagent-orchestration.md`
 - `tools/ingest_pipeline.py`

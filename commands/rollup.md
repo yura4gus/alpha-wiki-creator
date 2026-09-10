@@ -1,6 +1,6 @@
 ---
-description: "Summarize wiki activity — weekly or monthly rollup"
-argument-hint: "[week | month] [--write]"
+description: "Summarize wiki or optional AgentOps activity for a week or month"
+argument-hint: "[week | month] [--scope wiki|agentops|all] [--write]"
 ---
 
 Invoke the `rollup` skill from the `alpha-wiki` plugin. Human meaning: summarize what changed in the wiki over a week or month.
@@ -13,4 +13,6 @@ Default period is `month`. If `$ARGUMENTS` starts with `week` or `month`, use th
 uv run python -m tools.rollup --wiki-dir <wiki_dir> --period <period> <remaining-flags>
 ```
 
-For scheduled CI or persistent summaries, include `--write` so the report is written under `<wiki_dir>/rollups/`.
+Use `--scope agentops` to summarize sessions, handoffs, and backlog updates;
+that output is written under `<wiki_dir>/agentops/rollups/`. The default
+`--scope wiki` and ordinary first-run behavior are unchanged.

@@ -6,7 +6,7 @@ service: "[[alpha-wiki-runtime]]"
 consumers: "[[alpha-wiki-runtime]]"
 version: v1
 status: stable
-date_updated: 2026-05-05
+date_updated: 2026-09-08
 evidence: .claude-plugin/plugin.json, .claude-plugin/marketplace.json
 ---
 # Claude Plugin Marketplace Contract
@@ -18,9 +18,9 @@ evidence: .claude-plugin/plugin.json, .claude-plugin/marketplace.json
 
 ## Contract
 
-The package exposes one Claude Code plugin named `alpha-wiki`, version `0.2.0`, with repository and homepage pointing to `yura4gus/alpha-wiki-creator`.
+The package exposes one Claude Code plugin named `alpha-wiki`, currently version `0.6.0`, with repository and homepage pointing to `yura4gus/alpha-wiki-creator`.
 
-The marketplace entry describes Alpha-Wiki as an LLM-maintained wiki bootstrap with 11 skills, typed cross-links, schema evolution, and Obsidian-compatible graph support.
+The marketplace entry describes Alpha-Wiki as repo-native Markdown memory with 16 skills: 12 core workflows and 4 optional AgentOps workflows.
 
 ## Consumers
 
@@ -29,4 +29,3 @@ The marketplace entry describes Alpha-Wiki as an LLM-maintained wiki bootstrap w
 ## Migration notes
 
 - Initial v1 marketplace contract. At publish time, `pyproject.toml`, plugin metadata, marketplace metadata, changelog, and tag must stay aligned.
-

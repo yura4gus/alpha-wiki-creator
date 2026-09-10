@@ -13,7 +13,7 @@
 <h1>Codex Adapter Runtime</h1>
 <table class="frontmatter">
 <tr><th>belongs_to</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
-<tr><th>date_updated</th><td>2026-05-05</td></tr>
+<tr><th>date_updated</th><td>2026-09-08</td></tr>
 <tr><th>evidence</th><td>docs/codex-adapter.md, scripts/install_codex.py, tests/unit/test_install_codex.py</td></tr>
 <tr><th>implements</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
 <tr><th>kind</th><td>adapter</td></tr>
@@ -30,20 +30,28 @@
 </ul>
 <h2>Entities</h2>
 <ul>
-<li>`$alpha-wiki-*` skill namespace.</li>
+<li>`$alpha-wiki:*` plugin skill namespace.</li>
 <li>`scripts/install_codex.py`.</li>
+<li>`.codex/hooks.json` and the Alpha-Wiki hook adapter.</li>
+<li>`references/codex-subagent-orchestration.md`.</li>
 <li>Repository-local deterministic tools.</li>
 </ul>
 <h2>Requirements</h2>
 <ul>
-<li>Install exactly 11 prefixed Codex skills.</li>
+<li>Install exactly 16 Alpha-Wiki plugin skills: 12 core and 4 optional AgentOps workflows.</li>
+<li>Use plugin-only mode by default; standalone fallback skills must not coexist with the plugin.</li>
+<li>Exclude Claude `commands/` from the Codex package.</li>
 <li>Preserve Claude slash-command equivalents in adapter notes.</li>
-<li>Keep Codex support honest: skills and deterministic tools are supported; Claude hooks are not equivalent.</li>
+<li>Use native Codex subagents for bounded evidence collection and keep deterministic tools in the controller.</li>
+<li>Inject the common snapshot, truth-precedence, write-ownership, and result-envelope contract at `SubagentStart`.</li>
+<li>Keep platform support honest: Claude and Codex have different command and hook surfaces.</li>
 </ul>
 <h2>Current Evidence</h2>
 <ul>
-<li>Installed in `/Users/yuragus/.codex/skills`.</li>
-<li>Expected skills include `$alpha-wiki-init`, `$alpha-wiki-doctor`, `$alpha-wiki-ingest`, `$alpha-wiki-query`, `$alpha-wiki-lint`, `$alpha-wiki-status`, `$alpha-wiki-review`, and `$alpha-wiki-rollup`.</li>
+<li>The Codex package is installed through the local `plugins-cli` marketplace.</li>
+<li>Doctor verifies 16 plugin skills, no standalone or legacy duplicates, no packaged Claude commands, marketplace activation, project instructions, and the session/subagent/tool/session-end hook lifecycle.</li>
+<li>`spawn-agent` supports `create-profile`, `run-now`, and bounded `run-parallel` modes without creating a second agent runtime.</li>
+<li>Optional AgentOps uses the same native subagents and stores only summarized execution memory under `wiki/agentops/`.</li>
 </ul>
 </main>
 

@@ -13,8 +13,8 @@
 <h1>Codex Skill Adapter Contract</h1>
 <table class="frontmatter">
 <tr><th>consumers</th><td><a href="../../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
-<tr><th>date_updated</th><td>2026-05-05</td></tr>
-<tr><th>evidence</th><td>scripts/install_codex.py, docs/codex-adapter.md</td></tr>
+<tr><th>date_updated</th><td>2026-09-08</td></tr>
+<tr><th>evidence</th><td>scripts/install_codex.py, docs/codex-adapter.md, references/codex-subagent-orchestration.md</td></tr>
 <tr><th>service</th><td><a href="../../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
 <tr><th>slug</th><td>codex-skill-adapter-contract</td></tr>
 <tr><th>status</th><td>stable</td></tr>
@@ -26,17 +26,18 @@
 <h1>Codex Skill Adapter Contract</h1>
 <h2>Provenance</h2>
 <ul>
-<li>Source: scripts/install_codex.py, docs/codex-adapter.md.</li>
+<li>Source: scripts/install_codex.py, docs/codex-adapter.md, references/codex-subagent-orchestration.md.</li>
 </ul>
 <h2>Contract</h2>
-<p>`scripts/install_codex.py` transforms each Alpha-Wiki skill into a prefixed Codex skill under `$CODEX_HOME/skills`.</p>
+<p>`scripts/install_codex.py` packages exactly 16 Alpha-Wiki skills as one Codex plugin and activates it through the local marketplace. Twelve are core memory workflows; four are optional AgentOps workflows. Claude `commands/` are excluded. Standalone skills are compatibility fallback only and must not coexist with the active plugin.</p>
+<p>Codex subagent runs use the native Codex runtime. The controller pins one repository snapshot, assigns disjoint read/write ownership, waits for terminal results, rejects stale evidence, and preserves deterministic Alpha-Wiki tools as the source of truth.</p>
 <h2>Consumers</h2>
 <ul>
 <li><a href="../../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></li>
 </ul>
 <h2>Migration notes</h2>
 <ul>
-<li>Initial v1 contract. No migration required.</li>
+<li>Upgrade with `python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone` to remove duplicate legacy/fallback surfaces.</li>
 </ul>
 </main>
 

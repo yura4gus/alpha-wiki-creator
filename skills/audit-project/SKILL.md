@@ -95,6 +95,31 @@ declares readiness without evidence.
 - `receiving-code-review` (Superpowers) stays a separate per-change review; this
   audit is project-wide. Reference it as the per-PR checklist, don't replace it.
 
+## Codex Native Delegation
+
+Use native Codex subagents when the audit has at least two independent
+repositories or focus areas. Keep the controller read-only and follow this
+sequence:
+
+1. The controller reads `AGENTS.md` and Alpha-Wiki context, fetches required
+   remote metadata once, and records one immutable repository/SHA snapshot.
+2. Spawn two to four read-only evidence agents by repository or non-overlapping
+   focus area. Use five or six only when the user explicitly requests them or
+   supplies six independent scopes.
+3. Give every agent the same pinned snapshot, a bounded scope and non-scope,
+   forbidden actions, evidence format, and terminal status vocabulary.
+4. Treat starting assumptions as hypotheses to confirm, refute, or mark
+   `UNPROVEN`. Subagents must not fetch shared refs independently.
+5. Wait for every agent to reach a terminal state. Reject `STALE_SNAPSHOT`
+   results, permit at most one bounded retry, then deduplicate and synthesize.
+6. Run dependent contract alignment after the evidence wave when it needs other
+   agents' results. Do not pretend dependent work is independent parallel work.
+7. Produce one consolidated audit. Do not begin implementation; a writer wave is
+   only a proposal with disjoint ownership and explicit approval.
+
+Use the result envelope and truth precedence from
+`references/codex-subagent-orchestration.md`.
+
 ## Done Criteria
 
 - All 17 sections present; security/tech-debt/release always included for software
@@ -108,3 +133,4 @@ declares readiness without evidence.
 - `tools/project_audit.py`
 - `tools/review.py`, `tools/security.py`, `tools/init_audit.py`
 - `docs/project-audit.md`
+- `references/codex-subagent-orchestration.md`

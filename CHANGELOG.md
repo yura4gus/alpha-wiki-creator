@@ -2,6 +2,51 @@
 
 All notable Alpha-Wiki release changes are recorded here.
 
+## [Unreleased]
+
+## [0.6.0] - 2026-09-10
+
+Codex parity and optional AgentOps milestone. Alpha-Wiki keeps the same
+markdown-first lifecycle while adding one namespaced Codex plugin surface,
+project hooks, native subagent guidance, and an opt-in execution control layer.
+
+### Codex adaptation
+
+- Added a native Codex plugin manifest, namespaced `$alpha-wiki:*` workflows, and a personal marketplace install/upgrade path.
+- Made the namespaced plugin the default Codex surface; standalone fallback skills are opt-in and managed duplicates can be removed safely from `~/.agents/skills`.
+- Excluded Claude `commands/` from the Codex package so Codex does not auto-migrate them into duplicate skill entries.
+- Added generated `AGENTS.md`, project `.codex/hooks.json`, and a Codex hook adapter for context loading, graph refresh, generated-file warnings, and bounded session-end lint.
+- Added `scripts.bootstrap_cli` so a plugin-driven Codex init can bootstrap a fresh target before project-local tools exist.
+- Expanded `doctor` and release smoke coverage to verify the complete skill package, plugin packaging, marketplace registration, Codex project instructions, and project hooks.
+- Added native `.codex/agents/*.toml` output guidance to `spawn-agent`.
+- Added a native Codex subagent orchestration contract, `SubagentStart` context
+  injection, pinned snapshot/evidence rules, and bounded fan-out guidance across
+  every skill.
+- Expanded `spawn-agent` with `create-profile`, `run-now`, and `run-parallel`
+  modes without adding another command to the public skill surface.
+- Verified the current local package with `202 passed`, release smoke `PASS`, and release audit `READY`.
+
+### Optional AgentOps v0.2
+
+- Added four opt-in workflows: `orchestrate`, `backlog`, `handoff`, and
+  `release-check`, bringing the package to 12 core and 4 optional skills.
+- Added namespaced Markdown entities for orchestrator, tracks, eight role
+  declarations, sessions, summarized handoffs, decisions, backlog items, and
+  project releases under `wiki/agentops/`.
+- Added one-file-per-task backlog filtering and dependency validation, pinned
+  session evidence, concise handoffs, AgentOps rollups, and deterministic
+  `GREEN`/`WARNING`/`BLOCKED` project release checks.
+- Kept normal Alpha-Wiki init unchanged: AgentOps is created only by explicit
+  `tools.orchestrate init` or the corresponding skill workflow.
+
+### Release hardening
+
+- Excluded `.claude/worktrees/**` and `.codex/worktrees/**` from init source
+  discovery so agent worktree mirrors do not inflate the ingest plan.
+- Refreshed the repository's own scope, security memory, graph, HTML output,
+  and fresh-install evidence; wiki review is `READY` with zero structural
+  findings.
+
 ## [0.5.0] - 2026-07-10
 
 Stabilization + dogfood milestone: Alpha-Wiki is now positioned for daily real-project use. No new large features; no memory-architecture redesign; no breaking changes to existing skills.

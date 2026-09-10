@@ -1,6 +1,6 @@
 ---
 project: alpha-wiki-creator
-generated: 2026-05-05
+generated: 2026-09-10
 ---
 # Index
 
@@ -24,6 +24,7 @@ generated: 2026-05-05
 - [[state-backend-abstraction]]
 - [[marketplace-topology-deferred]]
 - [[spawn-agent-boundary]]
+- [[optional-agentops-control-layer]]
 
 
 ## Spec
@@ -40,6 +41,7 @@ generated: 2026-05-05
 - [[alpha-wiki-lint-operation]]
 - [[alpha-wiki-status-operation]]
 - [[alpha-wiki-review-operation]]
+- [[agentops-control-layer]]
 
 
 ## Entity
@@ -51,6 +53,17 @@ generated: 2026-05-05
 
 - [[codex-skill-adapter-contract]]
 - [[claude-plugin-marketplace-contract]]
+
+
+## Security Memory
+
+- [[security-overview]]
+- [[auth-session]]
+- [[identity-permissions]]
+- [[secrets-env]]
+- [[api-boundaries]]
+- [[release-security-gates]]
+- [[known-security-blockers]]
 
 
 ## Person

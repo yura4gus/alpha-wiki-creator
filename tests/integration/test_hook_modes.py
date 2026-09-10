@@ -1,3 +1,4 @@
+import json
 from pathlib import Path
 
 from scripts.bootstrap import bootstrap
@@ -43,6 +44,10 @@ def test_hook_mode_all_installs_session_and_git_hooks(tmp_path: Path):
 
     assert _installed_hooks(tmp_path) == SESSION_HOOKS | GIT_HOOKS
     assert (tmp_path / ".claude" / "settings.local.json").exists()
+    assert (tmp_path / ".codex" / "hooks.json").exists()
+    assert (tmp_path / ".codex" / "hooks" / "alpha_wiki_hook.py").exists()
+    codex_hooks = json.loads((tmp_path / ".codex" / "hooks.json").read_text())
+    assert "SubagentStart" in codex_hooks["hooks"]
 
 
 def test_hook_mode_session_installs_only_session_hooks(tmp_path: Path):
@@ -50,6 +55,9 @@ def test_hook_mode_session_installs_only_session_hooks(tmp_path: Path):
 
     assert _installed_hooks(tmp_path) == SESSION_HOOKS
     assert (tmp_path / ".claude" / "settings.local.json").exists()
+    assert (tmp_path / ".codex" / "hooks.json").exists()
+    codex_hooks = json.loads((tmp_path / ".codex" / "hooks.json").read_text())
+    assert "SubagentStart" in codex_hooks["hooks"]
 
 
 def test_hook_mode_git_installs_only_git_hooks(tmp_path: Path):
@@ -57,6 +65,7 @@ def test_hook_mode_git_installs_only_git_hooks(tmp_path: Path):
 
     assert _installed_hooks(tmp_path) == GIT_HOOKS
     assert not (tmp_path / ".claude" / "settings.local.json").exists()
+    assert not (tmp_path / ".codex" / "hooks.json").exists()
 
 
 def test_hook_mode_none_installs_no_hooks_or_settings(tmp_path: Path):
@@ -64,3 +73,4 @@ def test_hook_mode_none_installs_no_hooks_or_settings(tmp_path: Path):
 
     assert _installed_hooks(tmp_path) == set()
     assert not (tmp_path / ".claude" / "settings.local.json").exists()
+    assert not (tmp_path / ".codex" / "hooks.json").exists()

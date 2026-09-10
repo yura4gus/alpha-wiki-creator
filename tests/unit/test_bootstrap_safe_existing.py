@@ -21,6 +21,7 @@ def _cfg(wiki_dir: str = "wiki") -> InterviewConfig:
 
 def test_bootstrap_preserves_existing_project_files(tmp_path: Path):
     originals = {
+        "AGENTS.md": "# Existing Codex agent rules\n",
         "CLAUDE.md": "# Existing agent rules\n",
         "README.md": "# Existing readme\n",
         "pyproject.toml": "[project]\nname = 'existing'\n",

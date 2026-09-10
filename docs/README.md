@@ -1,6 +1,8 @@
 # Documentation Index
 
-This folder contains the current project design package for Alpha-Wiki and the related AgentOps/Superpowers integration model.
+This folder contains the current Alpha-Wiki design and release package. The
+active AgentOps design is the small optional control layer in ADR-007; older
+standalone AgentOps/Superpowers documents are historical context.
 
 For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers/` folder is historical design archive and future context, not part of the Alpha-Wiki beta first-run path.
 
@@ -8,7 +10,7 @@ For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers
 
 - [`00-architecture.md`](00-architecture.md) — ecosystem boundaries, ownership, plugin topology, integration matrix
 - [`01-alpha-wiki.md`](01-alpha-wiki.md) — Alpha-Wiki product specification and Phase 1a requirements
-- [`02-agentops.md`](02-agentops.md) — AgentOps product specification and boundaries
+- [`02-agentops.md`](02-agentops.md) — historical standalone AgentOps proposal, superseded for the v0.2 control-layer scope
 - [`03-superpowers-adapter.md`](03-superpowers-adapter.md) — optional Superpowers adapter contract
 - [`04-state-backend-contract.md`](04-state-backend-contract.md) — state backend abstraction for AgentOps
 
@@ -19,6 +21,7 @@ For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers
 - [`implementation-plan-2026-04-30.md`](implementation-plan-2026-04-30.md) — implementation plan for the current repository
 - [`quickstart.md`](quickstart.md) — 10-minute install, bootstrap, ingest, query, and status path
 - [`codex-adapter.md`](codex-adapter.md) — OpenAI Codex CLI install and Alpha-Wiki skill mapping
+- [`examples/codex-parallel-audit-prompt.md`](examples/codex-parallel-audit-prompt.md) — bounded native Codex audit fan-out and synthesis prompt card
 - [`best-practices-gap-analysis-2026-04-30.md`](best-practices-gap-analysis-2026-04-30.md) — operator and AI ergonomics gap scan
 - [`karpathy-llm-wiki-compliance-audit-2026-05-01.md`](karpathy-llm-wiki-compliance-audit-2026-05-01.md) — Phase 0 audit against the Karpathy LLM-Wiki core
 - [`final-release-hardening-plan.md`](final-release-hardening-plan.md) — consolidated key improvements required for final release
@@ -38,6 +41,7 @@ For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers
 - [`ADR-004-state-backend-abstraction.md`](ADR-004-state-backend-abstraction.md)
 - [`ADR-005-marketplace-topology-deferred.md`](ADR-005-marketplace-topology-deferred.md)
 - [`ADR-006-spawn-agent-boundary.md`](ADR-006-spawn-agent-boundary.md)
+- [`ADR-007-optional-agentops-control-layer.md`](ADR-007-optional-agentops-control-layer.md) — active optional AgentOps boundary
 
 ## Supporting Material
 

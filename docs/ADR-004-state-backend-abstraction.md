@@ -1,7 +1,10 @@
 # ADR-004 — State backend abstraction
 
-**Status**: Accepted
+**Status**: Superseded for the lightweight v0.2 scope by ADR-007
 **Date**: 2026-04-29
+
+> Retained as historical design for a standalone AgentOps product. The current
+> optional Alpha-Wiki layer writes only to `wiki/agentops/`.
 
 ## Context
 

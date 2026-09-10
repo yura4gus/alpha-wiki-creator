@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AgentOps Control Layer</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>AgentOps Control Layer</h1>
+<table class="frontmatter">
+<tr><th>belongs_to</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date_updated</th><td>2026-09-08</td></tr>
+<tr><th>evidence</th><td>references/agentops-control-layer.md</td></tr>
+<tr><th>implements</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>kind</th><td>operational-spec</td></tr>
+<tr><th>slug</th><td>agentops-control-layer</td></tr>
+<tr><th>status</th><td>beta</td></tr>
+<tr><th>title</th><td>AgentOps Control Layer</td></tr>
+<tr><th>version</th><td>v0.2</td></tr>
+</table>
+<main>
+<h1>AgentOps Control Layer</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: `references/agentops-control-layer.md` and</li>
+</ul>
+<p>  `docs/ADR-007-optional-agentops-control-layer.md`.</p>
+<h2>Entities</h2>
+<ul>
+<li>Orchestrator, track, agent role, session, handoff, decision, backlog item, and release.</li>
+<li>Eight role declarations: CTO, Architect, Backend, Frontend, DevOps, QA, Documentation, Release.</li>
+<li>Backlog items are one Markdown file per task; session and handoff records are concise summaries.</li>
+</ul>
+<h2>Requirements</h2>
+<ul>
+<li>AgentOps is enabled only by an explicit `orchestrate init` operation.</li>
+<li>All state remains under `wiki/agentops/`; core Alpha-Wiki works without it.</li>
+<li>Native subagents receive a pinned snapshot, bounded scope, permissions, evidence format, and terminal status.</li>
+<li>The controller uses two to four agents by default and six only when explicitly requested.</li>
+<li>Governance reports exactly `GREEN`, `WARNING`, or `BLOCKED`.</li>
+<li>Backlog, handoff, session, rollup, and project release checks are deterministic.</li>
+<li>No raw logs, autonomous daemon, external orchestrator, RAG, embeddings, or SaaS UI.</li>
+</ul>
+<h2>Links</h2>
+<ul>
+<li>Decision: <a href="../decisions/optional-agentops-control-layer.html">[[optional-agentops-control-layer]]</a></li>
+<li>Runtime: <a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

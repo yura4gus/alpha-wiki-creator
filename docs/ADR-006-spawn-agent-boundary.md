@@ -3,6 +3,10 @@
 **Status**: Accepted
 **Date**: 2026-04-29
 
+> The generic `spawn-agent` boundary remains active. References below to a
+> separate nine-role AgentOps plugin are historical; ADR-007 defines eight
+> opt-in role declarations without moving them into `spawn-agent`.
+
 ## Context
 
 Alpha-Wiki ships a skill `/alpha-wiki:spawn-agent` that generates wiki-aware Claude Code subagents respecting the wiki mutability matrix.

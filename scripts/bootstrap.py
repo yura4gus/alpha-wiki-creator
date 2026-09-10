@@ -15,6 +15,7 @@ OVERLAYS = PLUGIN_ROOT / "references" / "overlays"
 TOOLS = PLUGIN_ROOT / "tools"
 
 PROTECTED_TOP_LEVEL_FILES = {
+    "AGENTS.md",
     "CLAUDE.md",
     "README.md",
     "pyproject.toml",
@@ -94,6 +95,9 @@ def bootstrap(
         _plan_path(report, target / config.wiki_dir)
         _plan_path(report, target / "raw")
         _plan_path(report, target / ".alpha-wiki" / "config.yaml")
+        if _uses_session_hooks(config.hooks):
+            _plan_path(report, target / ".codex" / "hooks.json")
+            _plan_path(report, target / ".codex" / "hooks" / "alpha_wiki_hook.py")
         return report
 
     target.mkdir(parents=True, exist_ok=True)
@@ -144,7 +148,14 @@ def _render_context(config: InterviewConfig, merged: dict) -> dict:
         "cross_ref_rules": merged.get("cross_ref_rules", []),
         "skills": ["/alpha-wiki:init", "/alpha-wiki:doctor", "/alpha-wiki:ingest", "/alpha-wiki:query", "/alpha-wiki:lint",
                    "/alpha-wiki:evolve", "/alpha-wiki:spawn-agent", "/alpha-wiki:render", "/alpha-wiki:status",
-                   "/alpha-wiki:review", "/alpha-wiki:rollup"],
+                   "/alpha-wiki:review", "/alpha-wiki:rollup", "/alpha-wiki:audit-project",
+                   "/alpha-wiki:orchestrate", "/alpha-wiki:backlog", "/alpha-wiki:handoff",
+                   "/alpha-wiki:release-check"],
+        "codex_skills": ["$alpha-wiki:init", "$alpha-wiki:doctor", "$alpha-wiki:ingest", "$alpha-wiki:query",
+                         "$alpha-wiki:lint", "$alpha-wiki:evolve", "$alpha-wiki:status",
+                         "$alpha-wiki:spawn-agent", "$alpha-wiki:render", "$alpha-wiki:review",
+                         "$alpha-wiki:rollup", "$alpha-wiki:audit-project", "$alpha-wiki:orchestrate",
+                         "$alpha-wiki:backlog", "$alpha-wiki:handoff", "$alpha-wiki:release-check"],
         "schema_evolve_mode": config.schema_evolve_mode,
         "ci": config.ci,
     }
@@ -160,6 +171,7 @@ def _render_top_level_files(
 ) -> None:
     env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
     files = [
+        ("agents-md.j2", "AGENTS.md"),
         ("claude-md.j2", "CLAUDE.md"),
         ("readme.j2", "README.md"),
         ("pyproject.j2", "pyproject.toml"),
@@ -222,6 +234,14 @@ def _copy_assets(target: Path, config: InterviewConfig) -> None:
         env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
         (target / ".claude" / "settings.local.json").write_text(
             env.get_template("settings-local.j2").render(wiki_dir=config.wiki_dir))
+        codex_hooks = target / ".codex" / "hooks"
+        codex_hooks.mkdir(parents=True, exist_ok=True)
+        hook_script = ASSETS / "codex-hooks" / "alpha_wiki_hook.py"
+        hook_dest = codex_hooks / hook_script.name
+        shutil.copy(hook_script, hook_dest)
+        hook_dest.chmod(0o755)
+        (target / ".codex" / "hooks.json").write_text(
+            env.get_template("codex-hooks/hooks.json.j2").render(wiki_dir=config.wiki_dir))
     if config.ci:
         wf_dir = target / ".github" / "workflows"
         wf_dir.mkdir(parents=True, exist_ok=True)

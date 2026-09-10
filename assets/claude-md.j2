@@ -60,6 +60,10 @@ Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stu
 {% for s in skills %}- `{{ s }}`
 {% endfor %}
 
+The `orchestrate`, `backlog`, `handoff`, and `release-check` operations are an
+optional AgentOps control layer. Normal initialization does not create
+`{{ wiki_dir }}/agentops/`.
+
 ## Python environment
 
 - Python 3.12+

@@ -13,8 +13,8 @@
 <h1>Alpha-Wiki Runtime</h1>
 <table class="frontmatter">
 <tr><th>consumes</th><td>[&#x27;<a href="../contracts/rpc/codex-skill-adapter-contract.html">[[codex-skill-adapter-contract]]</a>&#x27;, &#x27;<a href="../contracts/rpc/claude-plugin-marketplace-contract.html">[[claude-plugin-marketplace-contract]]</a>&#x27;]</td></tr>
-<tr><th>date_updated</th><td>2026-05-05</td></tr>
-<tr><th>decisions</th><td>[&#x27;<a href="../decisions/no-embeddings-mvp.html">[[no-embeddings-mvp]]</a>&#x27;, &#x27;<a href="../decisions/graph-cluster-semantics.html">[[graph-cluster-semantics]]</a>&#x27;, &#x27;<a href="../decisions/alpha-wiki-agentops-boundary.html">[[alpha-wiki-agentops-boundary]]</a>&#x27;, &#x27;<a href="../decisions/superpowers-adapter-not-fork.html">[[superpowers-adapter-not-fork]]</a>&#x27;, &#x27;<a href="../decisions/state-backend-abstraction.html">[[state-backend-abstraction]]</a>&#x27;, &#x27;<a href="../decisions/marketplace-topology-deferred.html">[[marketplace-topology-deferred]]</a>&#x27;, &#x27;<a href="../decisions/spawn-agent-boundary.html">[[spawn-agent-boundary]]</a>&#x27;]</td></tr>
+<tr><th>date_updated</th><td>2026-09-08</td></tr>
+<tr><th>decisions</th><td>[&#x27;<a href="../decisions/no-embeddings-mvp.html">[[no-embeddings-mvp]]</a>&#x27;, &#x27;<a href="../decisions/graph-cluster-semantics.html">[[graph-cluster-semantics]]</a>&#x27;, &#x27;<a href="../decisions/alpha-wiki-agentops-boundary.html">[[alpha-wiki-agentops-boundary]]</a>&#x27;, &#x27;<a href="../decisions/superpowers-adapter-not-fork.html">[[superpowers-adapter-not-fork]]</a>&#x27;, &#x27;<a href="../decisions/state-backend-abstraction.html">[[state-backend-abstraction]]</a>&#x27;, &#x27;<a href="../decisions/marketplace-topology-deferred.html">[[marketplace-topology-deferred]]</a>&#x27;, &#x27;<a href="../decisions/spawn-agent-boundary.html">[[spawn-agent-boundary]]</a>&#x27;, &#x27;<a href="../decisions/optional-agentops-control-layer.html">[[optional-agentops-control-layer]]</a>&#x27;]</td></tr>
 <tr><th>description</th><td>Plain-markdown agent memory runtime with Claude Code primary support and Codex skill adapters.</td></tr>
 <tr><th>evidence</th><td>README.md, docs/final-release-readiness-audit-2026-05-04.md, CHANGELOG.md, raw/docs/source-manifest-2026-05-05.md</td></tr>
 <tr><th>owner</th><td>yuragus</td></tr>
@@ -33,7 +33,9 @@
 <li>Bootstrap for a typed markdown wiki in a target project.</li>
 <li>Deterministic graph rebuild through `tools/wiki_engine.py`.</li>
 <li>Structural lint/status/review/rollup tools.</li>
-<li>Codex skill adapter installation through `scripts/install_codex.py`.</li>
+<li>Codex plugin installation and duplicate cleanup through `scripts/install_codex.py`.</li>
+<li>Native Codex subagent orchestration through <a href="../contracts/rpc/codex-skill-adapter-contract.html">[[codex-skill-adapter-contract]]</a> and <a href="../decisions/spawn-agent-boundary.html">[[spawn-agent-boundary]]</a>.</li>
+<li>Optional controlled execution memory through <a href="../specs/agentops-control-layer.html">[[agentops-control-layer]]</a>.</li>
 <li>Release gates through `tools/release_audit.py` and `tools/release_smoke.py`.</li>
 <li>Source inventory through <a href="../specs/source-corpus-inventory.html">[[source-corpus-inventory]]</a>.</li>
 <li>Marketplace metadata through <a href="../contracts/rpc/claude-plugin-marketplace-contract.html">[[claude-plugin-marketplace-contract]]</a>.</li>
@@ -51,11 +53,12 @@
 <li><a href="../decisions/state-backend-abstraction.html">[[state-backend-abstraction]]</a></li>
 <li><a href="../decisions/marketplace-topology-deferred.html">[[marketplace-topology-deferred]]</a></li>
 <li><a href="../decisions/spawn-agent-boundary.html">[[spawn-agent-boundary]]</a></li>
+<li><a href="../decisions/optional-agentops-control-layer.html">[[optional-agentops-control-layer]]</a></li>
 </ul>
 <h2>Active tasks</h2>
 <ul>
 <li>Keep release audit `READY`.</li>
-<li>Improve unified health scoring and Codex automation parity in the next hardening pass.</li>
+<li>Pilot native Codex subagent workflows on real repositories and keep the first-run path single-agent by default.</li>
 </ul>
 </main>
 
