@@ -43,6 +43,9 @@ def check_missing_reverse_links(wiki_dir: Path) -> list[LintFinding]:
     by_slug = {p.slug: p for p in pages}
     findings: list[LintFinding] = []
     for src in pages:
+        relative = Path(src.path).relative_to(wiki_dir)
+        if relative.parts and relative.parts[0] == "agentops":
+            continue  # AgentOps dependencies are intentionally directed and validated separately.
         for key, value in src.frontmatter.items():
             reverse = REVERSE_OF.get(key)
             if reverse is None or reverse.startswith("_"):
@@ -76,7 +79,13 @@ def check_orphans(wiki_dir: Path) -> list[LintFinding]:
             target = link.split("|")[0].split("/")[-1]
             if target in incoming:
                 incoming[target] += 1
-    index_text = (wiki_dir / "index.md").read_text() if (wiki_dir / "index.md").exists() else ""
+    # Namespaced extensions such as wiki/agentops keep their own generated index.
+    # Treat all index files as navigation without scanning them as source pages.
+    index_text = "\n".join(
+        path.read_text()
+        for path in sorted(wiki_dir.rglob("index.md"))
+        if not any(part.startswith(".") or part in {"graph", "render", "outputs"} for part in path.relative_to(wiki_dir).parts[:-1])
+    )
     findings: list[LintFinding] = []
     for p in pages:
         if incoming[p.slug] == 0 and f"[[{p.slug}]]" not in index_text:
@@ -96,6 +105,9 @@ def check_required_frontmatter(wiki_dir: Path, schema: dict[str, list[str]], dir
     pages = scan_wiki(wiki_dir)
     for p in pages:
         page_path = Path(p.path)
+        relative = page_path.relative_to(wiki_dir)
+        if relative.parts and relative.parts[0] == "agentops":
+            continue  # checked against the namespaced AgentOps schema below
         type_name = None
         for part in page_path.parts:
             if part in dir_to_type:
@@ -187,6 +199,65 @@ def check_cluster_links(wiki_dir: Path) -> list[LintFinding]:
     return findings
 
 
+def check_agentops_state(wiki_dir: Path) -> list[LintFinding]:
+    root = wiki_dir / "agentops"
+    if not root.exists():
+        return []
+    from tools._agentops import GOVERNANCE_STATUSES, SESSION_STATUSES, list_entities
+    from tools.backlog import validate_backlog
+    from tools.handoff import validate_handoffs
+
+    required = {
+        "orchestrator": ["goal", "current_objective", "snapshot", "governance_status"],
+        "track": ["objective", "owner", "agent_role", "dependencies", "acceptance_criteria"],
+        "agent": ["role", "scope", "permissions"],
+        "session": ["session_id", "agent_role", "goal", "scope", "snapshot", "files_changed", "contracts_changed", "decisions", "risks", "tests", "result", "next_steps"],
+        "handoff": ["from_agent", "to_agent", "context_summary", "completed_work", "unfinished_work", "files", "contracts", "risks", "decisions", "next_action"],
+        "decision": ["owner", "context", "decision", "consequences", "affected_refs", "source_session"],
+        "backlog_item": ["description", "owner", "agent_role", "priority", "status", "track", "dependencies", "contracts", "files", "acceptance_criteria", "evidence"],
+        "release": ["version", "governance_status", "blockers", "evidence"],
+    }
+    findings: list[LintFinding] = []
+    for entity_type, fields in required.items():
+        for entity in list_entities(wiki_dir, entity_type):
+            for field in fields:
+                if field not in entity.frontmatter:
+                    findings.append(LintFinding(
+                        check="agentops-schema",
+                        severity=LintSeverity.ERROR,
+                        file=str(entity.path),
+                        line=0,
+                        message=f"{entity.frontmatter.get('id', entity.path.stem)} missing `{field}`",
+                    ))
+            status = entity.frontmatter.get("status")
+            if entity_type == "session" and status not in SESSION_STATUSES:
+                findings.append(LintFinding(
+                    check="agentops-session-status",
+                    severity=LintSeverity.ERROR,
+                    file=str(entity.path),
+                    line=0,
+                    message=f"invalid session status: {status}",
+                ))
+            governance = entity.frontmatter.get("governance_status")
+            if governance is not None and governance not in GOVERNANCE_STATUSES:
+                findings.append(LintFinding(
+                    check="agentops-governance-status",
+                    severity=LintSeverity.ERROR,
+                    file=str(entity.path),
+                    line=0,
+                    message=f"invalid governance status: {governance}",
+                ))
+    for message in [*validate_backlog(wiki_dir), *validate_handoffs(wiki_dir)]:
+        findings.append(LintFinding(
+            check="agentops-state",
+            severity=LintSeverity.ERROR,
+            file=str(root),
+            line=0,
+            message=message,
+        ))
+    return findings
+
+
 def run_all_checks(wiki_dir: Path, schema: dict, dir_to_type: dict, dependency_rules: list[dict]) -> list[LintFinding]:
     findings: list[LintFinding] = []
     findings += check_broken_wikilinks(wiki_dir)
@@ -196,6 +267,7 @@ def run_all_checks(wiki_dir: Path, schema: dict, dir_to_type: dict, dependency_r
     findings += check_duplicate_slugs(wiki_dir)
     findings += check_dependency_rules(wiki_dir, dependency_rules)
     findings += check_cluster_links(wiki_dir)
+    findings += check_agentops_state(wiki_dir)
     return findings
 
 

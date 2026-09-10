@@ -82,6 +82,13 @@ Color is not cluster. Do not build or describe one red cluster, one green cluste
    - `html`: run `uv run python -m tools.render_html --wiki-dir <wiki_dir>`.
 5. Run `/alpha-wiki:lint --suggest` if graph data changed.
 
+## Codex Native Delegation
+
+Do not spawn subagents for render. Mermaid, DOT, HTML, graph rebuild, and
+Obsidian configuration must be generated once from one integrated wiki state.
+Delegate investigation of source-page classification only as a separate review
+task; keep rendering and artifact validation in the controller.
+
 ## Done Criteria
 
 - Obsidian opens with meaningful color groups.
@@ -97,3 +104,4 @@ Color is not cluster. Do not build or describe one red cluster, one green cluste
 - `tools/render_mermaid.py`
 - `tools/render_dot.py`
 - `tools/render_html.py`
+- `references/codex-subagent-orchestration.md`

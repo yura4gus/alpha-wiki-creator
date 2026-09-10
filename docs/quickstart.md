@@ -20,10 +20,10 @@ npm install -g @openai/codex
 codex --login
 git clone https://github.com/yura4gus/alpha-wiki-creator
 cd alpha-wiki-creator
-python3 scripts/install_codex.py
+python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone
 ```
 
-Codex commands are skills with the `$alpha-wiki-*` prefix. Claude commands use `/alpha-wiki:*`.
+Preferred Codex plugin commands use `$alpha-wiki:*`. The default install exposes one set of 16 skills: 12 core workflows and 4 optional AgentOps workflows. Standalone `$alpha-wiki-*` skills are an explicit compatibility mode (`--standalone`, which skips the plugin) for Codex surfaces without plugin support. Claude commands use `/alpha-wiki:*`.
 
 ## 2. Bootstrap A Project
 
@@ -36,14 +36,14 @@ In the target project:
 Codex equivalent:
 
 ```text
-Use $alpha-wiki-init to bootstrap Alpha-Wiki in this project.
+Use $alpha-wiki:init to bootstrap Alpha-Wiki in this project.
 ```
 
 Recommended first-run choices:
 
 - Preset: `software-project` unless the project is clearly research/product/personal.
 - Wiki dir: `wiki`. Keep it visible so Obsidian can open it directly as a vault.
-- Hooks: `all` for Claude, `git` or `none` when operating mainly through Codex.
+- Hooks: `all` for Claude and Codex project automation; review Codex hooks with `/hooks`.
 - CI: enabled for GitHub projects.
 - Obsidian: enabled.
 
@@ -60,7 +60,7 @@ Claude:
 Codex:
 
 ```text
-Use $alpha-wiki-doctor with platform both and refresh enabled.
+Use $alpha-wiki:doctor with platform both and refresh enabled.
 ```
 
 Expected result: no failures. Warnings are acceptable before the first ingest if they say the wiki has no durable content yet.
@@ -76,7 +76,7 @@ Put a source file under `raw/docs/`, for example `raw/docs/project-brief.md`, th
 Codex:
 
 ```text
-Use $alpha-wiki-ingest on raw/docs/project-brief.md.
+Use $alpha-wiki:ingest on raw/docs/project-brief.md.
 ```
 
 Good first sources:
@@ -99,10 +99,10 @@ Good first sources:
 Codex equivalents:
 
 ```text
-Use $alpha-wiki-query for "what is this project building?"
-Use $alpha-wiki-status.
-Use $alpha-wiki-lint in dry-run mode.
-Use $alpha-wiki-review.
+Use $alpha-wiki:query for "what is this project building?"
+Use $alpha-wiki:status.
+Use $alpha-wiki:lint in dry-run mode.
+Use $alpha-wiki:review.
 ```
 
 The status report must always show a `Gap Check`. Treat gaps as work routing, not as failure noise.
@@ -142,3 +142,19 @@ python3.12 -m venv .venv
 ```
 
 Expected current release-audit verdict: `READY`.
+
+## Optional: Controlled Multi-Track Delivery
+
+Skip this section for ordinary wiki use. For a substantial project with
+independent tracks, explicitly initialize AgentOps:
+
+```bash
+uv run python -m tools.orchestrate init \
+  --wiki-dir wiki \
+  --goal "Prepare the project for release" \
+  --objective "Close verified release gaps"
+```
+
+Then use `$alpha-wiki:orchestrate`, `$alpha-wiki:backlog`,
+`$alpha-wiki:handoff`, and `$alpha-wiki:release-check`. All execution state is
+kept under `wiki/agentops/`; raw logs are not stored.

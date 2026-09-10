@@ -2,6 +2,11 @@
 
 > Foundation document. Defines the three-layer ecosystem, ownership boundaries, integration model, and plugin topology. All other design documents reference this one.
 
+> Historical ecosystem proposal. For the implemented lightweight AgentOps v0.2
+> boundary, ADR-007 supersedes the separate-plugin packaging direction. Core
+> Alpha-Wiki remains independent; the optional control state lives only under
+> `wiki/agentops/`.
+
 ---
 
 ## 1. The three layers

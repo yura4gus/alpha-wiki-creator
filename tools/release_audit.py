@@ -16,9 +16,11 @@ FAIL = "FAIL"
 EXPECTED_COMMANDS = {
     "init", "doctor", "ingest", "query", "lint", "evolve",
     "status", "spawn-agent", "render", "review", "rollup", "audit-project",
+    "orchestrate", "backlog", "handoff", "release-check",
 }
 
 EXPECTED_TOOLS = {
+    "_agentops.py",
     "doctor.py",
     "ingest_pipeline.py",
     "init_audit.py",
@@ -37,6 +39,11 @@ EXPECTED_TOOLS = {
     "claims_check.py",
     "contracts_check.py",
     "contradiction_detector.py",
+    "worktree_snapshot.py",
+    "orchestrate.py",
+    "backlog.py",
+    "handoff.py",
+    "release_check.py",
 }
 
 RELEASE_DOCS = {
@@ -166,6 +173,7 @@ def _smoke_check(root: Path) -> AuditFinding:
 def _version_check(root: Path) -> AuditFinding:
     pyproject = tomllib.loads((root / "pyproject.toml").read_text())
     plugin = json.loads((root / ".claude-plugin" / "plugin.json").read_text())
+    codex_plugin = json.loads((root / ".codex-plugin" / "plugin.json").read_text())
     marketplace = json.loads((root / ".claude-plugin" / "marketplace.json").read_text())
 
     project_version = pyproject["project"]["version"]
@@ -176,6 +184,7 @@ def _version_check(root: Path) -> AuditFinding:
     versions = {
         "pyproject": project_version,
         "plugin": plugin_version,
+        "codex plugin": codex_plugin["version"],
         "marketplace": marketplace_version,
         "marketplace plugin": listed_version,
     }
@@ -197,11 +206,11 @@ def _version_check(root: Path) -> AuditFinding:
         )
 
     description = listed.get("description", "")
-    if "12 skills" not in description and "12 slash commands" not in description:
+    if "16 skills" not in description and "16 slash commands" not in description:
         return AuditFinding(
             "version-metadata",
             FAIL,
-            "marketplace description does not mention the current 12-command surface",
+            "marketplace description does not mention the current 16-command surface",
             "Update marketplace metadata so users see the full command set.",
         )
 
@@ -221,18 +230,42 @@ def _trust_check(root: Path) -> AuditFinding:
         return AuditFinding(
             "trust-depth",
             WARN,
-            f"semantic trust tools are still missing: {', '.join(missing)}",
+            f"deterministic sanity-check tools are missing: {', '.join(missing)}",
             "Keep release scoped as beta or implement claim/contract checks before v1.0.",
         )
-    return AuditFinding("trust-depth", PASS, "claim/contract/contradiction tools exist")
+    return AuditFinding(
+        "trust-depth",
+        PASS,
+        "claim/contract/contradiction tools exist as deterministic sanity checks",
+    )
 
 
 def _platform_check(root: Path) -> AuditFinding:
-    if not (root / "docs" / "codex-adapter.md").exists():
-        return AuditFinding("platform", FAIL, "Codex adapter docs missing")
-    if not (root / "scripts" / "install_codex.py").exists():
-        return AuditFinding("platform", FAIL, "Codex installer missing")
-    return AuditFinding("platform", PASS, "Claude primary path and Codex adapter path documented")
+    required = {
+        "docs/codex-adapter.md",
+        "scripts/install_codex.py",
+        "scripts/bootstrap_cli.py",
+        ".codex-plugin/plugin.json",
+        "assets/agents-md.j2",
+        "assets/codex-hooks/hooks.json.j2",
+        "assets/codex-hooks/alpha_wiki_hook.py",
+        "references/codex-subagent-orchestration.md",
+        "docs/examples/codex-parallel-audit-prompt.md",
+    }
+    missing = sorted(path for path in required if not (root / path).exists())
+    if missing:
+        return AuditFinding("platform", FAIL, f"missing Codex integration files: {', '.join(missing)}")
+    manifest = json.loads((root / ".codex-plugin" / "plugin.json").read_text())
+    if manifest.get("name") != "alpha-wiki" or manifest.get("skills") != "./skills/":
+        return AuditFinding("platform", FAIL, "Codex plugin manifest does not expose the Alpha-Wiki skill package")
+    hooks = (root / "assets" / "codex-hooks" / "hooks.json.j2").read_text()
+    if '"SubagentStart"' not in hooks:
+        return AuditFinding("platform", FAIL, "Codex hook package does not inject the Alpha-Wiki subagent contract")
+    return AuditFinding(
+        "platform",
+        PASS,
+        "Claude and Codex plugin, instructions, native subagent hooks, installer, and docs are packaged",
+    )
 
 
 @click.command()

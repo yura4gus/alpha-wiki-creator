@@ -10,7 +10,7 @@ from pathlib import Path
 import click
 
 from scripts.bootstrap import bootstrap
-from scripts.install_codex import install_codex_skills
+from scripts.install_codex import install_codex
 from scripts.interview import InterviewConfig
 from tools.doctor import run_doctor
 from tools.ingest_pipeline import ingest_files
@@ -60,7 +60,10 @@ def run_release_smoke(base_dir: Path | None = None) -> SmokeResult:
 
     try:
         project = base / "project"
-        codex_home = base / "codex-home"
+        codex_home = base / ".codex"
+        codex_skills = base / ".agents" / "skills"
+        codex_plugin = base / "plugins" / "alpha-wiki"
+        codex_marketplace = base / ".agents" / "plugins" / "marketplace.json"
         checks: list[tuple[str, str, str]] = []
 
         cfg = InterviewConfig(
@@ -76,16 +79,28 @@ def run_release_smoke(base_dir: Path | None = None) -> SmokeResult:
             schema_evolve_mode="gated",
         )
         bootstrap(target=project, config=cfg)
-        install_codex_skills(codex_home / "skills")
-        old_codex_home = os.environ.get("CODEX_HOME")
-        os.environ["CODEX_HOME"] = str(codex_home)
+        install_codex(
+            skills_target=codex_skills,
+            plugin_dir=codex_plugin,
+            marketplace_path=codex_marketplace,
+            activate=False,
+        )
+        env_names = {
+            "CODEX_HOME": str(codex_home),
+            "ALPHA_WIKI_CODEX_SKILLS_DIR": str(codex_skills),
+            "ALPHA_WIKI_CODEX_PLUGIN_DIR": str(codex_plugin),
+            "ALPHA_WIKI_CODEX_MARKETPLACE": str(codex_marketplace),
+        }
+        old_env = {name: os.environ.get(name) for name in env_names}
+        os.environ.update(env_names)
         try:
             doctor = run_doctor(project, platform="both", refresh=True)
         finally:
-            if old_codex_home is None:
-                os.environ.pop("CODEX_HOME", None)
-            else:
-                os.environ["CODEX_HOME"] = old_codex_home
+            for name, value in old_env.items():
+                if value is None:
+                    os.environ.pop(name, None)
+                else:
+                    os.environ[name] = value
         _record(checks, "Claude/Codex doctor", not doctor.failures, f"{len(doctor.passes)} pass, {len(doctor.warnings)} warn, {len(doctor.failures)} fail")
 
         wiki = project / "wiki"

@@ -1,9 +1,10 @@
 ---
 title: Alpha-Wiki AgentOps Boundary
 slug: alpha-wiki-agentops-boundary
-status: accepted
+status: superseded
 date: 2026-04-29
-date_updated: 2026-05-05
+date_updated: 2026-09-08
+superseded_by: "[[optional-agentops-control-layer]]"
 belongs_to: "[[alpha-wiki-runtime]]"
 affects: "[[alpha-wiki-runtime]]"
 evidence: docs/ADR-001-alpha-wiki-agentops-boundary.md
@@ -16,7 +17,8 @@ evidence: docs/ADR-001-alpha-wiki-agentops-boundary.md
 
 ## Context
 
-Alpha-Wiki and AgentOps both persist project state, but they serve different product layers. A clean boundary prevents a monolithic plugin and keeps both products independently installable.
+This page records the historical boundary for a separate AgentOps product. The
+lightweight v0.2 implementation is governed by [[optional-agentops-control-layer]].
 
 ## Decision
 
@@ -26,8 +28,6 @@ AgentOps owns the agent operating model: roles, communication mechanisms, proces
 
 ## Consequences
 
-- Alpha-Wiki never imports AgentOps.
-- AgentOps may use Alpha-Wiki as an optional state backend through a namespaced adapter.
-- Shared installs keep AgentOps state under `wiki/agentops/`, not at wiki root.
-- Each plugin can be tested, released, and upgraded independently.
-
+- The large standalone AgentOps product remains outside Alpha-Wiki.
+- Alpha-Wiki may expose a small opt-in control layer under `wiki/agentops/`.
+- Core wiki workflows do not depend on or initialize that namespace.

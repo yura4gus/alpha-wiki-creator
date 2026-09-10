@@ -1,0 +1,66 @@
+{
+  "description": "Alpha-Wiki project lifecycle hooks for Codex.",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|resume|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/alpha_wiki_hook.py\" session-start --wiki-dir \"wiki\"",
+            "timeout": 5,
+            "statusMessage": "Loading Alpha-Wiki context"
+          }
+        ]
+      }
+    ],
+    "SubagentStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/alpha_wiki_hook.py\" subagent-start --wiki-dir \"wiki\"",
+            "timeout": 5,
+            "statusMessage": "Loading Alpha-Wiki subagent contract"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|apply_patch|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/alpha_wiki_hook.py\" pre-tool --wiki-dir \"wiki\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|apply_patch|Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/alpha_wiki_hook.py\" post-tool --wiki-dir \"wiki\"",
+            "timeout": 30,
+            "statusMessage": "Refreshing Alpha-Wiki graph"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/.codex/hooks/alpha_wiki_hook.py\" session-end --wiki-dir \"wiki\"",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  }
+}

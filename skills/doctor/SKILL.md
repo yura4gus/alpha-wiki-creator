@@ -36,7 +36,8 @@ Give the operator and AI one reliable command that answers: "Is this Alpha-Wiki 
    - Missing graph artifacts: rerun with `--refresh` or run `/alpha-wiki:status`.
    - Lint errors: run `/alpha-wiki:lint --fix`, then rerun `doctor`.
    - Missing Claude hooks/CI: rerun init with hooks/CI enabled or copy generated assets.
-   - Missing Codex skills: run `python3 scripts/install_codex.py` from the plugin repo.
+   - Missing/stale Codex plugin or skills: run `python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone` from the Alpha-Wiki repo, then start a new Codex task.
+   - Missing Codex project contract/hooks: rerun init with session hooks enabled, merge the Alpha-Wiki section into an existing `AGENTS.md`, and review hooks with `/hooks`.
 
 ## Required Output Discipline
 
@@ -59,6 +60,14 @@ uv run python -m tools.lint --wiki-dir <wiki_dir> --config .alpha-wiki/config.ya
 uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml
 ```
 
+## Codex Native Delegation
+
+Do not spawn subagents for doctor. Run the deterministic backend once in the
+controller so all checks observe one environment and one filesystem state. If
+doctor exposes independent follow-up investigations, delegate those as separate
+tasks only after recording the doctor result; do not run competing doctor
+instances.
+
 ## Done Criteria
 
 - The user can tell whether install/runtime is ready.
@@ -72,3 +81,4 @@ uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.
 - `tools/lint.py`
 - `tools/status.py`
 - `docs/final-release-hardening-plan.md`
+- `references/codex-subagent-orchestration.md`

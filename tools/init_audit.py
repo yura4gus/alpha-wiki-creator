@@ -334,6 +334,8 @@ def _scope_block(scope: InitScope | None) -> list[str]:
 
 def _excluded(path: Path, root: Path) -> bool:
     rel_parts = path.relative_to(root).parts
+    if "worktrees" in rel_parts and any(part in {".claude", ".codex"} for part in rel_parts):
+        return True
     if any(part in EXCLUDED_PARTS for part in rel_parts):
         return True
     return "render" in rel_parts and any(part in {".wiki", "wiki"} for part in rel_parts)

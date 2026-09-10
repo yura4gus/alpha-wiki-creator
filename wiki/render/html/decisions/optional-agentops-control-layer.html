@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Optional AgentOps Control Layer</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body>
+  <div class="shell">
+
+<p><a href="../index.html">Back to index</a></p>
+<h1>Optional AgentOps Control Layer</h1>
+<table class="frontmatter">
+<tr><th>affects</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>belongs_to</th><td><a href="../modules/alpha-wiki-runtime.html">[[alpha-wiki-runtime]]</a></td></tr>
+<tr><th>date</th><td>2026-09-08</td></tr>
+<tr><th>date_updated</th><td>2026-09-08</td></tr>
+<tr><th>evidence</th><td>docs/ADR-007-optional-agentops-control-layer.md</td></tr>
+<tr><th>slug</th><td>optional-agentops-control-layer</td></tr>
+<tr><th>status</th><td>accepted</td></tr>
+<tr><th>supersedes</th><td><a href="../decisions/alpha-wiki-agentops-boundary.html">[[alpha-wiki-agentops-boundary]]</a></td></tr>
+<tr><th>title</th><td>Optional AgentOps Control Layer</td></tr>
+</table>
+<main>
+<h1>Optional AgentOps Control Layer</h1>
+<h2>Provenance</h2>
+<ul>
+<li>Source: `docs/ADR-007-optional-agentops-control-layer.md`.</li>
+</ul>
+<h2>Context</h2>
+<p>Large projects need controlled multi-track execution, but Alpha-Wiki must stay</p>
+<p>useful as simple repo-native Markdown memory for small projects.</p>
+<h2>Decision</h2>
+<p>Alpha-Wiki includes an optional AgentOps v0.2 control layer under</p>
+<p>`wiki/agentops/`. It uses native Claude/Codex agents and deterministic Markdown</p>
+<p>tools for goals, tracks, backlog, sessions, handoffs, decisions, and project</p>
+<p>release checks. Normal init does not create AgentOps state.</p>
+<h2>Consequences</h2>
+<ul>
+<li>Twelve core workflows remain the normal first-run path.</li>
+<li>Four optional workflows add orchestrate, backlog, handoff, and release-check.</li>
+<li>No second agent runtime, raw-log store, RAG system, or external orchestrator is introduced.</li>
+<li><a href="../specs/agentops-control-layer.html">[[agentops-control-layer]]</a> defines the executable schema and lifecycle.</li>
+</ul>
+</main>
+
+  </div>
+</body>
+</html>

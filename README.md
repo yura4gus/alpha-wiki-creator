@@ -2,7 +2,7 @@
 
 > **Agent memory that compounds — in plain markdown, in your repo.**
 
-A Claude Code plugin that turns Andrej Karpathy's LLM-Wiki sketch into repo-native markdown memory. Agents read, write, and grow a typed, lint-enforced markdown knowledge base across sessions. No embeddings. No vector store. Deterministic drift checks. Just files your team can read, diff, and review.
+A Claude Code and OpenAI Codex plugin that turns Andrej Karpathy's LLM-Wiki sketch into repo-native markdown memory. Agents read, write, and grow a typed, lint-enforced markdown knowledge base across sessions. No embeddings. No vector store. Deterministic drift checks. Just files your team can read, diff, and review.
 
 [![Python 3.12+](https://img.shields.io/badge/python-3.12+-blue.svg)](https://www.python.org/downloads/) [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE) [![CI](https://github.com/yura4gus/alpha-wiki-creator/actions/workflows/plugin-ci.yml/badge.svg)](https://github.com/yura4gus/alpha-wiki-creator/actions)
 
@@ -21,9 +21,9 @@ Alpha-Wiki is published for real Claude Code and Codex use on active projects.
 Current release:
 
 - Branch: `main`
-- Latest release: [`v0.5.0`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.5.0)
-- Status: stable milestone for daily project use, not v1.0
-- Skills: **12** (init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup, audit-project)
+- Latest release: [`v0.6.0`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.6.0)
+- Status: Codex parity and optional AgentOps milestone for daily project use, not v1.0
+- Workflows: **12 core + 4 optional AgentOps** (orchestrate, backlog, handoff, release-check)
 - Live docs: https://yura4gus.github.io/alpha-wiki-creator/
 
 Current verified gates:
@@ -31,14 +31,16 @@ Current verified gates:
 - Public clone validation: passed
 - Fresh install smoke: `PASS`
 - Release audit: `READY`
-- Test suite: `169 passed`
+- Test suite: `202 passed`
 - Docs Pages: live at https://yura4gus.github.io/alpha-wiki-creator/
 - Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
-- Codex runtime: installed `$alpha-wiki-*` skill adapters
+- Codex runtime: one namespaced `$alpha-wiki:*` plugin surface, `AGENTS.md`, and trusted project hooks
 - Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
 - Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
 
-Beta scope: repo-native markdown memory, deterministic tools, Claude commands, Codex skills, Obsidian graph settings, Mermaid/DOT graph exports, static HTML export, release smoke, and release audit.
+Version `0.6.0` includes an opt-in AgentOps v0.2 control layer for controlled
+multi-track execution. It stores backlog items, session summaries, handoffs, and
+project release evidence under `wiki/agentops/`; normal init does not enable it.
 
 Not included in beta: embeddings, RAG, semantic search, PDF/DOCX/web crawlers, SaaS UI, multi-user permissions, or automatic truth resolution.
 
@@ -58,17 +60,14 @@ Codex adapter install:
 ```bash
 git clone https://github.com/yura4gus/alpha-wiki-creator
 cd alpha-wiki-creator
-python3 scripts/install_codex.py
+python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone
 ```
 
 First workflow:
 
 ```text
-install -> /alpha-wiki:init -> /alpha-wiki:doctor --refresh
--> /alpha-wiki:ingest raw/docs/project-brief.md
--> /alpha-wiki:query "what is this project building?"
--> /alpha-wiki:status
--> /alpha-wiki:render html
+install -> init -> doctor --refresh -> ingest one source
+-> query -> status -> render html
 ```
 
 ## Why Alpha-wiki
@@ -86,7 +85,7 @@ Karpathy's 2025 [gist](https://gist.github.com/karpathy/442a6bf555914893e9891c11
 | Karpathy's gist (sketch) | Alpha-wiki (runtime) |
 |---|---|
 | 3 untyped layers | Same 3 layers, made explicit as **mutability contracts** + 5 domain presets + 4 architectural overlays |
-| 3 operations (ingest, query, lint) | **12 skills + 12 slash commands** — init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup, audit-project |
+| 3 operations (ingest, query, lint) | **12 core workflows + 4 optional AgentOps workflows** — orchestration stays outside the first-run path |
 | No frontmatter rules | **Required frontmatter per entity type**, lint-blocked on violations |
 | Manual cross-links | **Bidirectional enforcement** — every forward link gets a reverse, written automatically by the engine |
 | No automation | **Three-layer hooks** — session-start loads `context_brief.md`, post-tool-use rebuilds the graph, session-end runs lint and appends a log entry, pre-commit blocks 🔴 errors, weekly CI review |
@@ -136,14 +135,14 @@ Why `uninstall` + `install` instead of `update`: a plain `claude plugin update` 
 
 ### Codex CLI (OpenAI)
 
-Install and sign in to Codex, then install Alpha-Wiki's Codex skill adapters:
+Install and sign in to Codex, then install the Alpha-Wiki plugin:
 
 ```bash
-npm install -g @openai/codex
+npm install -g @openai/codex@latest
 codex --login
 git clone https://github.com/yura4gus/alpha-wiki-creator
 cd alpha-wiki-creator
-python3 scripts/install_codex.py
+python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone
 ```
 
 Then in any project:
@@ -152,9 +151,25 @@ Then in any project:
 codex
 ```
 
-Ask Codex to use `$alpha-wiki-init` to bootstrap the wiki. Codex skill names are prefixed (`$alpha-wiki-query`, `$alpha-wiki-lint`, `$alpha-wiki-status`, etc.) so they do not collide with generic local skills. Claude slash commands stay unchanged.
+Ask Codex to use `$alpha-wiki:init` to bootstrap the wiki. Plugin skills are namespaced (`$alpha-wiki:query`, `$alpha-wiki:lint`, `$alpha-wiki:status`, etc.). Claude slash commands stay unchanged.
 
-OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --login`.
+The installer uses plugin-only mode by default so the Skills menu contains one set of 16 Alpha-Wiki workflows: 12 core and 4 optional AgentOps workflows. On a Codex surface that cannot load plugins, explicitly install the compatibility fallback with `python3 scripts/install_codex.py --standalone`; this mode skips plugin installation.
+
+After init, use `/hooks` in Codex to review and trust the generated project hooks. Start a new Codex task after install or upgrade so the skill/plugin inventory refreshes.
+
+Codex native subagents are supported without adding another Alpha-Wiki command.
+`$alpha-wiki:spawn-agent` can create a reusable profile, run one bounded helper,
+or run independent scopes in parallel. The controller pins one repository/SHA
+snapshot and the generated `SubagentStart` hook gives every helper the wiki
+contract and compact context.
+
+Codex update command:
+
+```bash
+git pull --ff-only
+npm install -g @openai/codex@latest
+python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone
+```
 
 ## Architecture
 
@@ -163,7 +178,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 │                          Target Project                         │
 │                                                                 │
 │  ┌──────────┐     ┌─────────────────┐     ┌────────────────┐  │
-│  │   raw/   │ ──> │     wiki/       │ <── │   CLAUDE.md    │  │
+│  │   raw/   │ ──> │     wiki/       │ <── │ CLAUDE/AGENTS  │  │
 │  │ (L1)     │     │   (L2 + L3)     │     │   (L4 schema)  │  │
 │  │ sources  │     │ pages + graph/  │     │ contract       │  │
 │  │ read-    │     │ LLM-mutable     │     │ for the agent  │  │
@@ -174,7 +189,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 │        │ ingest           │ query/lint            │ evolve     │
 │        │                  │                       │             │
 │  ┌─────┴──────────────────┴───────────────────────┴───────┐    │
-│  │              .claude/hooks/  (session + git + CI)       │    │
+│  │       .claude/hooks/ + .codex/hooks/ + git + CI         │    │
 │  │  session-start: load context_brief.md                   │    │
 │  │  pre/post-tool-use: validate + rebuild graph            │    │
 │  │  session-end: lint + log + summary                      │    │
@@ -195,6 +210,7 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
                        │  /alpha-wiki:render      │
                        │  /alpha-wiki:review      │
                        │  /alpha-wiki:rollup      │
+                       │  + optional AgentOps (4) │
                        └────────────────────┘
 ```
 
@@ -208,6 +224,8 @@ OpenAI Codex CLI setup reference: `npm install -g @openai/codex`, then `codex --
 - **Auto-generated context** — `wiki/graph/context_brief.md` (≤8000 chars) loaded at every session start
 - **Obsidian-compatible** — `wiki/.obsidian/` config generated, so opening the `wiki/` folder as a vault works out of the box
 - **Claude hook runtime** — official hook event names, JSON stdin parsing, wiki-path filtering, and graph rebuild after wiki writes
+- **Codex runtime** — one plugin skill surface, `AGENTS.md`, trusted project hooks, and an explicit standalone compatibility mode
+- **Codex native subagents** — bounded run-now/run-parallel workflows, reusable project profiles, pinned evidence snapshots, and `SubagentStart` context
 - **Deterministic engine** — `tools.doctor`, `tools.lint`, and `tools.wiki_engine` are pure Python modules, no LLM, fully tested
 - **Schema-evolution gate** — every new entity type confirmed before added (or auto-mode if you trust)
 - **CI-ready** — deterministic GitHub Actions run `tools.lint`, `tools.review`, and `tools.rollup` without Claude secrets
@@ -239,7 +257,14 @@ Full command surface:
 10. /alpha-wiki:review        Weekly structural review — status + lint + next actions
 11. /alpha-wiki:rollup        Weekly/monthly activity summary
 12. /alpha-wiki:audit-project Read-only delivery-readiness audit (git/docs/tests/deploy/security/providers/tech-debt)
+13. /alpha-wiki:orchestrate   Plan and control an optional multi-track execution wave
+14. /alpha-wiki:backlog      Manage one-file-per-task AgentOps backlog state
+15. /alpha-wiki:handoff      Transfer concise evidence between agent roles
+16. /alpha-wiki:release-check Check target-project readiness from execution evidence
 ```
+
+Commands 13-16 are optional. Enable them only for substantial coordinated work;
+they do not change the normal install, init, ingest, query, status, or render path.
 
 The `session-start` hook auto-loads `context_brief.md` so the agent has compressed context for free.
 The `session-end` hook runs lint and appends a log entry. Most users never invoke `/alpha-wiki:lint` manually.
@@ -303,6 +328,10 @@ The point is durable operational memory: what was decided, what was already chec
 | `/alpha-wiki:review` | Wiki-level structural review — status snapshot, lint findings, next actions |
 | `/alpha-wiki:rollup` | Weekly/monthly wiki activity rollup |
 | `/alpha-wiki:audit-project` | Read-only delivery-readiness audit — git/docs/tests/deploy/security/providers/tech-debt → structured status report |
+| `/alpha-wiki:orchestrate` | Opt-in controller for goals, tracks, native agents, sessions, and synthesis |
+| `/alpha-wiki:backlog` | Create, filter, update, and validate the optional Markdown backlog |
+| `/alpha-wiki:handoff` | Store a concise role-to-role transfer without raw logs |
+| `/alpha-wiki:release-check` | Evaluate target-project readiness as GREEN, WARNING, or BLOCKED |
 
 ## Reading the Obsidian graph
 
@@ -357,6 +386,7 @@ Decision records:
 - [`docs/ADR-004-state-backend-abstraction.md`](docs/ADR-004-state-backend-abstraction.md)
 - [`docs/ADR-005-marketplace-topology-deferred.md`](docs/ADR-005-marketplace-topology-deferred.md)
 - [`docs/ADR-006-spawn-agent-boundary.md`](docs/ADR-006-spawn-agent-boundary.md)
+- [`docs/ADR-007-optional-agentops-control-layer.md`](docs/ADR-007-optional-agentops-control-layer.md)
 
 Archived design materials:
 

@@ -70,12 +70,30 @@ def test_platform_matrix_covers_supported_and_deferred_runtimes():
     text = (ROOT / "docs" / "platform-compatibility-matrix.md").read_text()
 
     for phrase in [
-        "Claude Code is the primary supported runtime",
-        "Codex is supported through prefixed skill adapters",
-        "Gemini is not supported",
+        "Claude Code remains the primary interactive runtime",
+        "Current Codex CLI and desktop are supported",
+        "Gemini is not packaged",
         "Session hooks",
-        "Doctor check",
-        "Codex has no native session-start/session-end hook equivalent",
+        "Doctor",
+        "Codex project hooks require explicit trust",
+    ]:
+        assert phrase in text
+
+
+def test_codex_parallel_audit_prompt_has_staged_evidence_contract():
+    text = (ROOT / "docs" / "examples" / "codex-parallel-audit-prompt.md").read_text()
+
+    for phrase in [
+        "Controller Preflight",
+        "Fetch required remote metadata once",
+        "pinned snapshot",
+        "Parallel Evidence Wave",
+        "Dependent Contract Wave",
+        "Controller Synthesis",
+        "Do not create nested subagents",
+        "one owner",
+        "tracked and untracked non-ignored content",
+        "path:line@snapshot:<digest>",
     ]:
         assert phrase in text
 

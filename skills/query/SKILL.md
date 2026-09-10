@@ -71,6 +71,23 @@ When the wiki is thin, explain how to make the next query better:
 - "This should be a contract page so it becomes orange in Obsidian."
 - "This service is isolated in the graph; link it to decisions/specs."
 
+## Codex Native Delegation
+
+Keep normal queries single-agent. Use read-only subagents only when the question
+crosses independent repositories or domains and cannot be answered from the
+normal 3-7 page evidence set.
+
+- The controller defines one sub-question per agent and supplies the same pinned
+  snapshot when runtime evidence is involved.
+- Agents return citations, truth status, contradictions, unknowns, and one
+  terminal status. They do not save outputs or modify wiki pages.
+- The controller reconciles duplicate or conflicting claims and returns one
+  answer. Runtime evidence and ratified contracts keep their distinct authority.
+- Do not use parallelism to compensate for a thin wiki; route missing durable
+  knowledge to ingest instead.
+
+Follow `references/codex-subagent-orchestration.md`.
+
 ## Done Criteria
 
 - Answer is grounded in pages read.
@@ -82,4 +99,5 @@ When the wiki is thin, explain how to make the next query better:
 
 - `references/concept.md`
 - `references/cross-reference-rules.md`
+- `references/codex-subagent-orchestration.md`
 - `tools/wiki_search.py`

@@ -3,7 +3,7 @@ title: Alpha-Wiki Product Spec
 slug: alpha-wiki-product-spec
 kind: product-spec
 status: stable
-date_updated: 2026-05-05
+date_updated: 2026-09-08
 belongs_to: "[[alpha-wiki-runtime]]"
 implements: "[[alpha-wiki-runtime]]"
 version: v1
@@ -18,13 +18,13 @@ evidence: docs/01-alpha-wiki.md
 ## Entities
 
 - Runtime layers: `raw/`, wiki pages, graph artifacts, gated schema contract.
-- User operations: init, doctor, ingest, query, lint, evolve, status, spawn-agent, render, review, rollup.
+- User operations: 12 core workflows plus optional orchestrate, backlog, handoff, and release-check.
 - Deterministic tools: wiki engine, lint, init audit, ingest pipeline, query/search, status/review/rollup, renderers, release audit, and contract/claim sanity checks.
 - Presentation layer: Obsidian config plus Mermaid, DOT, and static HTML exports.
 
 ## Requirements
 
-- Alpha-Wiki is standalone and must not import AgentOps or Superpowers.
+- Alpha-Wiki core is standalone; the optional [[agentops-control-layer]] is isolated under `wiki/agentops/`.
 - Wiki pages use typed frontmatter, stable slugs, provenance, and wikilinks.
 - `ingest`, `query`, and `lint` remain the core Karpathy operations.
 - `init` must audit the existing source corpus before migration.

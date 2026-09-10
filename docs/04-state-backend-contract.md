@@ -2,6 +2,9 @@
 
 > Specification for the state backend abstraction. Defines path schema, detection logic, read/write contract, and the `wiki-backend-adapter` Tier 2 skill inside AgentOps.
 
+> Historical standalone AgentOps design. The implemented v0.2 control layer has
+> one backend only: `wiki/agentops/`, as decided by ADR-007.
+
 References: `00-architecture.md` for boundaries, `02-agentops.md` for AgentOps Tier 1 skills, `01-alpha-wiki.md` for wiki ownership, `adr/ADR-001`, `adr/ADR-004`, `adr/ADR-006`.
 
 ---

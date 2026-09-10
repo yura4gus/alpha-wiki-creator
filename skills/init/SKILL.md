@@ -16,7 +16,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 ## Operating Principles
 
-- Follow Karpathy's LLM-Wiki shape: `raw/` is source evidence, `<wiki_dir>/` is maintained markdown memory, `CLAUDE.md` is the operating contract.
+- Follow Karpathy's LLM-Wiki shape: `raw/` is source evidence, `<wiki_dir>/` is maintained markdown memory, and `CLAUDE.md`/`AGENTS.md` expose the operating contract to Claude Code/Codex.
 - Prefer explicit markdown, frontmatter, wikilinks, and deterministic tools over embeddings or opaque retrieval.
 - Preserve existing project files by default. Never silently overwrite `CLAUDE.md`, `README.md`, `pyproject.toml`, `.gitignore`, or `.env.example`.
 - Choose `wiki/` by default, including existing codebases, so Obsidian can open the wiki folder directly as a vault.
@@ -37,7 +37,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 1. Inspect the repo before asking questions:
    - Detect code markers: `src/`, `package.json`, `pyproject.toml`, `go.mod`, etc.
-   - Detect existing `wiki/`, legacy/custom `.wiki/`, `raw/`, `CLAUDE.md`, `wiki/.obsidian/`, legacy root `.obsidian/`, `.claude/`, `.github/workflows/`.
+   - Detect existing `wiki/`, legacy/custom `.wiki/`, `raw/`, `CLAUDE.md`, `AGENTS.md`, `wiki/.obsidian/`, legacy root `.obsidian/`, `.claude/`, `.codex/`, `.github/workflows/`.
    - If existing project files are present, plan safe-existing mode.
    - Run or emulate `uv run python -m tools.init_audit --root <project> --wiki-dir <wiki_dir>` to enumerate durable source documents and exclude generated/runtime folders.
    - Classify candidate docs into root contracts, architecture docs, ADRs, commands, skills, references, specs, API contracts, transcripts, and archives.
@@ -76,8 +76,13 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 6. Render the runtime:
    - Call `scripts.bootstrap.bootstrap(target, config)`.
+   - In a fresh Codex project, resolve the installed runtime path from the Codex Adapter section and use:
+     `uv run --project <runtime_root> python -m scripts.bootstrap_cli --target <project> --project-name "<name>" --description "<purpose>" --preset <preset> --overlay <overlay> --hooks <mode> --ci`.
+   - Use the same command with `--dry-run` before writing when protected project files already exist.
    - Confirm generated `CLAUDE.md` lists all active skills, including `review` and `rollup`.
+   - Confirm generated `AGENTS.md` points Codex to the context brief, mutability rules, and namespaced plugin skills.
    - Confirm generated hooks honor `wiki_dir` and selected hook mode.
+   - For Codex, confirm `.codex/hooks.json` and `.codex/hooks/alpha_wiki_hook.py` exist when session hooks are enabled; tell the user to review them with `/hooks`.
    - Write a raw source manifest when the user chose manifest or mixed mode.
 
 7. Verify immediately:
@@ -97,27 +102,47 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 ## Files Written
 
 - `CLAUDE.md` unless protected and preserved.
+- `AGENTS.md` unless protected and preserved.
 - `<wiki_dir>/index.md`, `<wiki_dir>/log.md`, entity directories, `graph/*`.
 - `raw/` directories.
 - `raw/docs/source-manifest.md` or a date-stamped source manifest when existing repo sources are discovered.
 - `.alpha-wiki/config.yaml` and optional `.alpha-wiki/bootstrap-report.md`.
 - `<wiki_dir>/.obsidian/*` if enabled.
 - `.claude/hooks/*` and `.claude/settings.local.json` according to hook mode.
+- `.codex/hooks.json` and `.codex/hooks/*` according to hook mode.
 - `.github/workflows/wiki-*.yml` if CI is enabled.
 - `tools/*.py` copied to the target project.
 
 ## Safety Gates
 
 - Ask before `git init`.
-- Ask before changing an existing `CLAUDE.md`.
+- Ask before changing an existing `CLAUDE.md` or `AGENTS.md`.
 - Do not reset existing graph artifacts on upgrade.
 - Do not install hooks the user did not choose.
 - Do not invent custom entity types during init unless the user selected `custom`.
+
+## Codex Native Delegation
+
+Keep normal init single-controller. For a large corpus or multi-repo project,
+the controller may spawn read-only inventory agents, one per repository or
+durable source class.
+
+- Pin repository SHAs before fan-out when remote freshness matters.
+- Inventory agents only classify sources, boundaries, candidate owners, and
+  exclusions. They do not create `raw/`, wiki pages, manifests, or config.
+- The controller deduplicates candidates, presents one source plan, and owns all
+  bootstrap writes.
+- Do not spawn agents for a small single-repo bootstrap.
+- Run deterministic init audit, bootstrap, graph rebuild, lint, and doctor once
+  in the controller after integration.
+
+Follow `references/codex-subagent-orchestration.md`.
 
 ## Done Criteria
 
 - Wiki dir exists and matches the selected path.
 - `CLAUDE.md` explains mutability, page types, cross-reference rules, graph automation, and all skills.
+- `AGENTS.md` gives Codex the startup reading order and shared runtime rules.
 - Obsidian config exists when requested and uses the color legend semantics.
 - Lint runs.
 - Graph files exist.
@@ -134,4 +159,5 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 - `references/overlays/`
 - `references/cross-reference-rules.md`
 - `references/hooks-design.md`
+- `references/codex-subagent-orchestration.md`
 - `assets/obsidian/COLOR-LEGEND.md`

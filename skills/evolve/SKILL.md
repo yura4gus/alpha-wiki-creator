@@ -86,6 +86,22 @@ Do not evolve when:
 
 If a new type does not fit these semantics, document whether `render` must update Obsidian color groups.
 
+## Codex Native Delegation
+
+Schema ownership stays with the controller. For repeated gaps across independent
+domains, read-only subagents may collect:
+
+- examples that do not fit the current schema;
+- candidate existing types that were rejected and why;
+- migration impact by directory or domain;
+- graph/color and cross-reference consequences.
+
+Subagents do not edit `CLAUDE.md`, config, templates, directories, or pages.
+The controller merges evidence into one proposed schema diff, requests the
+required owner decision, and applies one migration. Run graph rebuild and lint
+once after the final change. Follow
+`references/codex-subagent-orchestration.md`.
+
 ## Done Criteria
 
 - Schema diff is explicit.
@@ -98,4 +114,5 @@ If a new type does not fit these semantics, document whether `render` must updat
 
 - `references/schema-evolution.md`
 - `references/cross-reference-rules.md`
+- `references/codex-subagent-orchestration.md`
 - `assets/obsidian/COLOR-LEGEND.md`

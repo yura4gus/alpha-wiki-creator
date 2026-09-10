@@ -76,6 +76,14 @@ Cluster ownership is checked through typed frontmatter links such as `belongs_to
 - Do not change status values without user confirmation.
 - Rebuild `edges.jsonl`, `context_brief.md`, and `open_questions.md` after fixes.
 
+## Codex Native Delegation
+
+Do not fan out lint. One deterministic lint run must evaluate one integrated
+wiki state. When fixes are requested, the controller may delegate disjoint page
+groups only after assigning exact write ownership; shared indexes, config, log,
+and graph source relations have one writer. The controller then rebuilds the
+graph and reruns lint once on the integrated result.
+
 ## Done Criteria
 
 - Errors are zero.
@@ -88,4 +96,5 @@ Cluster ownership is checked through typed frontmatter links such as `belongs_to
 - `tools/lint.py`
 - `tools/wiki_engine.py`
 - `references/cross-reference-rules.md`
+- `references/codex-subagent-orchestration.md`
 - `assets/obsidian/COLOR-LEGEND.md`

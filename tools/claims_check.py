@@ -26,8 +26,8 @@ def check_claims(wiki_dir: Path, today: date | None = None) -> list[LintFinding]
     return findings
 
 
-def claims_report(wiki_dir: Path) -> str:
-    findings = check_claims(wiki_dir)
+def claims_report(wiki_dir: Path, today: date | None = None) -> str:
+    findings = check_claims(wiki_dir, today=today)
     errors = [finding for finding in findings if finding.severity == LintSeverity.ERROR]
     warnings = [finding for finding in findings if finding.severity == LintSeverity.WARNING]
     lines = [

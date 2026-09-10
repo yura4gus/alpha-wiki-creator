@@ -46,8 +46,9 @@ If Pages is not enabled yet, use repository Settings -> Pages -> Source: GitHub 
 
 Every release **must** bump the version. The marketplace source tracks `main`, and `claude plugin update` compares version strings — if the version does not change, installed clients keep serving a stale build even after commits land on `main`.
 
-1. **Bump the version** in all three manifests so they agree:
+1. **Bump the version** in all four release surfaces so they agree:
    - `.claude-plugin/plugin.json` -> `version`
+   - `.codex-plugin/plugin.json` -> `version`
    - `.claude-plugin/marketplace.json` -> `metadata.version` and the `plugins[].version` entry
    - `pyproject.toml` -> `version`
 2. **Update `CHANGELOG.md`** with a new `## [x.y.z]` section (keep prior sections; `tests/unit/test_audit_docs.py` asserts historical entries stay present).

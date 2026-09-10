@@ -1,4 +1,9 @@
-# 02 — AgentOps
+# 02 — AgentOps (Historical Standalone Proposal)
+
+> Superseded for the implemented v0.2 scope by
+> `ADR-007-optional-agentops-control-layer.md`. This document is retained as
+> historical context and is not the install, first-run, or current delivery
+> plan.
 
 > Specification for the AgentOps plugin. Agent operating model layer. Standalone product. Optionally integrates with Alpha-Wiki (knowledge backend) and Superpowers (execution discipline) via process-level adapters.
 

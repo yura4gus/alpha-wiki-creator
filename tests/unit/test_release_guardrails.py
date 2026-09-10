@@ -25,16 +25,22 @@ EXPECTED_SKILLS = {
     "review",
     "rollup",
     "audit-project",
+    "orchestrate",
+    "backlog",
+    "handoff",
+    "release-check",
 }
 
 
 def _declared_versions() -> dict[str, str]:
     pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text())
     plugin = json.loads((ROOT / ".claude-plugin" / "plugin.json").read_text())
+    codex_plugin = json.loads((ROOT / ".codex-plugin" / "plugin.json").read_text())
     marketplace = json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text())
     return {
         "pyproject.toml [project.version]": pyproject["project"]["version"],
         ".claude-plugin/plugin.json [version]": plugin["version"],
+        ".codex-plugin/plugin.json [version]": codex_plugin["version"],
         ".claude-plugin/marketplace.json [metadata.version]": marketplace["metadata"]["version"],
         ".claude-plugin/marketplace.json [plugins[0].version]": marketplace["plugins"][0]["version"],
     }
@@ -78,6 +84,14 @@ def test_readme_documents_reinstall_flow():
         assert phrase in readme, f"README is missing the reinstall/update instruction: {phrase!r}"
 
 
+def test_readme_documents_current_codex_upgrade_flow():
+    readme = (ROOT / "README.md").read_text()
+
+    assert "npm install -g @openai/codex@latest" in readme
+    assert "python3 scripts/install_codex.py --upgrade --remove-legacy" in readme
+    assert "$alpha-wiki:init" in readme
+
+
 def test_no_stale_skill_count_or_beta_release_references():
     readme = (ROOT / "README.md").read_text()
     marketplace = (ROOT / ".claude-plugin" / "marketplace.json").read_text()
@@ -98,6 +112,55 @@ def test_spawn_agent_contract_includes_scope_and_security():
     assert "active product scope" in skill, "spawn-agent must carry active scope into generated prompts"
     assert "out-of-scope" in skill, "spawn-agent must carry out-of-scope modules so agents don't drift"
     assert "security constraint" in skill, "spawn-agent must carry security constraints as hard limits"
+
+
+def test_all_skills_define_codex_native_delegation_policy():
+    for name in EXPECTED_SKILLS:
+        skill = (ROOT / "skills" / name / "SKILL.md").read_text()
+        assert "## Codex Native Delegation" in skill, (
+            f"{name} must state whether and how native Codex subagents are used"
+        )
+        assert "references/codex-subagent-orchestration.md" in skill
+
+
+def test_deterministic_operations_remain_controller_owned():
+    required = {
+        "doctor": "Do not spawn subagents for doctor",
+        "lint": "Do not fan out lint",
+        "status": "Do not spawn subagents for status",
+        "render": "Do not spawn subagents for render",
+        "rollup": "Do not fan out rollup",
+    }
+    for name, phrase in required.items():
+        skill = (ROOT / "skills" / name / "SKILL.md").read_text()
+        assert phrase in skill
+
+
+def test_spawn_agent_supports_native_run_modes_without_new_skill():
+    skill = (ROOT / "skills" / "spawn-agent" / "SKILL.md").read_text()
+
+    for mode in ("create-profile", "run-now", "run-parallel"):
+        assert mode in skill
+    for status in ("GREEN", "FIXES_REQUIRED", "BLOCKED", "UNPROVEN", "STALE_SNAPSHOT"):
+        assert status in skill
+    assert len(EXPECTED_SKILLS) == 16
+
+
+def test_codex_subagent_contract_covers_snapshot_synthesis_and_write_ownership():
+    contract = (ROOT / "references" / "codex-subagent-orchestration.md").read_text()
+
+    for phrase in (
+        "Controller Preflight",
+        "immutable snapshot",
+        "STALE_SNAPSHOT",
+        "Truth Precedence",
+        "one writer per wave",
+        "at most one bounded retry",
+        "close their threads",
+        "<sha>+worktree:<digest>",
+        "path:line@snapshot:<digest>",
+    ):
+        assert phrase in contract
 
 
 def test_docs_publishing_has_release_checklist():

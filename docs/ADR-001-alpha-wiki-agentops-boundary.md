@@ -1,7 +1,11 @@
 # ADR-001 — Alpha-Wiki ↔ AgentOps boundary
 
-**Status**: Accepted
+**Status**: Superseded for the lightweight v0.2 scope by ADR-007
 **Date**: 2026-04-29
+
+> Historical decision for a separate full AgentOps product. The active
+> Alpha-Wiki implementation is the opt-in control layer in
+> `ADR-007-optional-agentops-control-layer.md`.
 
 ## Context
 

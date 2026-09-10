@@ -69,6 +69,24 @@ security slots with `uv run python -m tools.security --wiki-dir <wiki_dir> --sca
 - If review finds missing knowledge, route to `/alpha-wiki:ingest`.
 - If review finds schema gaps, route to `/alpha-wiki:evolve`.
 
+## Codex Native Delegation
+
+Run the deterministic review backend once in the controller. For a substantial
+wiki, fan out up to three read-only scopes:
+
+1. Structure and graph: links, clusters, isolated roles, and generated-view
+   consistency.
+2. Contracts and provenance: owners, consumers, source evidence, accepted
+   decisions, and runtime pointers.
+3. Freshness and gaps: stale pages, scope drift, security placeholders, open
+   questions, and missing owner/timebox.
+
+Each agent receives the same wiki/runtime snapshot, does not edit files, and
+uses the common result envelope. Wait for all terminal results, preserve
+disagreements, and merge them with deterministic findings into one review.
+Route fixes to ingest/evolve/lint; do not repair during a read-only review.
+Follow `references/codex-subagent-orchestration.md`.
+
 ## Done Criteria
 
 - User can see blockers vs warnings vs maintenance suggestions.
@@ -81,3 +99,4 @@ security slots with `uv run python -m tools.security --wiki-dir <wiki_dir> --sca
 - `tools/status.py`
 - `tools/lint.py`
 - `assets/obsidian/COLOR-LEGEND.md`
+- `references/codex-subagent-orchestration.md`

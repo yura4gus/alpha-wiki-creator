@@ -1,0 +1,39 @@
+{
+  "name": "alpha-wiki",
+  "version": "0.6.0",
+  "description": "Repo-native markdown memory for AI agents and project teams.",
+  "author": {
+    "name": "yura4gus",
+    "url": "https://github.com/yura4gus"
+  },
+  "homepage": "https://yura4gus.github.io/alpha-wiki-creator/",
+  "repository": "https://github.com/yura4gus/alpha-wiki-creator",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "wiki",
+    "agent-memory",
+    "markdown",
+    "project-context"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Alpha-Wiki",
+    "shortDescription": "Repo-native markdown memory for agents and teams",
+    "longDescription": "Bootstrap, maintain, query, review, and render a lightweight project wiki, with optional AgentOps execution memory.",
+    "developerName": "yura4gus",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://yura4gus.github.io/alpha-wiki-creator/",
+    "defaultPrompt": [
+      "Initialize Alpha-Wiki in this project.",
+      "Show Alpha-Wiki status and current gaps.",
+      "Query the wiki before changing this project.",
+      "Plan an optional AgentOps execution wave for this project."
+    ],
+    "brandColor": "#2F7D4A"
+  }
+}

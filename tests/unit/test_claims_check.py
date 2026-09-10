@@ -18,7 +18,7 @@ def test_claims_check_passes_supported_fresh_claim(tmp_path: Path):
     )
 
     assert check_claims(wiki, today=date(2026, 5, 5)) == []
-    assert "PASS" in claims_report(wiki)
+    assert "PASS" in claims_report(wiki, today=date(2026, 5, 5))
 
 
 def test_claims_check_flags_missing_provenance_stale_and_missing_target(tmp_path: Path):

@@ -3,17 +3,17 @@ title: Release Readiness Runtime
 slug: release-readiness-runtime
 kind: release-gate
 status: stable
-date_updated: 2026-05-05
+date_updated: 2026-09-10
 belongs_to: "[[alpha-wiki-runtime]]"
 implements: "[[alpha-wiki-runtime]]"
 version: v1
-evidence: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2026-05-05.md, tools/release_audit.py
+evidence: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2026-09-10.md, tools/release_audit.py
 ---
 # Release Readiness Runtime
 
 ## Provenance
 
-- Source: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2026-05-05.md, tools/release_audit.py.
+- Source: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2026-09-10.md, tools/release_audit.py.
 
 ## Entities
 
@@ -32,5 +32,5 @@ evidence: docs/final-release-readiness-audit-2026-05-04.md, docs/release-smoke-2
 
 ## Current Evidence
 
-- Latest verified suite: `129 passed`.
+- Latest verified suite: `202 passed`.
 - Latest release audit: `READY`, 8 pass, 0 warn, 0 fail.
