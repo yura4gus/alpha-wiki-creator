@@ -6,11 +6,12 @@ the repository memory layer.
 
 ## When To Delegate
 
-Delegate only when a task has at least two independent, material scopes.
+Delegate only for useful independent, material work. One bounded helper is
+valid; parallel mode requires multiple independent scopes.
 Read-heavy exploration, audit, source analysis, and summarization are the best
 fits. Keep deterministic commands and tightly coupled writes in the controller.
 
-- Default to two to four subagents.
+- Choose the smallest useful number of subagents; do not fill a default count.
 - Use five or six only when the user requests it or the scopes are demonstrably
   independent.
 - Do not create nested subagents unless the user explicitly requests nested
@@ -26,8 +27,14 @@ Before fan-out, the controller must:
 3. Fetch remote metadata once when fresh remote evidence is required.
 4. Record an immutable snapshot: repository, branch/ref, exact SHA, dirty state,
    and relevant review/pipeline identifiers when available.
-5. State permissions, secret policy, network policy, and forbidden actions.
+5. State applicable permissions and existing constraints; do not invent new
+   secret, network, approval, or signing requirements.
 6. Assign non-overlapping read scopes or disjoint write ownership.
+
+Carry the execution discipline from `references/concept.md` into each prompt:
+result first, relevant evidence only, exact diagnostics preserved, checks tied
+to acceptance, and no invented release gates. Use the Release Decisions section
+only for release-related scopes.
 
 Subagents must not independently refresh a shared remote snapshot. If their
 observed SHA differs from the controller snapshot, they return
@@ -118,7 +125,14 @@ Use staged execution when one scope depends on another:
 4. Optional dependent analysis wave, such as contract alignment.
 5. Controller synthesis: deduplicate evidence, preserve disagreements, and
    separate facts, inference, and owner decisions.
-6. Optional writer proposal. Do not begin writes without approval.
+6. Apply writes when the user's task already authorizes them and ownership is
+   assigned. Ask only for a missing scope or authority decision; a read-only
+   task remains read-only.
+
+Advance independent controller work while the evidence wave runs. Wait only
+when the next decision depends on a result. Required agents must reach a
+terminal state before synthesis; additional reviews and cleanup are not an
+automatic next wave after acceptance.
 
 If a subagent fails, allow at most one bounded retry with corrected context.
 After all agents reach a terminal state, close their threads.

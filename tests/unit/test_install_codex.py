@@ -1,5 +1,6 @@
 from pathlib import Path
 import sys
+import tomllib
 
 import yaml
 
@@ -84,7 +85,8 @@ def test_install_codex_builds_plugin_and_personal_marketplace(tmp_path: Path):
     assert result.plugin_dir == tmp_path / "plugins" / "alpha-wiki"
     manifest = json.loads((result.plugin_dir / ".codex-plugin" / "plugin.json").read_text())
     assert manifest["name"] == "alpha-wiki"
-    assert manifest["version"].startswith("0.6.0+codex.local-")
+    version = tomllib.loads((Path(__file__).parents[2] / "pyproject.toml").read_text())["project"]["version"]
+    assert manifest["version"].startswith(f"{version}+codex.local-")
     assert len(list((result.plugin_dir / "skills").glob("*/SKILL.md"))) == 16
     assert not (result.plugin_dir / "commands").exists()
     assert (result.plugin_dir / "docs" / "project-audit.md").exists()
@@ -106,6 +108,28 @@ def test_install_codex_builds_plugin_and_personal_marketplace(tmp_path: Path):
     marketplace = json.loads((tmp_path / ".agents" / "plugins" / "marketplace.json").read_text())
     entry = next(plugin for plugin in marketplace["plugins"] if plugin["name"] == "alpha-wiki")
     assert entry["source"]["path"] == "./plugins/alpha-wiki"
+
+
+def test_workflow_rules_are_preserved_in_both_codex_skill_surfaces(tmp_path: Path):
+    """Installation must carry shared policy and each skill's instructions intact."""
+    from scripts.install_codex import ROOT, install_codex_plugin
+
+    plugin = install_codex_plugin(tmp_path / "plugin")
+    standalone = tmp_path / "fallback"
+    install_codex_skills(standalone, runtime_root=plugin)
+
+    assert (plugin / "references" / "concept.md").read_bytes() == (
+        ROOT / "references" / "concept.md"
+    ).read_bytes()
+    for source in sorted((ROOT / "skills").glob("*/SKILL.md")):
+        # Check the complete execution paragraph, not just the existence of a link.
+        policy = source.read_text().split("## Workflow\n", 1)[1].lstrip().split("\n\n", 1)[0]
+        assert policy
+        for installed in (
+            plugin / "skills" / source.parent.name / "SKILL.md",
+            standalone / f"alpha-wiki-{source.parent.name}" / "SKILL.md",
+        ):
+            assert policy in installed.read_text(), installed
 
 
 def test_install_codex_can_opt_into_standalone_fallback(tmp_path: Path):

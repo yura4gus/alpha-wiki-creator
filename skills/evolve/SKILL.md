@@ -1,7 +1,6 @@
 ---
 name: evolve
 description: "Add or refine wiki schema when real sources no longer fit existing entity types. Use when ingest repeatedly needs a new durable category, when a page type has different lifecycle/frontmatter needs, or when graph/color semantics require a new directory. Do not use for one-off pages or cosmetic taxonomy churn."
-argument-hint: "<type-name> [--generate-skill]"
 ---
 
 # wiki:evolve - grow the schema
@@ -30,6 +29,11 @@ Do not evolve when:
 - The type would duplicate an existing type with different wording.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. Read current schema:
    - `CLAUDE.md`

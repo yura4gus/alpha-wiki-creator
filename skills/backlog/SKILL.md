@@ -1,7 +1,6 @@
 ---
 name: backlog
 description: "Create, filter, update, validate, and inspect dependency state for the optional AgentOps markdown backlog. Use for controlled multi-track delivery; do not replace a team's external issue tracker or use it for casual notes."
-argument-hint: "<add | update | list | blocked | dependencies | validate>"
 ---
 
 # wiki:backlog - lightweight execution backlog
@@ -28,6 +27,11 @@ Statuses are exactly: `TODO`, `PLANNED`, `IN_PROGRESS`, `BLOCKED`, `REVIEW`,
 
 ## Workflow
 
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
+
 1. Ensure AgentOps was explicitly initialized.
 2. For `add`, require a real owner, role, track, acceptance criteria, affected
    files/contracts, and dependencies.
@@ -44,7 +48,9 @@ uv run python -m tools.backlog dependencies --wiki-dir <wiki_dir> [id]
 uv run python -m tools.backlog validate --wiki-dir <wiki_dir>
 ```
 
-5. `DONE` requires evidence. `BLOCKED` requires a reason. Dependency cycles and
+5. `DONE` requires evidence. `BLOCKED` requires an applicable requirement,
+   observed failure, affected step, and corrective action. Optional polish or
+   an unchecked hypothesis does not create a release blocker. Dependency cycles and
    missing dependencies are errors.
 6. Never mark work done from an agent narrative without test/file evidence.
 

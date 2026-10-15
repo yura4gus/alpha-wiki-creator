@@ -1,7 +1,6 @@
 ---
 name: query
 description: "Answer questions from the wiki using explicit markdown evidence. Use when the user asks what the project knows, why a decision was made, what changed, what is stale, or where related pages are. Do not use as generic web search or as a substitute for ingesting durable new material."
-argument-hint: "<question>"
 ---
 
 # wiki:query - ask the wiki
@@ -16,16 +15,22 @@ Synthesize answers from maintained wiki memory with citations, uncertainty label
 
 ## Retrieval Discipline
 
+When supplied excerpts already answer the request, cite those excerpts and their
+limits directly. Do not invent wiki pages, searches, or extra retrieval steps.
+Use the following path when a wiki lookup is actually needed:
+
 1. Start with `<wiki_dir>/graph/context_brief.md`.
 2. Read `<wiki_dir>/index.md`.
 3. Run `tools/wiki_search.py` for deterministic candidate ranking and line citations.
 4. Use explicit filenames, slugs, wikilinks, and frontmatter. Avoid embedding-style guesses.
-5. Select 3-7 relevant pages for normal questions; expand only when the topic crosses domains.
+5. Read the smallest relevant evidence set; expand when the answer remains
+   uncertain or crosses domains. A single page can be sufficient.
 6. Prefer accepted/stable pages over draft/stub pages, but mention stale or draft status when it matters.
 
 ## Answer Format
 
-Use this structure unless the user asked for something smaller:
+Lead with a cited answer. Use only the following details needed to resolve the
+question; do not turn a short lookup into a mandatory multi-section report:
 
 - Short answer.
 - Evidence: cite pages as `[[slug]]` and include file paths when precision matters.
@@ -40,7 +45,12 @@ Use this structure unless the user asked for something smaller:
 
 ## Workflow
 
-1. Detect wiki dir from `CLAUDE.md` or default to `wiki/`.
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
+
+1. Detect wiki dir from `AGENTS.md` or default to `wiki/`.
 2. Read `context_brief.md` and `index.md`.
 3. Search candidate pages by slug, title, directory, frontmatter, and body:
    - `uv run python -m tools.wiki_search --wiki-dir <wiki_dir> --query "<question>"`
@@ -50,10 +60,8 @@ Use this structure unless the user asked for something smaller:
    - Pages using `contradicts`, `supersedes`, `superseded_by`.
    - Same concept described differently in decisions/specs.
 6. Answer with citations and truth status.
-7. If the answer is reusable, offer one of:
-   - Save to `<wiki_dir>/outputs/<slug>.md`.
-   - Update an existing page via `/alpha-wiki:ingest`.
-   - Create an open question entry.
+7. Persist an output or page update only when requested. Mention a maintenance
+   action only when a concrete evidence gap affects the answer.
 8. Append log entry only when the query materially changes wiki state or writes an output.
 
 ## Graph Hygiene
@@ -75,7 +83,8 @@ When the wiki is thin, explain how to make the next query better:
 
 Keep normal queries single-agent. Use read-only subagents only when the question
 crosses independent repositories or domains and cannot be answered from the
-normal 3-7 page evidence set.
+relevant evidence set. Additional agents are not a substitute for opening the
+one source that answers the question.
 
 - The controller defines one sub-question per agent and supplies the same pinned
   snapshot when runtime evidence is involved.

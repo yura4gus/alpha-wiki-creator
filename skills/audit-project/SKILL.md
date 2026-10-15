@@ -1,7 +1,6 @@
 ---
 name: audit-project
 description: "Run a read-only delivery-readiness audit across git, docs, tests, deploy, security, providers, and tech debt. Produces a structured, evidence-first status report a Claude/Codex session can start or end with. Use for 'where did development stop', 'is deploy ready', 'what to test next', 'can we hand this off', or a founder/PM status snapshot. Read-only: never edits, commits, pushes, or deploys."
-argument-hint: "--project <name> [--repo <path> ...] [--period today|24h|week|all|custom] [--focus backend,frontend,sdk,providers,deploy,testing,security,tech-debt,release]"
 ---
 
 # wiki:audit-project — delivery-readiness audit
@@ -34,25 +33,34 @@ declares readiness without evidence.
 - If input is incomplete, **do not block** — proceed with available evidence and
   mark confidence low.
 - Do not rely only on chat claims; verify against code/git/docs when possible.
-- Do not mark deploy blocked without a proven root cause. If deploy is configured
-  and only verification remains, say so explicitly.
+- A proven failure of a required step can block deployment before its root cause
+  is known. Keep optional failures and missing verification separately labelled.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. **Collect inputs**: project name, repo path(s), period, primary branches,
    focus areas, pasted context (chats/logs/roadmap/PR links). Missing is fine.
 
-2. **Generate the audit skeleton** (guarantees structure + invariants):
+2. **Choose the requested output**. Use the full skeleton only for a full
+   delivery audit. A user-specified A-G report or short status wins over the
+   default 17 sections. The backend can print the skeleton to stdout:
 
    ```bash
    uv run python -m tools.project_audit --project "<name>" \
      --repo <path1> --repo <path2> --period <period> \
-     --focus <area> --note "<pasted-context marker>" --out <wiki_dir>/outputs/delivery-audit.md
+     --focus <area> --note "<pasted-context marker>"
    ```
 
-   The tool emits all 17 sections, the exact status-label legend, an always-present
+   The optional skeleton emits all 17 sections, the exact status-label legend, an always-present
    security section, provider/business-coverage tables, a read-only git inventory
-   per repo, and `not confirmed` defaults for every unproven cell.
+   per repo, and `not confirmed` defaults for every unproven cell. Strict
+   read-only creates no report file and runs no status/review backend that
+   refreshes graph artifacts. Read existing reports when relevant.
 
 3. **Fill from evidence**, section by section:
    - **Source inventory**: mark each source checked/unavailable + confidence.
@@ -73,11 +81,15 @@ declares readiness without evidence.
    - **Security**: use the always-present table; cross-check `wiki/security/`.
    - **Tech debt**: classify and prioritize.
 
-4. **Root-cause over symptoms.** When a blocker is claimed, trace it; if you
-   can't prove a root cause, label it "suspected — not confirmed".
+4. **Prove the affected step.** Cite the applicable requirement, observed
+   failure, affected required step, and smallest fix. A failing required test
+   blocks that step even if its root cause needs investigation. An unchecked
+   item is unverified; an optional Pages failure is a docs-deployment result.
+   Do not add signing, secrets, approvals, or security controls without an
+   existing project requirement.
 
-5. **Founder/PM summary stays compact**; technical detail goes in the appendix
-   sections. Finish with a concrete **Next 3 Actions**.
+5. Return the requested summary and only useful next actions. Include an
+   appendix or three-action list only when it helps or the user asked for it.
 
 ## Status Labels (verbatim)
 
@@ -97,15 +109,13 @@ declares readiness without evidence.
 
 ## Codex Native Delegation
 
-Use native Codex subagents when the audit has at least two independent
-repositories or focus areas. Keep the controller read-only and follow this
-sequence:
+Use native Codex subagents only when independent evidence scopes materially
+benefit. A small audit stays single-agent. Keep the controller read-only:
 
 1. The controller reads `AGENTS.md` and Alpha-Wiki context, fetches required
    remote metadata once, and records one immutable repository/SHA snapshot.
-2. Spawn two to four read-only evidence agents by repository or non-overlapping
-   focus area. Use five or six only when the user explicitly requests them or
-   supplies six independent scopes.
+2. Choose the smallest useful number of read-only agents by repository or
+   non-overlapping scope; do not spawn merely to satisfy a default count.
 3. Give every agent the same pinned snapshot, a bounded scope and non-scope,
    forbidden actions, evidence format, and terminal status vocabulary.
 4. Treat starting assumptions as hypotheses to confirm, refute, or mark
@@ -115,18 +125,18 @@ sequence:
 6. Run dependent contract alignment after the evidence wave when it needs other
    agents' results. Do not pretend dependent work is independent parallel work.
 7. Produce one consolidated audit. Do not begin implementation; a writer wave is
-   only a proposal with disjoint ownership and explicit approval.
+   outside this read-only request.
 
 Use the result envelope and truth precedence from
 `references/codex-subagent-orchestration.md`.
 
 ## Done Criteria
 
-- All 17 sections present; security/tech-debt/release always included for software
-  projects.
+- Requested output and evidence scope are complete; a full audit uses the
+  standard skeleton, and a bounded request includes only applicable sections.
 - Every important status carries evidence or is explicitly `not confirmed`.
-- Deploy is not called blocked without a proven root cause.
-- The report ends with an actionable Next 3 Actions.
+- Blockers identify a proven failure of an applicable required step.
+- The response is concise and preserves material unknowns and next actions.
 
 ## References
 

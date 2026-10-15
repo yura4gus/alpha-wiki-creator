@@ -1,7 +1,6 @@
 ---
 name: init
 description: "Bootstrap Alpha-Wiki project memory into a repo. Use when the user wants persistent LLM-maintained markdown memory, Karpathy-style raw/wiki/schema separation, Obsidian graph support, hooks, CI, or agent memory that compounds across sessions. Do not use for one-off documentation, a static README rewrite, or a summary that will not be maintained."
-argument-hint: "[project-description]"
 ---
 
 # wiki:init - bootstrap project memory
@@ -35,6 +34,11 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 ## Workflow
 
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
+
 1. Inspect the repo before asking questions:
    - Detect code markers: `src/`, `package.json`, `pyproject.toml`, `go.mod`, etc.
    - Detect existing `wiki/`, legacy/custom `.wiki/`, `raw/`, `CLAUDE.md`, `AGENTS.md`, `wiki/.obsidian/`, legacy root `.obsidian/`, `.claude/`, `.codex/`, `.github/workflows/`.
@@ -49,7 +53,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
    - Batch work so the user can approve Batch 1 first instead of trying to ingest the whole repo at once.
    - Mark generated artifacts, previous wiki output, build folders, dependency folders, and raw snapshots as excluded from re-ingest.
 
-3. Interview sequentially:
+3. Reuse supplied answers and configuration; ask only for missing choices that affect bootstrap:
    - Project name and one-line purpose.
    - Wiki dir, defaulting to visible `wiki/` unless the user explicitly requests a custom hidden path.
    - Preset and overlay.
@@ -72,7 +76,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 5. Run dry-run when protected files exist:
    - Call bootstrap with `dry_run=True`.
    - Surface `.alpha-wiki/bootstrap-report.md` style conflicts.
-   - Continue only when the user accepts preservation/merge behavior.
+   - Continue with authorized preservation; ask only for an unresolved overwrite or scope decision.
 
 6. Render the runtime:
    - Call `scripts.bootstrap.bootstrap(target, config)`.

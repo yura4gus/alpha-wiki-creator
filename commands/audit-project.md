@@ -7,10 +7,15 @@ Invoke the `audit-project` skill from the `alpha-wiki` plugin. Human meaning: st
 
 Arguments: $ARGUMENTS
 
-Generate the structured skeleton (all 17 sections, status labels, always-present security section, provider/business-coverage tables, read-only git inventory, `not confirmed` defaults):
+Honor the user's requested format and scope. For a full audit, the optional
+backend prints a 17-section skeleton to stdout:
 
 ```bash
-uv run python -m tools.project_audit --project "<name>" --repo <path> --period <period> --out <wiki_dir>/outputs/delivery-audit.md $ARGUMENTS
+uv run python -m tools.project_audit --project "<name>" --repo <path> --period <period>
 ```
 
-Then fill every table from real evidence (git/docs/tests/logs), mark confidence, distinguish facts from assumptions, do not invent blockers, and finish with a concrete Next 3 Actions. This is a project-wide delivery audit, not the per-change `receiving-code-review`.
+Use only applicable sections for a bounded request. Strict read-only creates no
+report file or graph refresh. Ground conclusions in evidence; distinguish failed,
+unverified, and optional items. A release blocker needs its existing requirement,
+failure, affected step, and smallest fix. Do not add signing, secrets, approvals,
+or cosmetic gates. Return the result, evidence, and useful next actions concisely.

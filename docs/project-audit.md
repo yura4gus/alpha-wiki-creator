@@ -23,28 +23,31 @@ The deterministic backend (`tools/project_audit.py`) always emits:
   recent commits, uncommitted/untracked, branch sprawl);
 - `not confirmed` in every cell without evidence — nothing is invented.
 
-The operator (skill) then fills the tables from real git/docs/tests/logs evidence.
+The skill uses this full skeleton when a full audit is requested. A user-specified
+A-G report or short status takes precedence; keep only relevant sections and
+cite real git/docs/tests/logs evidence.
 
 ## Read-only guarantee
 
 The audit never edits, commits, pushes, or deploys. Git inspection uses only
-`git status`, `git log`, `git rev-list`, and reads. Anything that could mutate
-state (a deploy, a write) must be confirmed with the user first.
+`git status`, `git log`, `git rev-list`, and reads. This workflow creates no
+report files, refreshes no graph, and performs no deployments. An explicitly
+requested implementation is a separate scope, not an audit side effect.
 
 ## Running it
 
 ```bash
 # skeleton for one repo
 uv run python -m tools.project_audit --project "ZamWallet" --repo /path/to/repo \
-  --period week --focus backend --focus sdk --out wiki/outputs/delivery-audit.md
+  --period week --focus backend --focus sdk
 
 # multi-repo workspace
 uv run python -m tools.project_audit --project "Zamio" \
   --repo /path/to/backend --repo /path/to/sdk --repo /path/to/web \
-  --period all --out wiki/outputs/delivery-audit.md
+  --period all
 ```
 
-Then open the generated report and fill each section from evidence. Missing
+Read the stdout report and return the requested sections with evidence. Missing
 inputs do not block the audit — they lower confidence and are marked
 `not confirmed`.
 
@@ -53,8 +56,13 @@ inputs do not block the audit — they lower confidence and are marked
 Always distinguish: **confirmed fact · likely assumption · unconfirmed claim ·
 missing evidence · real blocker · suspected (non-root-cause) blocker**. Every
 important status needs a commit hash, file path, command output, PR/MR number,
-test line, or log line. Do not mark deploy blocked without a proven root cause;
-if deploy is configured and only verification remains, say so.
+test line, or log line. A failure of an applicable required step can block that
+step before its root cause is known. Unchecked behavior remains unverified;
+optional failures remain separate. Each blocker names the requirement, observed
+failure, affected step, and smallest fix. Use existing release policy and
+authentication; do not invent signing, secrets, approvals, or cosmetic gates.
+Pages failures concern docs deployment unless an existing package-release rule
+requires that deployment. See `references/concept.md` (Release Decisions).
 
 ## Relationship to `receiving-code-review`
 

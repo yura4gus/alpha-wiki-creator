@@ -1,7 +1,6 @@
 ---
 name: rollup
 description: "Generate a weekly or monthly wiki rollup, optionally including AgentOps sessions, handoffs, and backlog updates. Use before stakeholder updates or when durable activity needs a compact summary."
-argument-hint: "[week | month] [--scope wiki|agentops|all] [--write]"
 ---
 
 # wiki:rollup - period summary
@@ -20,6 +19,11 @@ Compress a period of wiki activity into a durable summary while preserving links
 - `week`: ISO week. Output label `YYYY-Www`.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. Detect wiki dir.
 2. Determine period.

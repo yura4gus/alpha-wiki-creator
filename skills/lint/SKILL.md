@@ -1,7 +1,6 @@
 ---
 name: lint
 description: "Validate and repair wiki structure: frontmatter, broken wikilinks, missing reverse links, orphan pages, duplicate slugs, dependency rules, and graph hygiene. Use before commits, after ingest/evolve, when the graph looks wrong, or when pages become hard to find."
-argument-hint: "[--fix | --suggest | --dry-run]"
 ---
 
 # wiki:lint - structural validation
@@ -28,6 +27,11 @@ Keep the wiki trustworthy as a graph. Lint is the guardrail that prevents markdo
 - CI/pre-commit mode: fail on errors; allow warnings unless strict mode is explicitly requested.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. Detect wiki dir and config:
    - `--wiki-dir <wiki_dir>`
@@ -73,7 +77,9 @@ Cluster ownership is checked through typed frontmatter links such as `belongs_to
 - Add reverse links only when the reverse relation is defined.
 - Do not create semantic content automatically.
 - Do not delete pages.
-- Do not change status values without user confirmation.
+- Do not infer accepted/completed status from formatting. Apply a requested,
+  evidence-backed status repair within its authorized scope; ask only for a
+  missing semantic decision.
 - Rebuild `edges.jsonl`, `context_brief.md`, and `open_questions.md` after fixes.
 
 ## Codex Native Delegation

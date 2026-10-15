@@ -21,8 +21,8 @@ Alpha-Wiki is published for real Claude Code and Codex use on active projects.
 Current release:
 
 - Branch: `main`
-- Latest release: [`v0.6.0`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.6.0)
-- Status: Codex parity and optional AgentOps milestone for daily project use, not v1.0
+- Latest release: [`v0.6.1`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.6.1)
+- Status: concise agent workflows, scoped release checks, and Codex hook stability; not v1.0
 - Workflows: **12 core + 4 optional AgentOps** (orchestrate, backlog, handoff, release-check)
 - Live docs: https://yura4gus.github.io/alpha-wiki-creator/
 
@@ -31,16 +31,21 @@ Current verified gates:
 - Public clone validation: passed
 - Fresh install smoke: `PASS`
 - Release audit: `READY`
-- Test suite: `202 passed`
+- Test suite: `204 passed`
 - Docs Pages: live at https://yura4gus.github.io/alpha-wiki-creator/
 - Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
 - Codex runtime: one namespaced `$alpha-wiki:*` plugin surface, `AGENTS.md`, and trusted project hooks
 - Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
 - Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
 
-Version `0.6.0` includes an opt-in AgentOps v0.2 control layer for controlled
+Version `0.6.1` retains the opt-in AgentOps v0.2 control layer for controlled
 multi-track execution. It stores backlog items, session summaries, handoffs, and
 project release evidence under `wiki/agentops/`; normal init does not enable it.
+
+The 0.6.1 skills use the smallest sufficient evidence and checks. Release
+blockers cite an existing requirement and a concrete failure; optional Pages,
+wiki, or unused-platform findings keep their scope. Signing is required only
+when the project requires it. See [shared rules](references/concept.md).
 
 Not included in beta: embeddings, RAG, semantic search, PDF/DOCX/web crawlers, SaaS UI, multi-user permissions, or automatic truth resolution.
 

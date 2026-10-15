@@ -13,4 +13,7 @@ Run:
 uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml $ARGUMENTS
 ```
 
-Surface the generated markdown report. This is Alpha-Wiki structural review, not AgentOps `cto-review`.
+Summarize the generated report in the requested format with decisive evidence.
+Name its verdict as wiki quality; missing wiki metadata does not establish a
+runtime vulnerability or block package publication without an existing rule.
+Save only when requested. Use Release Decisions in `references/concept.md`.

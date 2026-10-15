@@ -1,7 +1,6 @@
 ---
 name: render
 description: "Refresh the wiki presentation layer: Obsidian graph settings plus deterministic Mermaid/DOT/HTML exports. Use when colors, graph filters, vault settings, static read-only pages, or generated visual artifacts are stale. Do not use to change wiki content."
-argument-hint: "[obsidian | html | mermaid | dot]"
 ---
 
 # wiki:render - visual and export layer
@@ -66,6 +65,11 @@ If a black document floats alone, the problem is usually missing links. If a mod
 Color is not cluster. Do not build or describe one red cluster, one green cluster, one black cluster. A useful cluster normally mixes colors: red service boundary, green modules, blue features, black evidence, and orange contracts connected by typed links.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. Detect wiki dir and config.
 2. Rebuild graph artifacts first:

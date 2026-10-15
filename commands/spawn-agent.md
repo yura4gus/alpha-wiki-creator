@@ -7,4 +7,10 @@ Invoke the `spawn-agent` skill from the `alpha-wiki` plugin. Human meaning: crea
 
 Arguments: $ARGUMENTS
 
-Ask the user for the agent name, role description (1-2 sentences), which wiki skills it should use, and whether to generate a companion skill. Render `.claude/agents/<name>.md` with frontmatter, allowed tools, and required reading of `<wiki_dir>/graph/context_brief.md` at start. Append a `spawn-agent` entry to `<wiki_dir>/log.md`. Commit and print activation instructions.
+Resolve `create-profile`, `run-now`, or `run-parallel` from the actual request.
+A bare skill mention inside an engineering task does not create a helper scope.
+For a requested profile, reuse supplied role details and create the native agent
+file; record actual profile creation in the wiki log. For a one-off wiki task,
+choose the smallest useful delegation. Preserve explicitly frozen reviewed
+documents and their hashes. Commit only when authorized. Return concise results
+and the actual activation or next action, if one is needed.

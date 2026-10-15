@@ -1,7 +1,6 @@
 ---
 name: release-check
 description: "Evaluate a project's AgentOps release readiness from backlog state, summarized sessions, handoffs, evidence, and Alpha-Wiki lint. Use before staging or production; do not confuse it with the Alpha-Wiki package release_audit."
-argument-hint: "--version <target> [--write]"
 ---
 
 # wiki:release-check - project delivery gate
@@ -18,7 +17,14 @@ from `tools.release_audit`, which validates the Alpha-Wiki package itself.
 
 ## Workflow
 
-1. Run deterministic backlog and handoff validation.
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
+
+1. Identify the requested release and its existing requirements. Use this
+   AgentOps workflow only when the target project already uses that layer;
+   do not initialize it merely to publish the Alpha-Wiki package.
 2. Check unfinished, blocked, or review-stage release work.
 3. Verify completed work has evidence and execution waves have session
    summaries.
@@ -29,13 +35,17 @@ from `tools.release_audit`, which validates the Alpha-Wiki package itself.
 uv run python -m tools.release_check \
   --wiki-dir <wiki_dir> \
   --version <target> \
-  --config .alpha-wiki/config.yaml \
-  --write
+  --config .alpha-wiki/config.yaml
 ```
 
-6. A Release Agent may interpret deployment-specific evidence, but it must not
-   turn a deterministic blocker into a green narrative.
-7. `WARNING` requires an owner and next action before production approval.
+6. Add `--write` only when a persisted release record is requested. Preserve
+   the backend verdict and name its target and evidence scope.
+7. For each claimed blocker, cite the requirement, observed failure, affected
+   required step, and smallest fix. Keep unverified, failed, access-blocked,
+   and optional findings distinct. Do not invent secrets, signing, or approvals.
+8. Apply owner decisions and production requirements only when the task or
+   existing project policy requires them. Package publication and Pages
+   deployment have separate outcomes unless an existing rule connects them.
 
 ## Verdicts
 

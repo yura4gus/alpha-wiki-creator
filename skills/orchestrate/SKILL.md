@@ -1,7 +1,6 @@
 ---
 name: orchestrate
 description: "Plan and execute an optional Alpha-Wiki AgentOps wave with native Codex/Claude agents, explicit tracks, pinned context, session evidence, conflict resolution, and one next master prompt. Use for substantial multi-track delivery; do not use for a small single-agent task."
-argument-hint: "<init | plan | run | resume | close | status>"
 ---
 
 # wiki:orchestrate - controlled execution waves
@@ -27,6 +26,11 @@ wave. It does not mean autonomous scheduling or background execution.
 - Do not use this workflow for one small task or one tightly coupled change.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 Choose one mode below. The controller always owns the snapshot, track
 dependencies, shared-file integration, deterministic checks, and final
@@ -59,16 +63,17 @@ uv run python -m tools.orchestrate init \
 ### `run` / `resume`
 
 1. Run `tools.worktree_snapshot` once in the controller.
-2. Select two to four dependency-ready tracks; six is allowed only when the
-   user explicitly requests it.
+2. Select only dependency-ready tracks that benefit from delegation; one
+   remaining track is valid. Use more agents only for material independent work.
 3. Start one summarized session for every delegated agent execution, not for
    individual tool calls.
 4. Spawn native Codex/Claude agents with bounded, disjoint scopes.
 5. Give every agent the context brief, pinned snapshot, permissions, files,
    contracts, acceptance criteria, and stable output envelope.
 6. Do not allow nested delegation or independent shared-ref refresh.
-7. Wait for all terminal results. Reject stale snapshots and allow one bounded
-   retry for malformed or failed evidence.
+7. Continue independent controller work while agents run. Wait when their
+   evidence is needed; obtain all required terminal results before synthesis.
+   Reject stale snapshots and allow one bounded retry for failed evidence.
 8. Resolve conflicts in the controller. Accepted contracts define intended
    behavior; runtime and tests prove current behavior.
 9. Integrate one write owner per shared file, run deterministic tests/lint, and
@@ -104,8 +109,8 @@ Roles are context declarations, not persistent autonomous processes.
 
 Use the native Codex subagent workflow defined in
 `references/codex-subagent-orchestration.md`. The main task remains the
-controller, records one pinned snapshot, delegates two to four independent
-tracks by default, and permits six only when the user explicitly requests it.
+controller, records one pinned snapshot, and chooses only useful independent
+tracks for delegation. Do not create idle tracks to fill a default count.
 Subagents cannot create nested agents or own shared deterministic checks.
 
 ## Session Contract

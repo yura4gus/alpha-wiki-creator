@@ -9,4 +9,8 @@ Flags from the user (if any): $ARGUMENTS
 
 Run: `uv run python -m tools.doctor --project-dir . $ARGUMENTS`
 
-Report PASS/WARN/FAIL checks. Treat FAIL as blocking. Treat WARN as non-blocking unless `--strict` was requested. If `--refresh` was used, mention that graph artifacts were rebuilt before verification.
+Report counts and decisive diagnostics concisely. A FAIL blocks only the required
+operation that depends on the failed capability. WARN stays non-blocking unless
+strict mode is requested or required by existing policy. If `--refresh` was
+used, mention that graph artifacts were rebuilt. Apply Release Decisions in
+`references/concept.md` for release judgments.

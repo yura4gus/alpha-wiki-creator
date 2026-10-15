@@ -15,8 +15,13 @@ Give the user a fast, honest picture of wiki health. Status should teach what ne
 
 ## Workflow
 
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
+
 1. Detect wiki dir:
-   - Prefer `CLAUDE.md` "Wiki dir" line.
+   - Prefer `AGENTS.md` "Wiki dir" line.
    - Fall back to `wiki/`.
 
 2. Read:

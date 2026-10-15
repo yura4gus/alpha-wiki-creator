@@ -1,4 +1,7 @@
 import importlib.util
+import json
+import subprocess
+import sys
 from pathlib import Path
 
 
@@ -79,3 +82,24 @@ def test_codex_hook_template_registers_subagent_start():
 
     assert '"SubagentStart"' in template
     assert "subagent-start --wiki-dir" in template
+
+
+def test_codex_hook_survives_stale_session_cwd():
+    payload = {
+        "cwd": "/alpha-wiki/removed-worktree",
+        "hook_event_name": "PreToolUse",
+        "tool_name": "Bash",
+        "tool_input": {"command": "git status --short"},
+    }
+
+    result = subprocess.run(
+        [sys.executable, str(HOOK_PATH), "pre-tool", "--wiki-dir", "wiki"],
+        cwd=HOOK_PATH.parents[2],
+        input=json.dumps(payload),
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=5,
+    )
+
+    assert result.returncode == 0, result.stderr

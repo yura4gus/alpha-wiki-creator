@@ -15,29 +15,37 @@ Give the operator and AI one reliable command that answers: "Is this Alpha-Wiki 
 
 ## Workflow
 
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
+
 1. Detect project and wiki:
    - Prefer `--wiki-dir` when supplied.
-   - Otherwise read `CLAUDE.md` `Wiki dir`.
+   - Otherwise read `AGENTS.md` `Wiki dir`.
    - Fall back to `wiki/`.
 
 2. Run deterministic backend:
    - `uv run python -m tools.doctor --project-dir .`
    - Add `--refresh` after init or after manual page edits.
-   - Add `--strict` for release gates.
+   - Add `--strict` only when requested or required by existing release policy.
    - Add `--platform claude`, `--platform codex`, or `--platform both` when checking a specific runtime.
 
 3. Read the result:
    - `PASS`: ready.
    - `WARN`: usable but incomplete; schedule repair.
-   - `FAIL`: block the next lifecycle step until fixed.
+   - `FAIL`: identify the affected operation and concrete failure; block only
+     a required step that depends on the failed capability.
 
 4. Route follow-up:
    - Missing wiki/config: run `/alpha-wiki:init`.
    - Missing graph artifacts: rerun with `--refresh` or run `/alpha-wiki:status`.
    - Lint errors: run `/alpha-wiki:lint --fix`, then rerun `doctor`.
-   - Missing Claude hooks/CI: rerun init with hooks/CI enabled or copy generated assets.
+   - Missing optional hooks/CI: report the limitation. Install them only when
+     chosen or required for the operation being checked.
    - Missing/stale Codex plugin or skills: run `python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone` from the Alpha-Wiki repo, then start a new Codex task.
    - Missing Codex project contract/hooks: rerun init with session hooks enabled, merge the Alpha-Wiki section into an existing `AGENTS.md`, and review hooks with `/hooks`.
+   - Legacy `CLAUDE.md`: merge only unique project guidance into `AGENTS.md`, then remove it; never use it as a runtime contract.
 
 ## Required Output Discipline
 
@@ -52,10 +60,12 @@ Always surface:
 
 ## Release-Gate Use
 
-Use this sequence for release smoke checks:
+For a lifecycle release check, select the supported platform and applicable
+checks below. Ordinary warnings remain warnings unless the existing policy
+requires strict mode. Do not enable an unused platform just to clear a warning.
 
 ```bash
-uv run python -m tools.doctor --project-dir . --platform both --refresh --strict
+uv run python -m tools.doctor --project-dir . --platform <claude|codex|both> --refresh
 uv run python -m tools.lint --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run
 uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml
 ```

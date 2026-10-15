@@ -42,8 +42,9 @@ PLAN -> ARCHITECTURE -> IMPLEMENTATION -> TESTING -> REVIEW
      -> DOCUMENTATION UPDATE -> STAGING -> PRODUCTION -> POST-RELEASE ROLLUP
 ```
 
-The controller may combine stages for small scopes. It must not skip acceptance
-evidence, documentation synchronization, or unresolved blockers.
+Select stages relevant to the requested outcome. Preserve applicable acceptance
+evidence and documentation synchronization. Use `references/concept.md` (Release
+Decisions) to distinguish blockers, unverified requirements, and optional work.
 
 ## Status Separation
 

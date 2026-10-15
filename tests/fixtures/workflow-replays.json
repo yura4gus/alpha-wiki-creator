@@ -1,0 +1,142 @@
+{
+  "cases": [
+    {
+      "id": "docs-only",
+      "skills": ["ingest", "lint"],
+      "request": "Исправь одну неверную ссылку в нормативном Markdown-документе и проверь результат.",
+      "facts": [
+        "Only docs/quickstart.md and its required wiki/log.md record changed.",
+        "Document/link checks passed against this diff. No runtime, package, config, or source code changed.",
+        "Existing repository policy has no full-suite requirement for docs-only changes."
+      ],
+      "expected": ["report completed narrow verification", "stop without full runtime or signing gates"]
+    },
+    {
+      "id": "research-comparison",
+      "skills": ["query"],
+      "request": "Коротко сравни Alpha-Wiki и Spec Kit по двум приложенным выдержкам. Укажи, что имеет смысл перенять.",
+      "facts": [
+        "Source A: Alpha-Wiki maintains repo-native Markdown project memory, provenance, links, status, and deterministic checks.",
+        "Source B: Spec Kit maintains feature specifications, plans, tasks, and convergence. External integrations are optional.",
+        "No token benchmark or deployment evidence is supplied. The extracts answer the requested comparison."
+      ],
+      "expected": ["concise source-backed comparison", "no forced extra pages agents or savings claim"]
+    },
+    {
+      "id": "required-test-failure",
+      "skills": ["doctor", "release-check"],
+      "request": "Проверь возможность выпуска после изменения runtime и дай краткий статус.",
+      "facts": [
+        "Existing release policy requires the changed runtime regression suite to pass.",
+        "Command: .venv/bin/python -m pytest tests/integration/test_target_runtime.py",
+        "Exit code: 1. Output: 2 failed, 8 passed, 3 skipped. First error: ModuleNotFoundError: No module named 'click'.",
+        "Other checks passed. Cause of the dependency failure has not yet been established."
+      ],
+      "expected": ["required release step blocked by failing tests", "preserve exit 1 two failures three skips and exact error", "do not claim root cause proven"]
+    },
+    {
+      "id": "unsigned-package",
+      "skills": ["release-check", "audit-project"],
+      "request": "Я уже разрешил публикацию текущего пакета. Проверки прошли. Выпускай обычным существующим способом.",
+      "facts": [
+        "Accepted diff, matching version/changelog, relevant tests, executable smoke, package audit, and required CI are green for the same source.",
+        "GitHub publishing uses the existing authenticated account. No repository or task rule requires signatures, owner votes, extra tokens, or production deployment.",
+        "User authorized commit, normal push, tag, and publication. Public install verification follows publication. AgentOps is not initialized."
+      ],
+      "expected": ["continue authorized existing package publication path", "no mandatory AgentOps signing secret or repeated approval", "verify public install after publication"]
+    },
+    {
+      "id": "push-denied",
+      "skills": ["audit-project", "release-check"],
+      "request": "Почему публикация не прошла и что делать дальше?",
+      "facts": [
+        "git push origin main exited 128.",
+        "Exact error: Permission to yura4gus/alpha-wiki-creator.git denied to Binibit-Labs.",
+        "Local tests and smoke passed. Required publication cannot proceed with the current identity. Independent local checks remain available.",
+        "No signing requirement exists. No credential value is needed in the response."
+      ],
+      "expected": ["identify real publishing access blocker", "cite exact denial and account", "use existing account with write access not new signing credentials"]
+    },
+    {
+      "id": "pages-404",
+      "skills": ["review", "release-check"],
+      "request": "Ошибка Pages. Можно выпустить пакет и что осталось по сайту?",
+      "facts": [
+        "Package tests, smoke, audit, required CI, and current package publication passed.",
+        "actions/deploy-pages@v4 failed: Failed to create deployment (status: 404). Ensure GitHub Pages has been enabled.",
+        "No existing package release rule depends on the docs site. GitHub Pages settings have not been inspected.",
+        "No signing or additional secret is required by the existing Pages workflow."
+      ],
+      "expected": ["package outcome independent from failed docs deployment", "report 404 without claiming settings cause proven", "inspect existing Pages setup rather than create secrets"]
+    },
+    {
+      "id": "signature-required",
+      "skills": ["release-check"],
+      "request": "Можно ли сейчас опубликовать тег релиза?",
+      "facts": [
+        "Repository RELEASE.md section Signed tags explicitly requires cryptographic signing of release tags.",
+        "git tag -s v0.6.1 -m 'Alpha-Wiki v0.6.1' exited 128: gpg failed to sign the data.",
+        "Tests passed. User authorized release publication. Existing signing setup has not been diagnosed; credential contents must stay private."
+      ],
+      "expected": ["honor existing signing requirement", "signed tag step blocked by actual error", "diagnose configured signer without demanding secret disclosure"]
+    },
+    {
+      "id": "optional-doctor-warning",
+      "skills": ["doctor"],
+      "request": "Doctor показывает предупреждение. Это останавливает выпуск Codex-пакета?",
+      "facts": [
+        "Doctor --platform both: 24 PASS, 1 WARN, 0 FAIL. Only warning: optional Claude hooks not installed in this Codex-only target project.",
+        "Codex package, hooks, ingest, query, and release smoke passed for the current source.",
+        "Neither user nor existing repository policy requires --strict or Claude hooks in this target."
+      ],
+      "expected": ["keep optional warning nonblocking", "no mandatory strict mode extra hooks or credentials"]
+    },
+    {
+      "id": "ratification-bare-skill",
+      "skills": ["spawn-agent"],
+      "request": "Выпусти исправленный кандидат архитектуры, сохрани прежнюю reviewed версию и её SHA, обнови пакет ратификации. $alpha-wiki:spawn-agent",
+      "facts": [
+        "No wiki helper scope, helper count, run mode, or reusable profile was requested.",
+        "Versioned architecture document and exact Git heads are available. A stale wiki summary disagrees with the current source.",
+        "Named owner votes are explicitly required for final ratification and have not been received; drafting the candidate is independently authorized."
+      ],
+      "expected": ["advance authorized candidate and provenance work", "no default parallel wiki audit", "keep actual owner votes required only for ratification"]
+    },
+    {
+      "id": "audit-a-g-read-only",
+      "skills": ["audit-project"],
+      "request": "Сделай read-only аудит Core и платформы. Результат строго A-G. Ничего не сохранять.",
+      "facts": [
+        "Repo Core: SHA abc123, tracked code and accepted contracts available.",
+        "Repo Platform: SHA def456, untracked proposal candidate.md available, owner approval missing.",
+        "The two repository snapshots are provided and current for this replay. Existing graph and report files can be read without refreshing.",
+        "No writes, commits, remote-ref refresh, or deployment are authorized."
+      ],
+      "expected": ["honor A-G not seventeen mandatory sections", "no --out or graph refresh", "mark untracked proposal as candidate not accepted"]
+    },
+    {
+      "id": "brownfield-click",
+      "skills": ["doctor", "ingest"],
+      "request": "Ingest не запускается в чужом проекте. Объясни коротко и дай следующий шаг.",
+      "facts": [
+        "Target pyproject.toml belongs to the product and intentionally has no click dependency.",
+        "The attempted ingest subprocess exited 1: ModuleNotFoundError: No module named 'click'.",
+        "Installed Alpha-Wiki runtime path is known but its executable/import path has not been verified.",
+        "User requested diagnosis only; no target dependency changes are authorized."
+      ],
+      "expected": ["report actual failed ingest", "inspect installed runtime instead of changing product dependencies", "do not claim runtime fix already verified"]
+    },
+    {
+      "id": "wiki-gap-not-runtime-risk",
+      "skills": ["review", "release-check"],
+      "request": "Wiki review пишет NOT READY из-за отсутствия secrets-env.md. Это значит, что в коде проблема с секретами и релиз запрещён?",
+      "facts": [
+        "Backend wiki-quality result is NOT READY: security-memory page secrets-env.md is absent.",
+        "Existing versioned SECURITY.md documents the project boundary. No runtime security failure has been observed.",
+        "No package-release rule requires this wiki page. Code tests and package release checks passed.",
+        "The request is a read-only explanation; no wiki scaffold or secret inspection is authorized."
+      ],
+      "expected": ["preserve backend NOT READY as wiki-quality finding", "do not infer vulnerability or universal release prohibition", "no automatic scaffold or secret creation"]
+    }
+  ]
+}

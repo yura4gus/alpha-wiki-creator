@@ -1,7 +1,6 @@
 ---
 name: ingest
 description: "Convert durable source material into maintained wiki pages with provenance, frontmatter, links, and graph updates. Use for PRDs, ADRs, specs, transcripts, research notes, OpenAPI files, decisions, meeting notes, and any source the project should remember. Do not use for one-off answers or unsupported content that should remain conversational."
-argument-hint: "<file-paths...>"
 ---
 
 # wiki:ingest - source to wiki memory
@@ -19,6 +18,7 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 - Preserve provenance. The page must say where the knowledge came from.
 - Keep raw source immutable. Copy or reference source files under `raw/`; do not rewrite source evidence.
 - Use the existing schema first. Evolve only when no existing entity type can hold the source cleanly.
+- Search the canonical document set before writing. Update the document that already owns the topic instead of creating a dated sibling or a second standard.
 - Prefer one coherent page over many tiny pages, but split when different entities need independent lifecycle.
 - Every new page needs frontmatter, stable slug, status, and cross-links.
 - Links are maintenance obligations: if a page links forward, lint must be able to verify reverse links or report a clear fix.
@@ -36,18 +36,29 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 
 ## Workflow
 
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
+
 1. Validate inputs:
    - Paths exist or URLs are fetchable by the current environment.
    - Source is not inside `<wiki_dir>/graph/`.
    - Source is not an auto-generated output being recursively ingested.
 
 2. Read the current wiki operating context:
-   - `CLAUDE.md`
+   - `AGENTS.md`
    - `<wiki_dir>/index.md`
    - `<wiki_dir>/graph/context_brief.md`
    - `.alpha-wiki/config.yaml`
 
 3. For each source:
+   - Run the pipeline only for a requested source import. A narrow repair of an
+     existing document needs its applicable checks, not another ingest batch.
+     A diagnosis-only request does not authorize import or dependency changes.
+   - On an import failure, verify the installed Alpha-Wiki executable and
+     module path before choosing a retry. Do not inject its dependencies into
+     an unrelated target project or claim an untested runtime path works.
    - Classify and write the first deterministic page with:
      - `uv run python -m tools.ingest_pipeline --wiki-dir <wiki_dir> <source>`
    - Use `--slot <dir>` when the target directory is obvious.
@@ -58,6 +69,8 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
    - Keep uncertain statements marked as `assumption`, `risk`, or `open`.
 
 4. Write or update pages:
+   - Prefer an in-place update to the existing canonical page.
+   - Create a new canonical page only when it has an independent owner and lifecycle, no existing page can absorb it, and the expansion is explicitly acknowledged.
    - Required frontmatter first.
    - Body sections according to entity type.
    - Provenance section with raw path, source date if known, and ingest date.
@@ -95,6 +108,7 @@ Turn raw evidence into durable, typed markdown memory. Ingest is the main growth
 ## Failure Modes
 
 - Duplicate page: merge or update the existing page instead of creating a sibling.
+- Document proliferation: keep research as evidence outside the canonical set; promote it only when it becomes an accepted specification, contract, decision, or standard.
 - Unknown schema: route to `/alpha-wiki:evolve`.
 - Oversized source: deterministic pipeline truncates the excerpt; ingest in sections if omitted material contains decisions, risks, or contracts.
 - Interrupted batch: rerun with `--resume`.

@@ -16,21 +16,48 @@ from typing import Any
 
 def _read_payload() -> dict[str, Any]:
     try:
-        return json.load(sys.stdin)
-    except (json.JSONDecodeError, OSError):
+        payload = json.load(sys.stdin)
+        return payload if isinstance(payload, dict) else {}
+    except (json.JSONDecodeError, OSError, UnicodeError):
         return {}
 
 
 def _project_root(payload: dict[str, Any]) -> Path:
-    cwd = Path(payload.get("cwd") or Path.cwd()).resolve()
-    result = subprocess.run(
-        ["git", "rev-parse", "--show-toplevel"],
-        cwd=cwd,
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    return Path(result.stdout.strip()).resolve() if result.returncode == 0 else cwd
+    candidates: list[Path] = []
+    payload_cwd = payload.get("cwd")
+    if isinstance(payload_cwd, str) and payload_cwd:
+        candidates.append(Path(payload_cwd).expanduser())
+    try:
+        candidates.append(Path.cwd())
+    except OSError:
+        pass
+    script_root = Path(__file__).resolve().parents[2]
+    candidates.append(script_root)
+
+    existing: list[Path] = []
+    for candidate in candidates:
+        try:
+            resolved = candidate.resolve()
+            if not resolved.is_dir() or resolved in existing:
+                continue
+            existing.append(resolved)
+            result = subprocess.run(
+                ["git", "rev-parse", "--show-toplevel"],
+                cwd=resolved,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+        except OSError:
+            continue
+        if result.returncode == 0 and result.stdout.strip():
+            return Path(result.stdout.strip()).resolve()
+
+    if script_root.is_dir():
+        return script_root
+    if existing:
+        return existing[0]
+    return Path(__file__).resolve().parent
 
 
 def _tool_text(payload: dict[str, Any]) -> str:
@@ -61,14 +88,20 @@ def _python_prefix(project: Path) -> list[str]:
 
 
 def _run(project: Path, args: list[str], timeout: float) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(
-        [*_python_prefix(project), *args],
-        cwd=project,
-        capture_output=True,
-        text=True,
-        check=False,
-        timeout=timeout,
-    )
+    command = [*_python_prefix(project), *args]
+    try:
+        return subprocess.run(
+            command,
+            cwd=project,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=timeout,
+        )
+    except subprocess.TimeoutExpired:
+        return subprocess.CompletedProcess(command, 124, "", f"timed out after {timeout:g}s")
+    except OSError as exc:
+        return subprocess.CompletedProcess(command, 127, "", f"runtime launch failed: {exc}")
 
 
 def _emit(message: str) -> None:
@@ -173,4 +206,10 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as exc:
+        _emit(
+            "Alpha-Wiki hook skipped after an unexpected "
+            f"{type(exc).__name__}. Run $alpha-wiki:doctor to diagnose the project hooks."
+        )

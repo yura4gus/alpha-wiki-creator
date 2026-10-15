@@ -1,7 +1,6 @@
 ---
 name: spawn-agent
 description: "Create a reusable wiki-aware agent profile or run bounded native Codex subagents now. Use for curator, reviewer, domain maintainer, importer, or documentation-gardener work that must read Alpha-Wiki context and respect its mutability rules. Do not use for AgentOps team-role bootstrap or arbitrary non-wiki agents."
-argument-hint: "[create-profile | run-now | run-parallel] <name-or-scopes>"
 ---
 
 # wiki:spawn-agent - create wiki-aware helper
@@ -30,7 +29,13 @@ for project-specific engineering agents.
   or clearly justified by independent scopes.
 
 When the mode is omitted, use `create-profile` for a recurring role and
-`run-now` for an explicit one-off task. State the selected mode before acting.
+`run-now` for an explicit bounded wiki task. A bare skill mention during an
+engineering task does not select a mode or authorize a parallel wiki audit.
+Continue the requested deliverable; use a helper only for a distinct useful
+wiki scope. State the selected mode briefly when launching or creating one.
+If the task freezes a reviewed document and SHA, preserve its bytes and identity.
+Create the requested candidate separately; Git history alone is not permission
+to overwrite the frozen reviewed file.
 
 ## Boundary From ADR-006
 
@@ -40,6 +45,11 @@ When the mode is omitted, use `create-profile` for a recurring role and
 - It must not encode CTO, Domain, Security, QA, Release, or other AgentOps team-role logic.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. Resolve:
    - Mode: `create-profile`, `run-now`, or `run-parallel`.
@@ -64,8 +74,9 @@ When the mode is omitted, use `create-profile` for a recurring role and
      fan-out. For a dirty worktree, run
      `uv run python -m tools.worktree_snapshot --root . --json-output`.
    - Give every subagent the bounded prompt contract below.
-   - Wait for all terminal results, allow at most one bounded retry, consolidate
-     evidence, and close completed agent threads.
+   - Continue independent work while agents run; wait only for evidence needed
+     by the next decision. Obtain all required terminal results, allow at most
+     one bounded retry, consolidate evidence, and close completed agent threads.
    - Do not create profiles or wiki outputs unless requested.
 
 4. For `create-profile`, detect the active platform and generate its native
@@ -80,7 +91,7 @@ When the mode is omitted, use `create-profile` for a recurring role and
 5. Include:
    - Role.
    - Required first read: `<wiki_dir>/graph/context_brief.md`.
-   - Required files: `CLAUDE.md`, `AGENTS.md` on Codex, and relevant index pages.
+   - Required files: `AGENTS.md`, `.alpha-wiki/config.yaml`, and relevant index pages.
    - Allowed tools.
    - Mutability matrix.
    - Required graph rebuild/lint after edits.
@@ -110,8 +121,8 @@ Every spawned wiki agent must know:
 
 - `raw/` is read-only source evidence.
 - `<wiki_dir>/graph/` is generated.
-- `CLAUDE.md` is schema/contract.
-- `AGENTS.md` is the Codex startup contract when present.
+- `.alpha-wiki/config.yaml` is the schema and cross-reference contract.
+- `AGENTS.md` is the required startup contract for every supported agent runtime.
 - Frontmatter is not optional.
 - Cross-links need reverses.
 - Contracts are orange boundary nodes.
@@ -122,8 +133,9 @@ Every spawned wiki agent must know:
 Codex run modes use the platform's native subagent tools. They do not emulate
 parallelism with files, shell processes, or repeated prompts in the main task.
 The controller owns preflight, one pinned snapshot, result validation,
-synthesis, and thread closure. Use two to four agents by default, prohibit
-nested delegation, and follow
+synthesis, and thread closure. `run-now` uses one helper; `run-parallel` uses
+only as many agents as material independent scopes justify. Prohibit nested
+delegation, and follow
 `references/codex-subagent-orchestration.md`.
 
 ## Done Criteria

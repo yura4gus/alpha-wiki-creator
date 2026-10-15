@@ -1,5 +1,7 @@
 # Log
 
+## [2026-10-15] update | release 0.6.1: concise skills, scoped release decisions, and resilient Codex hooks | files=AGENTS.md, README.md, CHANGELOG.md
+
 ## [2026-09-08] evolve | optional AgentOps v0.2 control layer | pages=[[optional-agentops-control-layer]], [[agentops-control-layer]]
 
 ## [2026-07-29] update | Codex native subagent orchestration | pages=[[codex-adapter-runtime]], [[codex-skill-adapter-contract]], [[spawn-agent-boundary]], [[claude-plugin-marketplace-contract]], [[alpha-wiki-runtime]]

@@ -1,7 +1,6 @@
 ---
 name: review
 description: "Run a wiki-level review: health snapshot, lint findings, graph risks, stale pages, open questions, and next actions. Use for weekly review, before release, before sharing the wiki, or when the user asks whether the wiki can be trusted. This is not AgentOps CTO/team review."
-argument-hint: "[--out <path>]"
 ---
 
 # wiki:review - structural wiki review
@@ -16,7 +15,8 @@ Provide a disciplined review of the wiki as a memory system. Review answers: is 
 
 ## Review Questions
 
-Always consider:
+Use the questions relevant to the requested scope; a full wiki review can cover
+all of them. Present only findings and evidence useful to that scope:
 
 1. Are there blocking structural errors?
 2. Are important pages stale?
@@ -33,14 +33,20 @@ Always consider:
 
 ## Scope And Security
 
-The deterministic backend now emits `## Scope`, `## Security Memory`, and a
-`## Release Readiness` verdict. Treat a review as **NOT READY** when active scope
-is unrecorded, critical security pages (auth-session, secrets-env,
-release-security-gates) are missing, or structural errors remain. Scaffold empty
-security slots with `uv run python -m tools.security --wiki-dir <wiki_dir> --scaffold`
-— placeholders only; never invent security facts without a source.
+The deterministic backend emits scope, security memory, and a release-readiness
+label. Report that label as the backend's wiki-quality result with its concrete
+findings. Missing scope or security pages are documentation gaps, not proof of
+a runtime vulnerability or a universal package-release prohibition. Inspect
+existing project evidence before proposing new pages or controls. Scaffold
+placeholders only when the user requests wiki repair; a review alone does not
+authorize it. Never invent security facts, secrets, signatures, or owner votes.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. Detect wiki dir and config.
 2. Run deterministic backend:
@@ -51,13 +57,8 @@ security slots with `uv run python -m tools.security --wiki-dir <wiki_dir> --sca
    - Dark grey docs with no inbound links.
    - Pages missing typed cluster ownership (`belongs_to`, `affects`, `implements`, `service`, `target_module`, `consumers`).
    - Pages without `date_updated`.
-4. Surface report with:
-   - Summary.
-   - Health snapshot.
-   - Trust checks: cluster gaps, isolated services, provenance, freshness.
-   - Structural findings.
-   - Graph/Obsidian observations.
-   - Suggested next actions.
+4. Return the requested format. Summarize concrete errors, warnings, relevant
+   gaps, and next actions; the full backend report need not be pasted again.
 5. If requested, save to `<wiki_dir>/outputs/review-YYYY-MM-DD.md`.
 6. If CI generated the report, ensure it is suitable as a GitHub issue body.
 
@@ -71,8 +72,8 @@ security slots with `uv run python -m tools.security --wiki-dir <wiki_dir> --sca
 
 ## Codex Native Delegation
 
-Run the deterministic review backend once in the controller. For a substantial
-wiki, fan out up to three read-only scopes:
+Run the deterministic review backend once in the controller. For substantial
+independent evidence needs, optionally delegate relevant read-only scopes:
 
 1. Structure and graph: links, clusters, isolated roles, and generated-view
    consistency.

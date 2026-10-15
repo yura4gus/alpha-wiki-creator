@@ -4,6 +4,32 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-15
+
+### Changed
+
+- Applied WF-004 and REL-003 to all 16 skills: result-first answers, targeted
+  evidence, checks tied to acceptance, and release blockers backed by existing
+  requirements and observed failures.
+- Corrected Claude command wrappers for read-only A-G audits, conditional
+  ingest/query execution, and explicitly scoped helper creation.
+- Kept actual signing/authentication requirements while removing invented
+  secrets, approval chains, universal strict mode, and default agent counts.
+- Preserved reviewed document bytes and SHA when preparing a requested candidate.
+
+### Fixed
+
+- Codex hooks recover from stale session directories and handle runtime launch
+  errors and timeouts without failing every tool call.
+
+### Validation And Scope
+
+- Added 12 sanitized workflow replay cases and plugin/fallback preservation tests.
+- Canonical schema migration, document-worker automation, and further AgentOps
+  state changes remain separate work and are not included in this patch release.
+- Live Claude model replay remains unverified after an expired OAuth session;
+  Claude command/skill instructions were tested through independent simulations.
+
 ## [0.6.0] - 2026-09-10
 
 Codex parity and optional AgentOps milestone. Alpha-Wiki keeps the same

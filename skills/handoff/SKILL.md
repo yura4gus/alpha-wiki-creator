@@ -1,7 +1,6 @@
 ---
 name: handoff
 description: "Create or validate a concise AgentOps transfer between agent roles. Use when responsibility or unfinished work moves to another role; do not create handoffs for every completed task and never paste raw logs."
-argument-hint: "<create | validate>"
 ---
 
 # wiki:handoff - summarized role transfer
@@ -29,6 +28,11 @@ means copying the prior chat, terminal history, or chain-of-thought.
 - One next action.
 
 ## Workflow
+
+Lead with the result and decisive evidence in the user's language. Preserve
+exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
+results while inputs and environment match, then stop. For release decisions,
+apply `references/concept.md` (Release Decisions).
 
 1. Verify source and destination roles exist under `<wiki_dir>/agentops/agents/`.
 2. Link the source session when available.

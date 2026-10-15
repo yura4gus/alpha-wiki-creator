@@ -19,6 +19,13 @@ This repository uses Alpha-Wiki as its durable markdown memory layer.
 
 ## Codex Workflows
 
+Return the result and decisive evidence concisely in the user's language.
+Read relevant sources, preserve exact diagnostics, and stop when acceptance
+passes. Reuse checks while their inputs match. Release blockers require an
+applicable requirement, observed failure, affected step, and corrective action.
+Use existing release rules; do not invent secrets, signing, or approval chains.
+
+
 Preferred plugin invocations use the `alpha-wiki` namespace:
 
 - `$alpha-wiki:init`
@@ -59,7 +66,7 @@ Codex project hooks are defined in `.codex/hooks.json`. Review and trust them wi
 Use Codex native subagents only for independent, material scopes:
 
 - Prefer read-only exploration, audit, source analysis, and summarization.
-- Default to two to four subagents; use more only when requested or clearly justified.
+- Choose the smallest useful number of independent subagents; one helper is valid.
 - The controller records one pinned repository/SHA snapshot before fan-out; for
   dirty worktrees use `python -m tools.worktree_snapshot --root . --json-output`.
 - Give every subagent a bounded scope, explicit non-scope, permissions, evidence format, and terminal status.

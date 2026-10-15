@@ -22,7 +22,8 @@ Before spawning agents:
 
 | Repository | Branch/ref | Exact SHA | Dirty state/digest | Review/pipeline |
 
-5. State network, secret, external-side-effect, and file-write restrictions.
+5. Carry existing network, secret, external-side-effect, and file-write
+   restrictions. Do not invent signing or approval requirements.
 6. Treat every starting assumption as a hypothesis to CONFIRM, REFUTE, or mark
    UNPROVEN.
 ```
@@ -67,7 +68,7 @@ Agent 1: repository and migration ownership
 Agent 2: historical test evidence
 Agent 3: runtime execution and recovery
 Agent 4: external acceptance boundaries
-Agent 5: signer/security boundaries
+Agent 5: documented security boundaries, only when relevant to the task
 ```
 
 ## Dependent Contract Wave
@@ -106,8 +107,9 @@ results as complete.
 7. Close completed agent threads.
 8. Do not implement.
 
-If proposing a writer wave, use no more than two writers, assign disjoint files,
-give every shared file one owner, and require explicit approval.
+If proposing a writer wave, assign disjoint files and give every shared file
+one owner. Execute it only within user-authorized write scope; a read-only audit
+alone does not authorize implementation.
 ```
 
 See `references/codex-subagent-orchestration.md` for the normative contract.
