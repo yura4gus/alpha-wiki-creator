@@ -41,13 +41,13 @@ apply `references/concept.md` (Release Decisions).
 4. Create the handoff:
 
 ```bash
-uv run python -m tools.handoff create --wiki-dir <wiki_dir> ...
+python3 .alpha-wiki/run.py -m tools.handoff create --wiki-dir <wiki_dir> ...
 ```
 
 5. Validate all handoffs with:
 
 ```bash
-uv run python -m tools.handoff validate --wiki-dir <wiki_dir>
+python3 .alpha-wiki/run.py -m tools.handoff validate --wiki-dir <wiki_dir>
 ```
 
 ## Codex Native Delegation

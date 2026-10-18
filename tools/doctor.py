@@ -6,6 +6,7 @@ import json
 import os
 import re
 import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
 from pathlib import Path
@@ -22,7 +23,6 @@ WARN = "WARN"
 FAIL = "FAIL"
 
 TOOL_MODULES = [
-    "scripts.bootstrap_cli",
     "tools.doctor",
     "tools.init_audit",
     "tools.wiki_engine",
@@ -127,6 +127,7 @@ def run_doctor(
     checks: list[DoctorCheck] = []
 
     checks.extend(_check_python_and_tools())
+    checks.append(_check_project_runtime(project))
     checks.extend(_check_project_config(project, platform))
     checks.extend(_check_wiki(project, wiki, refresh=refresh, platform=platform))
     checks.extend(_check_lint(project, wiki, platform))
@@ -142,6 +143,28 @@ def doctor_report(
     refresh: bool = False,
 ) -> str:
     return run_doctor(project_dir, wiki_dir=wiki_dir, platform=platform, refresh=refresh).to_markdown()
+
+
+def _check_project_runtime(project_dir: Path) -> DoctorCheck:
+    runtime = project_dir / ".alpha-wiki" / "runtime"
+    action = f'Run python3 "{project_dir / ".alpha-wiki" / "run.py"}" -m tools.doctor --project-dir .'
+    if not (runtime.parent / "run.py").is_file() or not (runtime / "pyproject.toml").is_file():
+        return DoctorCheck("isolated runtime", WARN, "isolated launcher/manifest missing", "Rerun init/upgrade before using project tools.")
+    python = runtime / ".venv" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+    if not python.exists():
+        return DoctorCheck("isolated runtime", WARN, "Alpha-Wiki dependencies have not been installed separately yet", action)
+    try:
+        result = subprocess.run(
+            [str(python), "-I", "-c", "import click, yaml, jinja2"],
+            capture_output=True, text=True, check=False, timeout=10,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        return DoctorCheck("isolated runtime", FAIL, f"runtime could not execute: {exc}", action)
+    if result.returncode:
+        detail = (result.stderr or result.stdout).strip().splitlines()
+        diagnostic = detail[-1] if detail else f"exit code {result.returncode}"
+        return DoctorCheck("isolated runtime", FAIL, f"runtime dependency imports failed: {diagnostic}", f'Run UV_PROJECT_ENVIRONMENT="{runtime / ".venv"}" uv sync --project "{runtime}" --no-dev')
+    return DoctorCheck("isolated runtime", PASS, f"dependencies isolated under {runtime / '.venv'}")
 
 
 def _resolve_wiki_dir(project_dir: Path, explicit: Path | None) -> Path:
@@ -451,6 +474,7 @@ def _check_codex(project_dir: Path) -> list[DoctorCheck]:
                         ".codex hooks cover session, subagent, tool, and session-end lifecycle",
                     )
                 )
+                checks.append(_check_codex_hook_runtime(project_dir, hook_script))
     else:
         checks.append(
             DoctorCheck(
@@ -472,6 +496,53 @@ def _check_codex(project_dir: Path) -> list[DoctorCheck]:
             )
         )
     return checks
+
+
+def _check_codex_hook_runtime(project_dir: Path, hook_script: Path) -> DoctorCheck:
+    python = shutil.which("python3") or sys.executable
+    stale_cwd = project_dir / ".alpha-wiki" / "missing-hook-cwd"
+    common = {
+        "cwd": str(stale_cwd),
+        "session_id": "alpha-wiki-doctor",
+        "turn_id": "alpha-wiki-doctor",
+        "permission_mode": "default",
+        "tool_name": "Bash",
+        "tool_use_id": "alpha-wiki-doctor",
+        "tool_input": {"command": "git status --short"},
+    }
+    for event, hook_event_name in (("pre-tool", "PreToolUse"), ("post-tool", "PostToolUse")):
+        payload = {**common, "hook_event_name": hook_event_name}
+        try:
+            result = subprocess.run(
+                [python, str(hook_script), event, "--wiki-dir", "wiki"],
+                cwd=project_dir,
+                input=json.dumps(payload),
+                capture_output=True,
+                text=True,
+                check=False,
+                timeout=10,
+            )
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            return DoctorCheck(
+                "codex hook smoke",
+                FAIL,
+                f"could not execute {hook_event_name}: {exc}",
+                "Rerun init/upgrade, then review the refreshed hooks with /hooks.",
+            )
+        if result.returncode != 0:
+            detail = (result.stderr or result.stdout).strip().splitlines()
+            message = detail[-1] if detail else f"exit code {result.returncode}"
+            return DoctorCheck(
+                "codex hook smoke",
+                FAIL,
+                f"{hook_event_name} failed: {message}",
+                "Rerun init/upgrade, then review the refreshed hooks with /hooks.",
+            )
+    return DoctorCheck(
+        "codex hook smoke",
+        PASS,
+        "PreToolUse and PostToolUse survive a stale session cwd",
+    )
 
 
 def _marketplace_has_alpha_wiki(path: Path) -> bool:

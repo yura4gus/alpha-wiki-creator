@@ -72,7 +72,7 @@ apply `references/concept.md` (Release Decisions).
      them.
    - The controller records any required repository/SHA snapshot once before
      fan-out. For a dirty worktree, run
-     `uv run python -m tools.worktree_snapshot --root . --json-output`.
+     `python3 .alpha-wiki/run.py -m tools.worktree_snapshot --root . --json-output`.
    - Give every subagent the bounded prompt contract below.
    - Continue independent work while agents run; wait only for evidence needed
      by the next decision. Obtain all required terminal results, allow at most

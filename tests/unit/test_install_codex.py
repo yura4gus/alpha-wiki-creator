@@ -89,6 +89,8 @@ def test_install_codex_builds_plugin_and_personal_marketplace(tmp_path: Path):
     assert manifest["version"].startswith(f"{version}+codex.local-")
     assert len(list((result.plugin_dir / "skills").glob("*/SKILL.md"))) == 16
     assert not (result.plugin_dir / "commands").exists()
+    assert (result.plugin_dir / "assets/runtime/run.py").is_file()
+    assert (result.plugin_dir / "assets/runtime/pyproject.toml").is_file()
     assert (result.plugin_dir / "docs" / "project-audit.md").exists()
     assert (result.plugin_dir / "docs" / "codex-adapter.md").exists()
     assert (

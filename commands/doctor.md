@@ -7,7 +7,7 @@ Invoke the `doctor` skill from the `alpha-wiki` plugin. Human meaning: run one d
 
 Flags from the user (if any): $ARGUMENTS
 
-Run: `uv run python -m tools.doctor --project-dir . $ARGUMENTS`
+If the existing wiki has no `.alpha-wiki/run.py`, run the runtime-only upgrade from the installed plugin environment first; do not install dependencies into the product. Then run: `python3 .alpha-wiki/run.py -m tools.doctor --project-dir . $ARGUMENTS`
 
 Report counts and decisive diagnostics concisely. A FAIL blocks only the required
 operation that depends on the failed capability. WARN stays non-blocking unless

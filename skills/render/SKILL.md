@@ -81,9 +81,9 @@ apply `references/concept.md` (Release Decisions).
    - Ensure color groups match current directory semantics.
    - Preserve user-local customizations when possible; report conflicts.
 4. For export modes:
-   - `mermaid`: run `uv run python -m tools.render_mermaid --wiki-dir <wiki_dir>`.
-   - `dot`: run `uv run python -m tools.render_dot --wiki-dir <wiki_dir>`.
-   - `html`: run `uv run python -m tools.render_html --wiki-dir <wiki_dir>`.
+   - `mermaid`: run `python3 .alpha-wiki/run.py -m tools.render_mermaid --wiki-dir <wiki_dir>`.
+   - `dot`: run `python3 .alpha-wiki/run.py -m tools.render_dot --wiki-dir <wiki_dir>`.
+   - `html`: run `python3 .alpha-wiki/run.py -m tools.render_html --wiki-dir <wiki_dir>`.
 5. Run `/alpha-wiki:lint --suggest` if graph data changed.
 
 ## Codex Native Delegation

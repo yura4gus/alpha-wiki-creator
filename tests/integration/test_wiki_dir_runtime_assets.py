@@ -44,13 +44,13 @@ def test_custom_wiki_dir_is_rendered_into_hooks_and_workflows(tmp_path: Path):
     assert "contents: read" in lint_workflow
 
     review_workflow = (tmp_path / ".github" / "workflows" / "wiki-review.yml").read_text()
-    assert "uv run python -m tools.review --wiki-dir .wiki --config .alpha-wiki/config.yaml --out review.md" in review_workflow
+    assert "python3 .alpha-wiki/run.py -m tools.review --wiki-dir .wiki --config .alpha-wiki/config.yaml --out review.md" in review_workflow
     assert "claude -p" not in review_workflow
     assert "issues: write" in review_workflow
     assert "/wiki-review" not in review_workflow
 
     rollup_workflow = (tmp_path / ".github" / "workflows" / "wiki-rollup.yml").read_text()
-    assert "uv run python -m tools.rollup --wiki-dir .wiki --period month --write" in rollup_workflow
+    assert "python3 .alpha-wiki/run.py -m tools.rollup --wiki-dir .wiki --period month --write" in rollup_workflow
     assert "claude -p" not in rollup_workflow
     assert "contents: write" in rollup_workflow
     assert "git add .wiki/rollups/ || true" in rollup_workflow
@@ -80,4 +80,4 @@ def test_post_tool_hook_rebuilds_full_graph(tmp_path: Path):
     assert "-m tools.wiki_engine rebuild-context-brief --wiki-dir \"$WIKI_DIR\"" in hook
     assert "-m tools.wiki_engine rebuild-open-questions --wiki-dir \"$WIKI_DIR\"" in hook
     assert "tool_input" in hook
-    assert ".venv/bin/python" in hook
+    assert 'python3 "$PROJECT_DIR/.alpha-wiki/run.py"' in hook

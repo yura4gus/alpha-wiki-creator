@@ -95,6 +95,8 @@ def bootstrap(
         _plan_path(report, target / config.wiki_dir)
         _plan_path(report, target / "raw")
         _plan_path(report, target / ".alpha-wiki" / "config.yaml")
+        _plan_path(report, target / ".alpha-wiki" / "run.py")
+        _plan_path(report, target / ".alpha-wiki" / "runtime" / "pyproject.toml")
         if _uses_session_hooks(config.hooks):
             _plan_path(report, target / ".codex" / "hooks.json")
             _plan_path(report, target / ".codex" / "hooks" / "alpha_wiki_hook.py")
@@ -106,6 +108,7 @@ def bootstrap(
     _initialize_wiki_files(target, ctx, upgrade=upgrade)
     _copy_assets(target, config)
     _copy_tools(target)
+    _copy_runtime(target)
     _initialize_graph(target, config, upgrade=upgrade)
     _write_merged_config(target, merged)
     _write_bootstrap_report(target, report)
@@ -174,7 +177,6 @@ def _render_top_level_files(
         ("agents-md.j2", "AGENTS.md"),
         ("claude-md.j2", "CLAUDE.md"),
         ("readme.j2", "README.md"),
-        ("pyproject.j2", "pyproject.toml"),
         ("gitignore.j2", ".gitignore"),
     ]
     for tmpl_name, out_name in files:
@@ -260,6 +262,58 @@ def _copy_tools(target: Path) -> None:
             if f.resolve() == dest.resolve():
                 continue
             shutil.copy(f, dest)
+
+
+def _copy_runtime(target: Path) -> None:
+    runtime = target / ".alpha-wiki" / "runtime"
+    runtime.mkdir(parents=True, exist_ok=True)
+    for source, destination in (
+        (ASSETS / "runtime" / "run.py", runtime.parent / "run.py"),
+        (ASSETS / "runtime" / "pyproject.toml", runtime / "pyproject.toml"),
+    ):
+        if source.resolve() != destination.resolve():
+            shutil.copy(source, destination)
+    (runtime / ".gitignore").write_text(".venv/\nuv.lock\n")
+
+
+def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: bool = False) -> BootstrapReport:
+    """Update runtime files only; preserve schema, contracts, routing, and wiki."""
+    from tools.doctor import _resolve_wiki_dir
+
+    target = target.resolve()
+    if not (target / ".alpha-wiki/config.yaml").is_file() or not (target / "tools").is_dir():
+        raise ValueError("Runtime-only upgrade requires an initialized Alpha-Wiki project; run init first.")
+    wiki = _resolve_wiki_dir(target, Path(wiki_dir) if wiki_dir is not None else None)
+    relative_wiki = str(wiki.relative_to(target))
+    config = InterviewConfig(
+        project_name=target.name, project_description="", wiki_dir=relative_wiki,
+        preset="software-project", overlay="none", custom_entity_types=None,
+        i18n_languages=["en"], hooks="none", ci=False, schema_evolve_mode="gated",
+    )
+    report = BootstrapReport(dry_run=dry_run)
+    copies = [(source, target / "tools" / source.name) for source in TOOLS.glob("*.py")]
+    copies.extend([
+        (ASSETS / "runtime/run.py", target / ".alpha-wiki/run.py"),
+        (ASSETS / "runtime/pyproject.toml", target / ".alpha-wiki/runtime/pyproject.toml"),
+    ])
+    codex_hook = target / ".codex/hooks/alpha_wiki_hook.py"
+    if codex_hook.is_file():
+        copies.append((ASSETS / "codex-hooks/alpha_wiki_hook.py", codex_hook))
+    hooks = [(ASSETS / "hooks" / name, target / ".claude/hooks" / name)
+             for name in sorted(SESSION_HOOKS | GIT_HOOKS)
+             if (target / ".claude/hooks" / name).is_file()]
+    report.planned = [str(destination) for _, destination in copies + hooks]
+    report.planned.append(str(target / ".alpha-wiki/runtime/.gitignore"))
+    if dry_run:
+        return report
+    _copy_tools(target)
+    _copy_runtime(target)
+    if codex_hook.is_file():
+        shutil.copy(ASSETS / "codex-hooks/alpha_wiki_hook.py", codex_hook)
+    for source, destination in hooks:
+        destination.write_text(_render_runtime_asset(source.read_text(), config))
+    report.written = list(report.planned)
+    return report
 
 
 def _hook_files_for_mode(mode: str) -> set[str]:

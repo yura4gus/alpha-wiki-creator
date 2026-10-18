@@ -36,6 +36,25 @@ def test_doctor_passes_bootstrapped_project_without_failures(tmp_path: Path):
     assert any(check.name == "github workflows" and check.status == "PASS" for check in result.checks)
 
 
+def test_doctor_reports_broken_isolated_runtime_with_exact_diagnostic(tmp_path: Path, monkeypatch):
+    import subprocess
+    from tools.doctor import _check_project_runtime
+
+    project = _bootstrap_project(tmp_path)
+    python = project / ".alpha-wiki/runtime/.venv/bin/python"
+    python.parent.mkdir(parents=True)
+    python.touch()
+    monkeypatch.setattr(subprocess, "run", lambda command, **kwargs:
+                        subprocess.CompletedProcess(command, 1, "", "ModuleNotFoundError: No module named 'click'\n"))
+
+    check = _check_project_runtime(project)
+
+    assert check.status == "FAIL"
+    assert "ModuleNotFoundError: No module named 'click'" in check.message
+    assert ".alpha-wiki/runtime/.venv" in check.action
+    assert "pip install" not in check.action
+
+
 def test_doctor_verifies_claude_and_codex_runtime_paths(tmp_path: Path, monkeypatch):
     project = _bootstrap_project(tmp_path / "project")
     codex_home = tmp_path / ".codex"

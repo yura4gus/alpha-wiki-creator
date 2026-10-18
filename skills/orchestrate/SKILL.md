@@ -43,7 +43,7 @@ synthesis.
 Initialize the optional control layer and eight role declarations:
 
 ```bash
-uv run python -m tools.orchestrate init \
+python3 .alpha-wiki/run.py -m tools.orchestrate init \
   --wiki-dir <wiki_dir> \
   --goal "<master goal>" \
   --objective "<current objective>"
@@ -89,7 +89,7 @@ moves to another role. Run status, lint, review, and release-check as needed.
 ### `status`
 
 ```bash
-uv run python -m tools.orchestrate status --wiki-dir <wiki_dir>
+python3 .alpha-wiki/run.py -m tools.orchestrate status --wiki-dir <wiki_dir>
 ```
 
 ## Role Registry

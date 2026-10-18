@@ -35,7 +35,9 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
     agents = (tmp_path / "AGENTS.md").read_text()
     assert "$alpha-wiki:init" in agents
     assert "wiki/graph/context_brief.md" in agents
-    assert "uv run python -m tools.doctor" in agents
+    assert "python3 .alpha-wiki/run.py -m tools.doctor" in agents
+    assert not (tmp_path / "pyproject.toml").exists()
+    assert (tmp_path / ".alpha-wiki/runtime/pyproject.toml").exists()
     assert "## Native Subagents" in agents
     assert "pinned repository/SHA snapshot" in agents
     assert "references/codex-subagent-orchestration.md" in agents

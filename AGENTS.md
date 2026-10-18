@@ -7,7 +7,7 @@ This repository uses Alpha-Wiki as its durable markdown memory layer.
 1. Read `wiki/graph/context_brief.md` before substantial project work.
 2. Use the wiki to recover project purpose, boundaries, contracts, decisions, risks, and gaps.
 3. Cite source wiki pages when an answer or implementation decision depends on project memory.
-4. Run `uv run python -m tools.status --wiki-dir wiki` when the current state is unclear.
+4. Run `python3 .alpha-wiki/run.py -m tools.status --wiki-dir wiki` when the current state is unclear.
 
 ## Mutability
 
@@ -52,12 +52,14 @@ plugin surface is unavailable. Do not install both surfaces together.
 Project-local deterministic tools remain the source of truth:
 
 ```bash
-uv run python -m tools.doctor --project-dir . --platform codex --refresh
-uv run python -m tools.status --wiki-dir wiki
-uv run python -m tools.lint --wiki-dir wiki --config .alpha-wiki/config.yaml --dry-run
+python3 .alpha-wiki/run.py -m tools.doctor --project-dir . --platform codex --refresh
+python3 .alpha-wiki/run.py -m tools.status --wiki-dir wiki
+python3 .alpha-wiki/run.py -m tools.lint --wiki-dir wiki --config .alpha-wiki/config.yaml --dry-run
 ```
 
-If `uv` is unavailable but the project environment is already installed, use `.venv/bin/python` instead.
+The launcher keeps dependencies in `.alpha-wiki/runtime/.venv`, outside the
+product environment. First setup or a changed runtime manifest needs `uv`;
+a prepared runtime can be reused without `uv`.
 
 Codex project hooks are defined in `.codex/hooks.json`. Review and trust them with `/hooks` after init or an Alpha-Wiki upgrade.
 
@@ -68,7 +70,7 @@ Use Codex native subagents only for independent, material scopes:
 - Prefer read-only exploration, audit, source analysis, and summarization.
 - Choose the smallest useful number of independent subagents; one helper is valid.
 - The controller records one pinned repository/SHA snapshot before fan-out; for
-  dirty worktrees use `python -m tools.worktree_snapshot --root . --json-output`.
+  dirty worktrees use `python3 .alpha-wiki/run.py -m tools.worktree_snapshot --root . --json-output`.
 - Give every subagent a bounded scope, explicit non-scope, permissions, evidence format, and terminal status.
 - Do not let subagents independently refresh shared remote refs or create nested subagents.
 - Parallel writers must have disjoint files; a shared file has one writer per wave.

@@ -11,7 +11,7 @@ Honor the user's requested format and scope. For a full audit, the optional
 backend prints a 17-section skeleton to stdout:
 
 ```bash
-uv run python -m tools.project_audit --project "<name>" --repo <path> --period <period>
+python3 .alpha-wiki/run.py -m tools.project_audit --project "<name>" --repo <path> --period <period>
 ```
 
 Use only applicable sections for a bounded request. Strict read-only creates no

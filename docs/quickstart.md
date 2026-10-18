@@ -65,6 +65,41 @@ Use $alpha-wiki:doctor with platform both and refresh enabled.
 
 Expected result: no failures. Warnings are acceptable before the first ingest if they say the wiki has no durable content yet.
 
+Both platforms run initialized project tools through the isolated launcher:
+
+```bash
+python3 .alpha-wiki/run.py -m tools.doctor --project-dir . --platform both --refresh
+python3 .alpha-wiki/run.py -m tools.status --wiki-dir wiki
+```
+
+First setup and runtime dependency changes need `uv`. Dependencies are installed
+in `.alpha-wiki/runtime/.venv`, not the product virtualenv. The launcher leaves
+root `pyproject.toml`, `uv.lock`, `requirements.txt`, and `package.json` untouched.
+Fresh projects do not receive a root Python dependency manifest for wiki tools.
+Once prepared, the runtime can be reused without `uv`.
+
+Before init, run bootstrap from the installed plugin directory, passing the
+absolute target path. On upgrade, use the init workflow's existing-project
+preservation mode; review/trust refreshed Codex hooks with `/hooks`.
+
+For an existing Codex-installed wiki, run this from the target project:
+
+```bash
+runtime_root="$HOME/plugins/alpha-wiki"
+UV_PROJECT_ENVIRONMENT="$runtime_root/.venv" uv run --project "$runtime_root" \
+  --directory "$runtime_root" --no-dev python -m scripts.bootstrap_cli \
+  --target "$PWD" --runtime-only
+```
+
+Claude uses the same command with its installed Alpha-Wiki plugin directory.
+`--runtime-only --dry-run` previews the managed runtime/tool/script writes. It
+preserves schema, agent contracts, wiki/graph files, CI configuration, and hook
+routing. Existing custom CI invocation lines must be updated deliberately;
+reinstall existing Alpha-Wiki Git hooks only if that project uses them.
+
+0.6.2 retains `CLAUDE.md` generation and existing schema behavior. It does not
+include the separate document-worker or AgentOps extensions.
+
 ## 4. Ingest First Durable Source
 
 Put a source file under `raw/docs/`, for example `raw/docs/project-brief.md`, then run:
@@ -149,7 +184,7 @@ Skip this section for ordinary wiki use. For a substantial project with
 independent tracks, explicitly initialize AgentOps:
 
 ```bash
-uv run python -m tools.orchestrate init \
+python3 .alpha-wiki/run.py -m tools.orchestrate init \
   --wiki-dir wiki \
   --goal "Prepare the project for release" \
   --objective "Close verified release gaps"

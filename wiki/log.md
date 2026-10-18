@@ -1,5 +1,7 @@
 # Log
 
+## [2026-10-18] update | runtime-only release 0.6.2: isolated dependencies and unified project tool launch; preserve 0.6.1 schema and AgentOps behavior | files=AGENTS.md, README.md, CHANGELOG.md
+
 ## [2026-10-15] update | release 0.6.1: concise skills, scoped release decisions, and resilient Codex hooks | files=AGENTS.md, README.md, CHANGELOG.md
 
 ## [2026-09-08] evolve | optional AgentOps v0.2 control layer | pages=[[optional-agentops-control-layer]], [[agentops-control-layer]]

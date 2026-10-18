@@ -12,6 +12,7 @@ try:
 except Exception:
     print("")
 ' 2>/dev/null || true)"
+TARGET_FILE="${TARGET_FILE#"$PROJECT_DIR"/}"
 if [ -z "$TARGET_FILE" ]; then exit 0; fi
 case "$TARGET_FILE" in
   "$WIKI_DIR"/graph/*) exit 0 ;;
@@ -19,10 +20,4 @@ case "$TARGET_FILE" in
   *) exit 0 ;;
 esac
 
-if command -v uv >/dev/null 2>&1; then
-  uv run python -m tools.lint --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --dry-run 2>&1 | head -5 || true
-elif [ -x ".venv/bin/python" ]; then
-  .venv/bin/python -m tools.lint --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --dry-run 2>&1 | head -5 || true
-else
-  python3 -m tools.lint --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --dry-run 2>&1 | head -5 || true
-fi
+python3 "$PROJECT_DIR/.alpha-wiki/run.py" -m tools.lint --wiki-dir "$WIKI_DIR" --config .alpha-wiki/config.yaml --dry-run 2>&1 | head -5 || true

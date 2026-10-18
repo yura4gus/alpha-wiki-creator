@@ -31,7 +31,7 @@ apply `references/concept.md` (Release Decisions).
    - All pages via `tools/wiki_engine.py`.
 
 3. Generate report:
-   - Prefer deterministic backend: `uv run python -m tools.status --wiki-dir <wiki_dir>`.
+   - Prefer deterministic backend: `python3 .alpha-wiki/run.py -m tools.status --wiki-dir <wiki_dir>`.
    - Status Summary: pages, edges, open questions, log entries, gap count.
    - Gap Check: cross-cutting holes that block wiki usefulness.
    - Recent activity.

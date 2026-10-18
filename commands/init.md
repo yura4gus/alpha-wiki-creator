@@ -7,7 +7,7 @@ Invoke the `init` skill from the `alpha-wiki` plugin. Human meaning: start durab
 
 Project description (optional, free text from the user): $ARGUMENTS
 
-First inspect the existing project with `uv run python -m tools.init_audit --root . --wiki-dir <wiki_dir>`. Use that report to show:
+Before init, inspect the target with `tools.init_audit --root <absolute-project> --wiki-dir <wiki_dir>` from the installed plugin environment. After init, run project tools through `python3 .alpha-wiki/run.py -m tools.<module>`. Do not add wiki dependencies to the product. Use the audit report to show:
 
 - candidate source documents already in the repo;
 - proposed `raw/` placement or manifest-only references;

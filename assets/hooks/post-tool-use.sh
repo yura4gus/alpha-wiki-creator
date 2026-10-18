@@ -12,6 +12,7 @@ try:
 except Exception:
     print("")
 ' 2>/dev/null || true)"
+TARGET_FILE="${TARGET_FILE#"$PROJECT_DIR"/}"
 case "$TARGET_FILE" in
   "$WIKI_DIR"/*) ;;
   *) exit 0 ;;
@@ -21,13 +22,7 @@ LOCK="$WIKI_DIR/graph/.rebuild.lock"
 NOW=$(date +%s)
 
 run_python() {
-  if command -v uv >/dev/null 2>&1; then
-    uv run python "$@"
-  elif [ -x ".venv/bin/python" ]; then
-    .venv/bin/python "$@"
-  else
-    python3 "$@"
-  fi
+  python3 "$PROJECT_DIR/.alpha-wiki/run.py" "$@"
 }
 
 if [ -f "$LOCK" ]; then
@@ -35,8 +30,10 @@ if [ -f "$LOCK" ]; then
   if [ $((NOW - LAST)) -lt 5 ]; then exit 0; fi
 fi
 echo "$NOW" > "$LOCK"
-(
-  run_python -m tools.wiki_engine rebuild-edges --wiki-dir "$WIKI_DIR" >/dev/null
-  run_python -m tools.wiki_engine rebuild-context-brief --wiki-dir "$WIKI_DIR" >/dev/null
+if ! (
+  run_python -m tools.wiki_engine rebuild-edges --wiki-dir "$WIKI_DIR" >/dev/null &&
+  run_python -m tools.wiki_engine rebuild-context-brief --wiki-dir "$WIKI_DIR" >/dev/null &&
   run_python -m tools.wiki_engine rebuild-open-questions --wiki-dir "$WIKI_DIR" >/dev/null
-) &
+); then
+  echo "Alpha-Wiki graph refresh failed. Run /alpha-wiki:doctor --refresh."
+fi

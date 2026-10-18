@@ -4,6 +4,35 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+## [0.6.2] - 2026-10-18
+
+### Runtime Fixes
+
+- Added `.alpha-wiki/run.py` and an isolated dependency environment under
+  `.alpha-wiki/runtime/.venv`. Product manifests, lockfiles, and virtualenvs
+  remain unchanged; fresh projects no longer get a root Python project solely
+  for wiki dependencies.
+- Unified generated Claude/Codex hooks, commands, skills, and CI on the launcher.
+  Prepared runtimes work without `uv`; manifest changes trigger an isolated
+  resync. Setup failures preserve diagnostics and return actionable repairs.
+- Added `scripts.bootstrap_cli --runtime-only` for existing wikis, preserving
+  schema, agent contracts, wiki files, CI settings, and hook routing.
+- Fixed target-project doctor incorrectly requiring the plugin-only bootstrap
+  module, and added isolated-runtime health and stale-directory hook checks.
+- Made Claude graph refresh handle absolute file paths and complete the rebuild
+  before returning from the hook.
+
+### Scope And Evidence
+
+- Added subprocess tests for fresh/brownfield lifecycle, both hook adapters,
+  packaged Codex bootstrap, custom wiki directories, spaces, upgrades, inherited
+  product environment settings, and a product environment without `click`.
+- Schema behavior, `CLAUDE.md` generation, and existing AgentOps contracts remain
+  compatible with 0.6.1. No document worker, schema migration, or new AgentOps
+  fields/statuses are included in this release.
+- Automated tools/hooks are verified separately from live Claude/Codex model
+  sessions. See the release smoke evidence for actual validation results.
+
 ## [0.6.1] - 2026-10-15
 
 ### Changed

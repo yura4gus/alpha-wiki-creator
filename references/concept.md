@@ -60,6 +60,13 @@ project instructions determine the scope.
 
 ## Release Decisions
 
+After init, deterministic tools run through
+`python3 .alpha-wiki/run.py -m tools.<module>`. The launcher resolves its project
+from its own file path, prepares dependencies in `.alpha-wiki/runtime/.venv`,
+and runs the copied project tools. Do not install Alpha-Wiki dependencies in the
+product environment or edit product manifests. Before init, use the installed
+plugin environment for bootstrap and initial source discovery.
+
 Use these rules only when judging or executing a release-related step:
 
 1. Identify the target: Alpha-Wiki package publication, target-project delivery,

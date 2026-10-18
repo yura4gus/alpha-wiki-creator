@@ -10,7 +10,7 @@ Arguments: $ARGUMENTS
 Default period is `month`. If `$ARGUMENTS` starts with `week` or `month`, use that as `<period>` and pass the remaining flags through. Run:
 
 ```bash
-uv run python -m tools.rollup --wiki-dir <wiki_dir> --period <period> <remaining-flags>
+python3 .alpha-wiki/run.py -m tools.rollup --wiki-dir <wiki_dir> --period <period> <remaining-flags>
 ```
 
 Use `--scope agentops` to summarize sessions, handoffs, and backlog updates;

@@ -60,7 +60,7 @@ apply `references/concept.md` (Release Decisions).
      module path before choosing a retry. Do not inject its dependencies into
      an unrelated target project or claim an untested runtime path works.
    - Classify and write the first deterministic page with:
-     - `uv run python -m tools.ingest_pipeline --wiki-dir <wiki_dir> <source>`
+     - `python3 .alpha-wiki/run.py -m tools.ingest_pipeline --wiki-dir <wiki_dir> <source>`
    - Use `--slot <dir>` when the target directory is obvious.
    - Use `--belongs-to <slug>` when attaching the page to a service/repo/module cluster.
    - Use `--resume` for interrupted batches; resume state lives in `<wiki_dir>/graph/ingest_state.json`.

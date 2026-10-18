@@ -40,12 +40,12 @@ apply `references/concept.md` (Release Decisions).
 4. Use the deterministic tool:
 
 ```bash
-uv run python -m tools.backlog add --wiki-dir <wiki_dir> ...
-uv run python -m tools.backlog update --wiki-dir <wiki_dir> <id> --status <status>
-uv run python -m tools.backlog list --wiki-dir <wiki_dir> [filters]
-uv run python -m tools.backlog blocked --wiki-dir <wiki_dir>
-uv run python -m tools.backlog dependencies --wiki-dir <wiki_dir> [id]
-uv run python -m tools.backlog validate --wiki-dir <wiki_dir>
+python3 .alpha-wiki/run.py -m tools.backlog add --wiki-dir <wiki_dir> ...
+python3 .alpha-wiki/run.py -m tools.backlog update --wiki-dir <wiki_dir> <id> --status <status>
+python3 .alpha-wiki/run.py -m tools.backlog list --wiki-dir <wiki_dir> [filters]
+python3 .alpha-wiki/run.py -m tools.backlog blocked --wiki-dir <wiki_dir>
+python3 .alpha-wiki/run.py -m tools.backlog dependencies --wiki-dir <wiki_dir> [id]
+python3 .alpha-wiki/run.py -m tools.backlog validate --wiki-dir <wiki_dir>
 ```
 
 5. `DONE` requires evidence. `BLOCKED` requires an applicable requirement,

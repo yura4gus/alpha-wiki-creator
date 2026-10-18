@@ -67,8 +67,10 @@ optional AgentOps control layer. Normal initialization does not create
 ## Python environment
 
 - Python 3.12+
-- Use `uv run` for any tool invocation: `uv run python -m tools.lint`
-- Activate `.venv` if invoking outside `uv`.
+- Run project tools through `python3 .alpha-wiki/run.py -m tools.<module>`.
+- The launcher prepares `.alpha-wiki/runtime/.venv` with `uv` on first use or
+  after a runtime manifest change. Do not install wiki dependencies into the
+  product environment or change product manifests.
 
 ## Hooks behavior
 

@@ -13,9 +13,9 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: '3.12'}
-      - run: pip install uv && uv sync
+      - run: pip install uv
       - name: run deterministic wiki review
-        run: uv run python -m tools.review --wiki-dir wiki --config .alpha-wiki/config.yaml --out review.md
+        run: python3 .alpha-wiki/run.py -m tools.review --wiki-dir wiki --config .alpha-wiki/config.yaml --out review.md
       - name: post issue
         uses: peter-evans/create-issue-from-file@v5
         with:

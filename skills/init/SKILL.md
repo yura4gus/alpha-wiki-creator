@@ -34,6 +34,12 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 ## Workflow
 
+For a runtime-only upgrade of an existing wiki, run
+`UV_PROJECT_ENVIRONMENT="<runtime_root>/.venv" uv run --project <runtime_root> --directory <runtime_root> --no-dev python -m scripts.bootstrap_cli --target <absolute-project> --runtime-only`.
+Use `--dry-run` to preview it. This does not regenerate schema, agent contracts,
+wiki documents, CI settings, or hook routing. Keep full bootstrap for initial
+setup or an explicitly requested broader reconfiguration.
+
 Lead with the result and decisive evidence in the user's language. Preserve
 exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
@@ -43,7 +49,7 @@ apply `references/concept.md` (Release Decisions).
    - Detect code markers: `src/`, `package.json`, `pyproject.toml`, `go.mod`, etc.
    - Detect existing `wiki/`, legacy/custom `.wiki/`, `raw/`, `CLAUDE.md`, `AGENTS.md`, `wiki/.obsidian/`, legacy root `.obsidian/`, `.claude/`, `.codex/`, `.github/workflows/`.
    - If existing project files are present, plan safe-existing mode.
-   - Run or emulate `uv run python -m tools.init_audit --root <project> --wiki-dir <wiki_dir>` to enumerate durable source documents and exclude generated/runtime folders.
+   - Before init, run `tools.init_audit --root <absolute-project> --wiki-dir <wiki_dir>` from the installed plugin environment to enumerate durable source documents and exclude generated/runtime folders.
    - Classify candidate docs into root contracts, architecture docs, ADRs, commands, skills, references, specs, API contracts, transcripts, and archives.
 
 2. Build the initial source corpus plan:
@@ -81,21 +87,22 @@ apply `references/concept.md` (Release Decisions).
 6. Render the runtime:
    - Call `scripts.bootstrap.bootstrap(target, config)`.
    - In a fresh Codex project, resolve the installed runtime path from the Codex Adapter section and use:
-     `uv run --project <runtime_root> python -m scripts.bootstrap_cli --target <project> --project-name "<name>" --description "<purpose>" --preset <preset> --overlay <overlay> --hooks <mode> --ci`.
+     `UV_PROJECT_ENVIRONMENT="<runtime_root>/.venv" uv run --project <runtime_root> --directory <runtime_root> --no-dev python -m scripts.bootstrap_cli --target <absolute-project> --project-name "<name>" --description "<purpose>" --preset <preset> --overlay <overlay> --hooks <mode> --ci`.
    - Use the same command with `--dry-run` before writing when protected project files already exist.
    - Confirm generated `CLAUDE.md` lists all active skills, including `review` and `rollup`.
    - Confirm generated `AGENTS.md` points Codex to the context brief, mutability rules, and namespaced plugin skills.
+   - Use `.alpha-wiki/run.py` after init; never add Alpha-Wiki requirements to product manifests or install them in the product virtualenv.
    - Confirm generated hooks honor `wiki_dir` and selected hook mode.
    - For Codex, confirm `.codex/hooks.json` and `.codex/hooks/alpha_wiki_hook.py` exist when session hooks are enabled; tell the user to review them with `/hooks`.
    - Write a raw source manifest when the user chose manifest or mixed mode.
 
 7. Verify immediately:
-   - `uv run python -m tools.init_audit --root <project> --wiki-dir <wiki_dir>`
-   - `uv run python -m tools.lint --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run`
-   - `uv run python -m tools.wiki_engine rebuild-edges --wiki-dir <wiki_dir>`
-   - `uv run python -m tools.wiki_engine rebuild-context-brief --wiki-dir <wiki_dir>`
-   - `uv run python -m tools.wiki_engine rebuild-open-questions --wiki-dir <wiki_dir>`
-   - `uv run python -m tools.doctor --project-dir <project> --wiki-dir <wiki_dir> --platform both --refresh`
+   - `python3 .alpha-wiki/run.py -m tools.init_audit --root <project> --wiki-dir <wiki_dir>`
+   - `python3 .alpha-wiki/run.py -m tools.lint --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml --dry-run`
+   - `python3 .alpha-wiki/run.py -m tools.wiki_engine rebuild-edges --wiki-dir <wiki_dir>`
+   - `python3 .alpha-wiki/run.py -m tools.wiki_engine rebuild-context-brief --wiki-dir <wiki_dir>`
+   - `python3 .alpha-wiki/run.py -m tools.wiki_engine rebuild-open-questions --wiki-dir <wiki_dir>`
+   - `python3 .alpha-wiki/run.py -m tools.doctor --project-dir <project> --wiki-dir <wiki_dir> --platform both --refresh`
    - `/alpha-wiki:status` or `tools/status.py` equivalent.
 
 8. Teach the user the first three moves:

@@ -9,7 +9,7 @@ $ARGUMENTS
 
 Run the deterministic pipeline for a requested source import:
 
-`uv run python -m tools.ingest_pipeline --wiki-dir <wiki_dir> $ARGUMENTS`
+`python3 .alpha-wiki/run.py -m tools.ingest_pipeline --wiki-dir <wiki_dir> $ARGUMENTS`
 
 Use `--resume` for interrupted batches. Classify sources, reuse existing pages,
 preserve provenance, and update applicable log/graph artifacts. An existing

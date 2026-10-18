@@ -32,7 +32,7 @@ apply `references/concept.md` (Release Decisions).
 5. Generate the report:
 
 ```bash
-uv run python -m tools.release_check \
+python3 .alpha-wiki/run.py -m tools.release_check \
   --wiki-dir <wiki_dir> \
   --version <target> \
   --config .alpha-wiki/config.yaml

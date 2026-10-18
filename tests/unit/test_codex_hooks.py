@@ -48,7 +48,7 @@ def test_codex_hook_keeps_source_detection_when_patch_also_mentions_graph():
     assert HOOK._touches_generated_graph(payload, "wiki")
 
 
-def test_codex_hook_prefers_installed_runtime_for_dependencies(tmp_path: Path, monkeypatch):
+def test_codex_hook_uses_isolated_project_launcher(tmp_path: Path, monkeypatch):
     runtime = tmp_path / "alpha-wiki"
     runtime.mkdir()
     (runtime / "pyproject.toml").write_text("[project]\nname='alpha-wiki'\nversion='0.5.0'\n")
@@ -57,7 +57,7 @@ def test_codex_hook_prefers_installed_runtime_for_dependencies(tmp_path: Path, m
 
     prefix = HOOK._python_prefix(tmp_path)
 
-    assert prefix == ["uv", "run", "--project", str(runtime), "python"]
+    assert prefix == [sys.executable, str(tmp_path / ".alpha-wiki/run.py")]
 
 
 def test_subagent_context_is_bounded_and_evidence_first(tmp_path: Path):

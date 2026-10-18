@@ -12,7 +12,5 @@ jobs:
           python-version: '3.12'
       - name: install uv
         run: pip install uv
-      - name: sync deps
-        run: uv sync --dev
       - name: run lint
-        run: uv run python -m tools.lint --wiki-dir wiki --config .alpha-wiki/config.yaml --dry-run
+        run: python3 .alpha-wiki/run.py -m tools.lint --wiki-dir wiki --config .alpha-wiki/config.yaml --dry-run

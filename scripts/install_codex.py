@@ -91,7 +91,7 @@ def transform_skill_for_codex(
         f"- Invoke this workflow as `{invocation}`.\n"
         "- Prefer the installed `alpha-wiki` plugin namespace; standalone prefixed skills are an IDE fallback.\n"
         "- Read project `AGENTS.md` and `wiki/graph/context_brief.md` before substantial work.\n"
-        "- Use project-local deterministic `python -m tools.*` commands when the wiki is initialized.\n"
+        "- After init, run project-local tools through `python3 .alpha-wiki/run.py -m tools.<module>`; dependencies live outside the product environment.\n"
         f"{runtime_line}"
     )
     return f"---{frontmatter}---{adapter_note}{_map_invocations(body.lstrip(), style)}"

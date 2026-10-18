@@ -35,7 +35,7 @@ def test_bootstrap_preserves_existing_project_files(tmp_path: Path):
 
     for name, content in originals.items():
         assert (tmp_path / name).read_text() == content
-    assert len(report.skipped) == len(originals)
+    assert len(report.skipped) == len(originals) - 1  # no wiki write to the product pyproject
     assert (tmp_path / ".alpha-wiki" / "bootstrap-report.md").exists()
     assert (tmp_path / "wiki" / "index.md").exists()
 

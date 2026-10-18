@@ -53,7 +53,7 @@ apply `references/concept.md` (Release Decisions).
 1. Detect wiki dir from `AGENTS.md` or default to `wiki/`.
 2. Read `context_brief.md` and `index.md`.
 3. Search candidate pages by slug, title, directory, frontmatter, and body:
-   - `uv run python -m tools.wiki_search --wiki-dir <wiki_dir> --query "<question>"`
+   - `python3 .alpha-wiki/run.py -m tools.wiki_search --wiki-dir <wiki_dir> --query "<question>"`
 4. Read candidate pages deeply enough to avoid shallow summary.
 5. Check for contradictions:
    - Conflicting statuses.

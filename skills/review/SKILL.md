@@ -50,7 +50,7 @@ apply `references/concept.md` (Release Decisions).
 
 1. Detect wiki dir and config.
 2. Run deterministic backend:
-   - `uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml`
+   - `python3 .alpha-wiki/run.py -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml`
 3. Inspect graph semantics:
    - Red nodes isolated.
    - Orange contracts missing consumers/owners.

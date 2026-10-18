@@ -51,7 +51,7 @@ apply `references/concept.md` (Release Decisions).
    default 17 sections. The backend can print the skeleton to stdout:
 
    ```bash
-   uv run python -m tools.project_audit --project "<name>" \
+   python3 .alpha-wiki/run.py -m tools.project_audit --project "<name>" \
      --repo <path1> --repo <path2> --period <period> \
      --focus <area> --note "<pasted-context marker>"
    ```

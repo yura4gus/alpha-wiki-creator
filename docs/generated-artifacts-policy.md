@@ -1,5 +1,10 @@
 # Generated Artifacts Policy
 
+Track `.alpha-wiki/run.py`, `.alpha-wiki/runtime/pyproject.toml`, and the runtime
+`.gitignore`. Its `.venv/` and local `uv.lock` are generated install outputs,
+ignored by the runtime's own `.gitignore`. Product dependency files are not
+Alpha-Wiki build outputs and must remain untouched.
+
 Alpha-Wiki has generated files. They are useful, but they are not the source of truth.
 
 ## Source Of Truth

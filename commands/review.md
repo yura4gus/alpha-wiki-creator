@@ -10,7 +10,7 @@ Arguments: $ARGUMENTS
 Run:
 
 ```bash
-uv run python -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml $ARGUMENTS
+python3 .alpha-wiki/run.py -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml $ARGUMENTS
 ```
 
 Summarize the generated report in the requested format with decisive evidence.

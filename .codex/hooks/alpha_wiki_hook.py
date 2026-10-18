@@ -76,15 +76,7 @@ def _touches_generated_graph(payload: dict[str, Any], wiki_dir: str) -> bool:
 
 
 def _python_prefix(project: Path) -> list[str]:
-    runtime = Path(os.environ.get("ALPHA_WIKI_RUNTIME", Path.home() / "plugins" / "alpha-wiki")).expanduser()
-    if shutil.which("uv") and (runtime / "pyproject.toml").exists():
-        return ["uv", "run", "--project", str(runtime), "python"]
-    if shutil.which("uv"):
-        return ["uv", "run", "python"]
-    venv_python = project / ".venv" / "bin" / "python"
-    if venv_python.exists():
-        return [str(venv_python)]
-    return [sys.executable]
+    return [sys.executable, str(project / ".alpha-wiki" / "run.py")]
 
 
 def _run(project: Path, args: list[str], timeout: float) -> subprocess.CompletedProcess[str]:

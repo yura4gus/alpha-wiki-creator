@@ -28,7 +28,7 @@ apply `references/concept.md` (Release Decisions).
 1. Detect wiki dir.
 2. Determine period.
 3. Run backend:
-   - `uv run python -m tools.rollup --wiki-dir <wiki_dir> --period <week|month>`
+   - `python3 .alpha-wiki/run.py -m tools.rollup --wiki-dir <wiki_dir> --period <week|month>`
    - Add `--scope agentops` for execution memory or `--scope all` for both layers.
    - Add `--write` when persistence is requested.
 4. Read generated report and improve presentation if needed without inventing facts.
