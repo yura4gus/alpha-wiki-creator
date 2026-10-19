@@ -25,3 +25,5 @@
 ## [2026-10-19] document-update | Implement bounded UPG-001 recovery for absent configured Claude/Codex hooks; preserve existing scripts and routing, report actual pending writes, and verify dry-run and repeat safety without publishing or changing the dirty primary checkout | documents=`docs/quickstart.md`, `docs/roadmap-execution.md`, `CHANGELOG.md` | change=16da08dead400ba40766
 
 ## [2026-10-19] document-update | Prepare authorized 0.7.1 UPG-001 release with aligned metadata, selective hook recovery scope and explicit public/install acceptance; preserve unfinished primary work | documents=`README.md`, `CHANGELOG.md`, `docs/quickstart.md`, `docs/roadmap-execution.md` | change=3fb7bea48df0c3594016
+
+## [2026-10-19] document-update | Close bounded UPG-001 with verified 0.7.1 public source/tag/artifact, 309 clean-clone tests and active Codex installation; report hosted runs as queued and preserve unfinished primary work | documents=`docs/roadmap-execution.md` | change=9cdd0059e26a53ec3013

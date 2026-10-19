@@ -331,7 +331,7 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | DOC-003 | P2 | CANDIDATE | Catch up registered maintenance scopes without idle model calls. | Pilot D: reuse hook/source-drift primitives; inspect missed events, multiple worktrees, interruption/recovery, and idle NO_CHANGE. Current worker is request-driven, not a session-discovery daemon. Add only minimal local recoverable state after an observed need; no server or Temporal. | DOC-002, scoped pilot authorization |
 | EVI-004 | P1 | CANDIDATE | Add alias/glossary support only for observed rename/synonym failures. | At least two pilot failures come from unresolved aliases; deterministic lookup solves them. | PILOT-002 |
 | EVI-005 | P2 | CANDIDATE | Add small/medium/large context profiles. | Measured context cost or truncation harms onboarding; profiles preserve answer quality. | PILOT-002 |
-| UPG-001 | P1 | IN_REVIEW | Preserve user-owned project state through upgrades. | The bounded missing-configured-hook repair is assembled as 0.7.1 on codex/upg-001-hook-recovery from 919be6c; existing hooks are not overwritten and unchanged runtime files are not rewritten. | Local recovery/dry-run/repeat and four fresh/brownfield Claude/Codex subprocess checks pass. Public 0.7.1 package/install verification is pending under the authorized publishing pass; broader modified-managed-tool detection remains outside scope. See section 21. | RUN-001, REL-002 |
+| UPG-001 | P1 | DONE | Recover missing configured hooks without overwriting user hooks. | Published 0.7.1 at 45b590c from the isolated codex/upg-001-hook-recovery branch; existing hooks are not overwritten and unchanged runtime files are not rewritten. | Clean public clone: 309 tests, smoke PASS, audit READY; downloaded source checksum verified. Installed/enabled Codex 0.7.1+codex.local-20261019163734 has 16 skills and matching runtime assets. Broader modified-managed-tool detection remains outside this bounded acceptance. See section 21. | RUN-001, REL-002 |
 | GPH-001 | P1 | READY | Close remaining graph quality gaps from real projects. | Pilots show correct mixed-color clusters, understandable labels, bounded isolated nodes, and deterministic rebuilds. | PILOT-001 |
 | V1-001 | P1 | READY | Decide v1.0 from evidence, not feature count. | Two pilots pass core journey; release/install receipts are repeatable; docs are honest; no open P0. | All Wave 3 P1 required items |
 
@@ -1043,10 +1043,32 @@ existing hooks or routing, zero-write dry-run, and repeat upgrades that preserve
 unchanged contents/modes/mtimes. Version metadata and public instructions align
 at 0.7.1. No schema, AgentOps, server, provider or billing changes are included.
 
-Previous local verification: 309 tests passed; four fresh/brownfield Claude/Codex
-subprocess scenarios executed recovered hooks; smoke PASS, audit READY, lint and
-document governance PASS. The publishing pass reruns applicable checks and must
-verify a clean public source and installed Codex package before claiming delivery.
-Hosted CI/Pages is separate; existing account/provider failures do not become
-claims of successful hosted or live Claude execution. Publication/install receipts
-will be recorded only after the corresponding actions succeed.
+Publication and installation verified on 2026-10-19:
+
+- Source commit: 45b590c64dbb7eb6ba807d22601e30fa03e15177, pushed normally to
+  GitHub main. Annotated v0.7.1 resolves to that exact source. The prior v0.7.0
+  tag is unchanged. Public release:
+  https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.7.1.
+- Local full suite: 309 passed in 69.97s. A clean public clone at the same SHA
+  installed with uv sync --dev --locked and passed 309 tests in 63.74s. Four
+  fresh/brownfield Claude/Codex subprocess scenarios executed recovered hooks;
+  dry-run, repeat safety, custom-file preservation and failure cases passed.
+  Public smoke PASS, audit READY (8 pass, 0 fail), governance PASS; local lint
+  and diff check passed. No live Claude model-cycle claim is made.
+- Uploaded/downloaded source asset: alpha_wiki-0.7.1.tar.gz, SHA-256
+  4e4c9579109198315504f81d7414c0d7a327e2d466c91a300c2be052c5234fad.
+  Bootstrap assets are present; private maintenance/runtime payloads are absent.
+- Codex installed and enabled: 0.7.1+codex.local-20261019163734. Sixteen adapted
+  skills, no standalone duplicates and no commands/ surface. The manager and
+  active cache match 110 public source runtime/assets/reference/quickstart files.
+  The installed isolated runtime executes the updated bootstrap CLI. Existing
+  desktop sessions must restart to reload; no existing product is auto-upgraded.
+- The primary checkout remains unchanged. Claude global installation, provider
+  access, billing and unrelated unfinished work were not modified by this pass.
+- At verification, main plugin-ci 39286767077, docs-pages 39286766854 and tag
+  plugin-ci 39286975758 were queued, not passed. Earlier billing failures remain
+  historical evidence, not an invented result for these runs. Hosted CI/Pages
+  completion is unverified and separate from the tested package publication.
+
+This post-publication receipt changes documentation only; it does not move the
+release tag or change the accepted code, metadata, packaged skills or artifact.

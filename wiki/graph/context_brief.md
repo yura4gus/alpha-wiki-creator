@@ -2,11 +2,11 @@
 
 
 ## Recent log
+## [2026-10-19] document-update | Close bounded UPG-001 with verified 0.7.1 public source/tag/artifact, 309 clean-clone tests and active Codex installation; report hosted runs as queued and preserve unfinished primary work | documents=`docs/roadmap-execution.md` | change=9cdd0059e26a53ec3013
 ## [2026-10-19] document-update | Prepare authorized 0.7.1 UPG-001 release with aligned metadata, selective hook recovery scope and explicit public/install acceptance; preserve unfinished primary work | documents=`README.md`, `CHANGELOG.md`, `docs/quickstart.md`, `docs/roadmap-execution.md` | change=3fb7bea48df0c3594016
 ## [2026-10-19] document-update | Implement bounded UPG-001 recovery for absent configured Claude/Codex hooks; preserve existing scripts and routing, report actual pending writes, and verify dry-run and repeat safety without publishing or changing the dirty primary checkout | documents=`docs/quickstart.md`, `docs/roadmap-execution.md`, `CHANGELOG.md` | change=16da08dead400ba40766
 ## [2026-10-19] document-update | Record actual public 0.7 source/tag/artifact, clean-clone verification, Claude/Codex installation and fresh skill discovery; preserve disabled Claude preference and attribute hosted billing/provider failures and configured-hook recovery separately | documents=`docs/roadmap-execution.md` | change=e0f592abe4d9c2aa3e92
 ## [2026-10-19] document-update | Assemble compatible Alpha-Wiki 0.7 from published 0.6.2: source-bound document lifecycle, task/evidence instructions, read-only reports and release metadata; retain schema/AgentOps contracts and preserve unfinished primary work | documents=`AGENTS.md`, `README.md`, `CHANGELOG.md`, `docs/README.md`, `docs/quickstart.md`, `docs/roadmap-execution.md`, `wiki/specs/alpha-wiki-product-spec.md`, `wiki/specs/alpha-wiki-query-operation.md`, `wiki/specs/alpha-wiki-status-operation.md`, `wiki/specs/alpha-wiki-review-operation.md` | change=521c920c97b5df24509b
-## [2026-10-19] document-update | Reconcile final 0.7 ingest behavior: portable source bindings, explicit legacy-source gaps and transaction-specific reimport registration | documents=`wiki/specs/alpha-wiki-ingest-operation.md` | sources=`docs/quickstart.md`, `skills/ingest/SKILL.md`, `tools/document_maintenance.py`, `tools/document_worker.py`, `tools/ingest_pipeline.py` | change=7c3ad75390babbd99c2b
 
 
 ## Active pages (28)
