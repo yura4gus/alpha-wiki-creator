@@ -6,12 +6,12 @@
     "url": "https://github.com/yura4gus"
   },
   "metadata": {
-    "version": "0.7.0"
+    "version": "0.7.1"
   },
   "plugins": [
     {
       "name": "alpha-wiki",
-      "version": "0.7.0",
+      "version": "0.7.1",
       "description": "Repo-native markdown memory with 16 skills: core init/doctor/ingest/query/lint/evolve/status/render/review/rollup/audit-project/spawn-agent plus optional AgentOps orchestration, backlog, handoffs, and project release checks.",
       "source": "./",
       "author": {

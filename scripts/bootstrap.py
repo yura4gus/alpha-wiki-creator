@@ -1,5 +1,7 @@
 """Render pipeline: InterviewConfig → target file tree."""
 from __future__ import annotations
+import json
+import shlex
 import shutil
 from dataclasses import dataclass, field
 from datetime import date as _date
@@ -298,7 +300,7 @@ def _copy_runtime(target: Path) -> None:
 
 
 def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: bool = False) -> BootstrapReport:
-    """Update runtime files only; preserve schema, contracts, routing, and wiki."""
+    """Update managed runtime; recover missing routed hooks without replacing hooks."""
     from tools.doctor import _resolve_wiki_dir
 
     target = target.resolve()
@@ -317,24 +319,92 @@ def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: b
         (ASSETS / "runtime/run.py", target / ".alpha-wiki/run.py"),
         (ASSETS / "runtime/pyproject.toml", target / ".alpha-wiki/runtime/pyproject.toml"),
     ])
-    codex_hook = target / ".codex/hooks/alpha_wiki_hook.py"
-    if codex_hook.is_file():
-        copies.append((ASSETS / "codex-hooks/alpha_wiki_hook.py", codex_hook))
-    hooks = [(ASSETS / "hooks" / name, target / ".claude/hooks" / name)
-             for name in sorted(SESSION_HOOKS | GIT_HOOKS)
-             if (target / ".claude/hooks" / name).is_file()]
-    report.planned = [str(destination) for _, destination in copies + hooks]
-    report.planned.append(str(target / ".alpha-wiki/runtime/.gitignore"))
+    hooks = _missing_configured_hooks(target, report)
+    writes = [(destination, source.read_bytes()) for source, destination in copies]
+    writes.append((target / ".alpha-wiki/runtime/.gitignore", b".venv/\nuv.lock\n"))
+    writes = [(path, content) for path, content in writes
+              if not path.is_file() or path.read_bytes() != content]
+    writes.extend((destination, _render_runtime_asset(source.read_text(), config).encode())
+                  for source, destination in hooks)
+    report.planned = [str(path) for path, _ in writes]
     if dry_run:
         return report
-    _copy_tools(target)
-    _copy_runtime(target)
-    if codex_hook.is_file():
-        shutil.copy(ASSETS / "codex-hooks/alpha_wiki_hook.py", codex_hook)
-    for source, destination in hooks:
-        destination.write_text(_render_runtime_asset(source.read_text(), config))
-    report.written = list(report.planned)
+    hook_paths = {destination for _, destination in hooks}
+    for destination, content in writes:
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        if destination in hook_paths:
+            # Exclusive creation preserves a user file created after planning too.
+            try:
+                with destination.open("xb") as stream:
+                    stream.write(content)
+            except FileExistsError:
+                report.skipped.append(BootstrapConflict(str(destination), "hook path appeared; preserved"))
+                continue
+            destination.chmod(0o755)
+        else:
+            destination.write_bytes(content)
+        report.written.append(str(destination))
     return report
+
+
+def _missing_configured_hooks(target: Path, report: BootstrapReport) -> list[tuple[Path, Path]]:
+    """Read project routing as data, never execute or expand a configured command."""
+    configured: set[Path] = set()
+    for relative in (".claude/settings.json", ".claude/settings.local.json", ".codex/hooks.json"):
+        routing = target / relative
+        if not routing.is_file():
+            continue
+        try:
+            data = json.loads(routing.read_text())
+            groups = data.get("hooks", {})
+            if not isinstance(groups, dict):
+                raise ValueError("hooks must be an object")
+            for entries in groups.values():
+                for entry in entries:
+                    for hook in entry.get("hooks", []):
+                        if hook.get("type") == "command" and isinstance(hook.get("command"), str):
+                            path = _configured_hook_path(target, relative, hook["command"])
+                            if path is not None:
+                                configured.add(path)
+        except (ValueError, AttributeError, TypeError) as exc:
+            raise ValueError(f"Invalid hook routing {routing}: {exc}") from exc
+
+    missing = []
+    for path in sorted(configured):
+        parents = path.relative_to(target).parents
+        if any((target / parent).is_symlink() or
+               ((target / parent).exists() and not (target / parent).is_dir()) for parent in parents):
+            report.skipped.append(BootstrapConflict(str(path), "hook parent is not a real directory; preserved"))
+        elif path.is_symlink() or (path.exists() and not path.is_file()):
+            report.skipped.append(BootstrapConflict(str(path), "occupied hook path; preserved"))
+        elif not path.exists():
+            source = (ASSETS / "hooks" / path.name if path.suffix == ".sh"
+                      else ASSETS / "codex-hooks/alpha_wiki_hook.py")
+            missing.append((source, path))
+    return missing
+
+
+def _configured_hook_path(target: Path, routing: str, command: str) -> Path | None:
+    try:
+        parts = shlex.split(command, comments=True)
+    except ValueError:
+        return None
+    if not parts:
+        return None
+    claude = routing.startswith(".claude/")
+    launchers = {"bash", "sh"} if claude else {"python", "python3"}
+    script = parts[1] if Path(parts[0]).name in launchers and len(parts) > 1 else parts[0]
+    relatives = ([f".claude/hooks/{name}" for name in sorted(SESSION_HOOKS | GIT_HOOKS)]
+                 if claude else [".codex/hooks/alpha_wiki_hook.py"])
+    for relative in relatives:
+        aliases = {relative, f"./{relative}", str(target / relative)}
+        if claude:
+            aliases.update({f"$CLAUDE_PROJECT_DIR/{relative}", f"${{CLAUDE_PROJECT_DIR}}/{relative}"})
+        else:
+            aliases.add(f"$(git rev-parse --show-toplevel)/{relative}")
+        if script in aliases:
+            return target / relative
+    return None
 
 
 def _hook_files_for_mode(mode: str) -> set[str]:

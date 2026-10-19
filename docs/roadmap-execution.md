@@ -331,7 +331,7 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | DOC-003 | P2 | CANDIDATE | Catch up registered maintenance scopes without idle model calls. | Pilot D: reuse hook/source-drift primitives; inspect missed events, multiple worktrees, interruption/recovery, and idle NO_CHANGE. Current worker is request-driven, not a session-discovery daemon. Add only minimal local recoverable state after an observed need; no server or Temporal. | DOC-002, scoped pilot authorization |
 | EVI-004 | P1 | CANDIDATE | Add alias/glossary support only for observed rename/synonym failures. | At least two pilot failures come from unresolved aliases; deterministic lookup solves them. | PILOT-002 |
 | EVI-005 | P2 | CANDIDATE | Add small/medium/large context profiles. | Measured context cost or truncation harms onboarding; profiles preserve answer quality. | PILOT-002 |
-| UPG-001 | P1 | IN_REVIEW | Preserve user-owned project state through upgrades. | Retained and tested runtime-only dry-run/upgrade, user docs/contracts/config/routing and product dependency preservation. Added explicit managed-tool replacement guidance and packaged maintenance quickstart. | Local L2 fixtures pass; real public install result remains under REL-002. Broader modified-managed-tool detection is not claimed. | RUN-001, REL-002 |
+| UPG-001 | P1 | IN_REVIEW | Preserve user-owned project state through upgrades. | The bounded missing-configured-hook repair is assembled as 0.7.1 on codex/upg-001-hook-recovery from 919be6c; existing hooks are not overwritten and unchanged runtime files are not rewritten. | Local recovery/dry-run/repeat and four fresh/brownfield Claude/Codex subprocess checks pass. Public 0.7.1 package/install verification is pending under the authorized publishing pass; broader modified-managed-tool detection remains outside scope. See section 21. | RUN-001, REL-002 |
 | GPH-001 | P1 | READY | Close remaining graph quality gaps from real projects. | Pilots show correct mixed-color clusters, understandable labels, bounded isolated nodes, and deterministic rebuilds. | PILOT-001 |
 | V1-001 | P1 | READY | Decide v1.0 from evidence, not feature count. | Two pilots pass core journey; release/install receipts are repeatable; docs are honest; no open P0. | All Wave 3 P1 required items |
 
@@ -1007,14 +1007,20 @@ schema/AgentOps work remains preserved, not accepted by implication.
 
 DOC-003 remains P2 CANDIDATE. Existing plan/apply already supports an explicit
 bounded one-shot catch-up; no new scheduler/server is justified by this release.
-PILOT-001/PILOT-002 remain the wider real-project adoption target. This run
-already measured one bounded UPG-001 follow-on: runtime-only upgrade does not
-restore absent scripts even when existing Alpha-Wiki routing explicitly names
-them. Next candidate: repair only missing, already-configured Alpha-Wiki hook
-paths; preserve existing scripts, schema, settings/routing and product
-dependencies. Required acceptance: stale/missing hook fixture, unrelated hook
-untouched, dry-run zero writes and repeat upgrade unchanged. The actual primary
-case was repaired locally, not silently presented as a new packaged capability.
+PILOT-001/PILOT-002 remain the wider real-project adoption target. The published
+0.7 upgrade does not restore absent scripts even when existing Alpha-Wiki routing
+explicitly names them. Its bounded UPG-001 follow-on is now implemented locally
+on codex/upg-001-hook-recovery, based on 919be6c, without changing the dirty primary
+checkout. Recovery creates only missing bundled hook paths referenced by the
+existing Claude/Codex project configuration. Existing custom or stale scripts,
+settings, schema, wiki and product dependencies remain unchanged. Symlinks and
+occupied paths are preserved and reported; malformed routing fails before writes.
+Unit checks cover selective restoration, unconfigured scripts, custom files,
+invalid routing and occupied/symlink paths. Four fresh/brownfield Claude/Codex
+subprocess cases verify zero-write dry-run, repeat-run content/mode/mtime identity
+and actual recovered hook execution, including custom wiki paths and spaces.
+This is local runtime evidence, not a live Claude model-cycle result. The change
+was initially local-only; the authorized 0.7.1 publishing pass is tracked below.
 
 Native Codex also warned that the existing four defaultPrompt entries exceed
 its supported maximum of three. Skill discovery/execution still succeeds;
@@ -1023,3 +1029,24 @@ Other unrelated local MCP startup warnings are not Alpha-Wiki release gates.
 No 0.8 feature or release is claimed from these observations. External HTTP
 integration still requires its owning service/operation; it is not a synthetic
 gate for the completed CLI/package release.
+
+## 21. Release 0.7.1 - UPG-001
+
+The user authorized commit, normal push, a GitHub release and Codex plugin
+upgrade on 2026-10-19. The candidate branch is codex/upg-001-hook-recovery,
+based on public main at 919be6c. The dirty primary remains on 89f77f2 with all
+unfinished changes preserved; no rebase, reset or runtime-only upgrade is run
+against that authoring checkout.
+
+Scope: selective recovery of missing configured bundled hooks, no overwrite of
+existing hooks or routing, zero-write dry-run, and repeat upgrades that preserve
+unchanged contents/modes/mtimes. Version metadata and public instructions align
+at 0.7.1. No schema, AgentOps, server, provider or billing changes are included.
+
+Previous local verification: 309 tests passed; four fresh/brownfield Claude/Codex
+subprocess scenarios executed recovered hooks; smoke PASS, audit READY, lint and
+document governance PASS. The publishing pass reruns applicable checks and must
+verify a clean public source and installed Codex package before claiming delivery.
+Hosted CI/Pages is separate; existing account/provider failures do not become
+claims of successful hosted or live Claude execution. Publication/install receipts
+will be recorded only after the corresponding actions succeed.

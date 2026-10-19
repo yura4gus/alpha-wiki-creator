@@ -182,9 +182,26 @@ document_governance:
 
 Do not replace existing entity_types, cross_ref_rules or dependency_rules.
 Extend the canonical set to the project's accepted specifications only.
-Runtime-only upgrade replaces managed Alpha-Wiki tools/hook scripts; inspect
-its dry-run and preserve any intentional local customizations before applying.
-It does not overwrite user documentation or regenerate schema/routing.
+Runtime-only upgrade replaces managed Alpha-Wiki tools and the isolated launcher;
+inspect its dry-run and preserve intentional managed-tool customizations first.
+Existing hook files are never overwritten or chmodded, including custom or stale
+scripts. Missing bundled hooks are restored only when explicitly referenced by
+project routing in `.claude/settings.json`, `.claude/settings.local.json`, or
+`.codex/hooks.json`. Unconfigured scripts stay absent. Settings, schema, agent
+contracts, wiki documents and product dependencies are preserved.
+
+Recovery recognizes bundled script paths as direct commands or arguments to
+`bash`/`sh` (Claude) or `python`/`python3` (Codex), with project-relative or absolute
+paths and the generated project-root expressions. It does not execute commands
+or guess custom wrappers. Symlinks and occupied non-file paths are preserved and
+reported. Invalid routing JSON stops the upgrade before writes; fix that routing
+deliberately rather than replacing it with a generated default.
+
+Dry-run reports only actual pending writes and creates nothing. Repeating an
+unchanged upgrade reports zero writes and preserves file contents, modes and
+modification times. This recovery behavior is available in 0.7.1 (UPG-001);
+0.7.0 does not include it. Updating a plugin does not silently upgrade existing
+projects: run the explicit runtime-only command against each intended target.
 
 Keep four layers separate: canonical specifications/contracts maintained in
 place; immutable source evidence; unaccepted research/candidates; and generated

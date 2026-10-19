@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import os
 from pathlib import Path
 import shutil
@@ -24,6 +25,16 @@ def execute(args, cwd, env=None, payload=None):
     )
     assert result.returncode == 0, f"{args}\n{result.stdout}\n{result.stderr}"
     return result.stdout
+
+
+def tree_state(root):
+    return {
+        str(path.relative_to(root)): (
+            path.stat().st_mode, path.stat().st_mtime_ns,
+            hashlib.sha256(path.read_bytes()).hexdigest() if path.is_file() else None,
+        )
+        for path in root.rglob("*")
+    }
 
 
 @pytest.mark.parametrize("platform", ["claude", "codex"])
@@ -139,6 +150,35 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
                           "tool_input": {"file_path": str(module)}})
     if platform == "claude":
         environment["CLAUDE_PROJECT_DIR"] = str(project)
+
+    recovered = ([project / ".claude/hooks" / (event + ".sh") for event in
+                  ("session-start", "session-end", "pre-tool-use", "post-tool-use")]
+                 if platform == "claude" else [project / ".codex/hooks/alpha_wiki_hook.py"])
+    expected = {path: path.read_bytes() for path in recovered}
+    for path in recovered:
+        path.unlink()
+    user_hook = project / ".claude/hooks/user-owned.sh"
+    user_hook.write_text("#!/bin/sh\n# Independent user hook.\nexit 0\n")
+    user_hook.chmod(0o700)
+    existing_hook = (project / ".codex/hooks/alpha_wiki_hook.py" if platform == "claude"
+                     else project / ".claude/hooks/session-start.sh")
+    existing_hook.write_text(existing_hook.read_text() + "\n# Preserve user customization.\n")
+    protected = {path: (path.read_bytes(), path.stat().st_mode) for path in
+                 (user_hook, existing_hook, project / ".claude/settings.local.json",
+                  project / ".codex/hooks.json", project / ".alpha-wiki/config.yaml")}
+    upgrade = [sys.executable, "-m", "scripts.bootstrap_cli", "--target", project, "--runtime-only"]
+    before = tree_state(project)
+    assert "completed writes: 0" in execute([*upgrade, "--dry-run"], bootstrap_root)
+    assert tree_state(project) == before
+    assert f"completed writes: {len(recovered)}" in execute(upgrade, bootstrap_root)
+    for path, content in expected.items():
+        assert path.read_bytes() == content
+        assert path.stat().st_mode & 0o111 == 0o111
+    for path, state in protected.items():
+        assert (path.read_bytes(), path.stat().st_mode) == state
+    repaired = tree_state(project)
+    assert "completed writes: 0" in execute(upgrade, bootstrap_root)
+    assert tree_state(project) == repaired
 
     def hook(event):
         command = (["bash", project / ".claude/hooks" / (event + ".sh")]

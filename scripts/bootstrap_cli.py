@@ -58,7 +58,7 @@ def cli() -> None:
     parser.add_argument("--obsidian", action=argparse.BooleanOptionalAction, default=True)
     parser.add_argument("--upgrade", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
-    parser.add_argument("--runtime-only", action="store_true", help="Update runtime/tools and existing hook scripts without regenerating schema, contracts, wiki, or CI settings.")
+    parser.add_argument("--runtime-only", action="store_true", help="Update managed runtime/tools and restore missing configured hooks; preserve existing hooks, schema, contracts, wiki, and routing.")
     args = parser.parse_args()
 
     if args.runtime_only:

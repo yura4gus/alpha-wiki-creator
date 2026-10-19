@@ -4,6 +4,17 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+## [0.7.1] - 2026-10-19
+
+### Configured Hook Recovery (UPG-001)
+
+- Runtime-only upgrade restores missing bundled hooks only when existing
+  Claude/Codex project routing references them. Existing hooks, settings and
+  user documents are preserved; no unconfigured hooks are installed.
+- Dry-run lists actual pending writes without creating files. Identical runtime
+  files are not rewritten on repeated upgrades. Hook recovery preserves occupied
+  paths/symlinks and refuses malformed routing before any writes.
+
 ## [0.7.0] - 2026-10-19
 
 ### Reliable Engineering Lifecycle
