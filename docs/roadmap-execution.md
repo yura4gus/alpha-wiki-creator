@@ -277,7 +277,7 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | GOV-002 | P0 | IN_REVIEW | Make this file the only active roadmap. | Replace legacy mixed Alpha-Wiki/AgentOps phases; update docs index and product links; mark dated plans as supporting evidence; keep rejected work out of active tasks. | Document worker passes; docs index names one canonical roadmap; no second active priority list. | GOV-001 for commit |
 | DOC-001 | P0 | IN_REVIEW | Enforce finite canonical documents and bidirectional change records. | Fix NUL-delimited Git paths and custom wiki/index slugs; validate record/check, explicit registration, ownership hierarchy, and meaningful journal records. | Regression tests and cross-platform lifecycle must pass on the current implementation. Existing broad worktree remains unpublished; no new release authorized by this task. | GOV-001 |
 | GOV-003 | P1 | READY | Define idea-to-task promotion without document proliferation. | Keep hypotheses in this roadmap; require owner/outcome/acceptance/dependency before READY; create AgentOps task files only for an activated wave. | No one-file-per-idea backlog; active wave can be projected deterministically when needed. | GOV-002 |
-| OPS-001 | P0 | IN_REVIEW | Attribute hosted CI and Pages correctly. | GitHub API confirms main is unprotected; latest 36df49e check never started because GitHub reports an account billing lock. Existing GitHub origin/auth work; no GitLab project is invented. | Hosted CI is unavailable, not green. Local applicable package checks run independently; Pages remains a separate deployment outcome. Record new release check results after push. | GOV-001 |
+| OPS-001 | P0 | IN_REVIEW | Attribute hosted CI and Pages correctly. | New 12fd58d plugin-ci run 39271869745 and docs-pages 39271869737 failed before execution. Check annotation confirms GitHub account billing lock; main is unprotected. | Hosted results are not green. Existing local/package publication succeeded independently under actual branch rules. Owner must restore GitHub Actions billing to rerun hosted CI/docs deployment. | GOV-001 |
 
 ## 9. Wave 1 - Runtime, Workflow, And Trust
 
@@ -286,7 +286,7 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | ID | P | Status | Outcome | Subtasks | Acceptance / evidence | Depends |
 |---|---|---|---|---|---|---|
 | RUN-001 | P0 | DONE | One dependency-aware launcher for project tools. | Published separately as 0.6.2 at 36df49e; remote main verified at that SHA on 2026-10-18. This dirty primary checkout remains on 0.6.1 plus pending work; do not confuse it with the released tree. | Release-specific public/install proof belongs to 0.6.2. The document worker and pending schema/AgentOps work were excluded. | GOV-001 |
-| RUN-002 | P0 | IN_REVIEW | Keep hooks operational through source/runtime changes. | Retained 0.6.2 stale-cwd behavior and runtime-only upgrade; added advisory governance and removed technical session heartbeat logs. | Local L2: fresh/brownfield Claude/Codex subprocess/hook cases pass. Global installed result belongs to REL-002; no live Claude proof implied. | RUN-001 |
+| RUN-002 | P0 | DONE | Keep selected 0.7 hooks operational through runtime changes. | Retained stale-cwd behavior and runtime-only upgrade; actual fresh/brownfield hooks pass. Restored four already-configured but absent primary Claude scripts from published assets without overwriting settings. | Primary doctor: 27 pass, 1 optional workflow warning, 0 fail; SessionEnd exits 0. Runtime-only repair of missing configured scripts remains a measured follow-on under UPG-001. | RUN-001 |
 | RUN-003 | P1 | CANDIDATE | Machine-readable runtime and capability inspection. | Report package version, runtime path, active skill surface, config, hooks, managed files, and supported features through existing doctor/install interfaces. | JSON or structured output is stable and does not add a broad management command family. | RUN-001 |
 
 ### Task-First Agent Workflow
@@ -311,10 +311,10 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | ID | P | Status | Outcome | Subtasks | Acceptance / evidence | Depends |
 |---|---|---|---|---|---|---|
 | QA-001 | P0 | IN_REVIEW | Replay task, permission and evidence failures. | Twelve held-out native Codex response replays were compared with existing expectations; all matched. Backend no-write/recovery/upgrade tests pass in subprocesses. | L2 for observed Codex responses and deterministic backends only. Real external operations were not executed by the replay; live Claude remains under WF-003.1. | RUN-001, WF-001, EVI-001 |
-| QA-002 | P0 | IN_REVIEW | Verify fresh/brownfield lifecycle in separate processes. | Candidate 0.7 full suite: 288 passed. Four isolated Claude/Codex scenarios cover runtime, maintenance, hooks, graphs/HTML and preservation of product manifests/environment. | Local L2 achieved. Clean public source and real installed plugin verification remain release-stage evidence, not claims from fixtures. | RUN-001, DOC-001 scoped 0.7 implementation |
+| QA-002 | P0 | DONE | Verify selected 0.7 fresh/brownfield lifecycle in separate processes. | Clean public clone at 12fd58d: 288 passed in 66.07s; four isolated Claude/Codex scenarios cover runtime, maintenance, hooks, graphs/HTML and product environment preservation. | Local/runtime L2 plus published-source verification accepted for this release. External-corpus and production integration remain outside scope. | RUN-001, DOC-001 scoped 0.7 implementation |
 | QA-003 | P1 | READY | Prove graph and HTML remain useful on real data. | Mixed-role cluster snapshot; orphan detection; relative HTML links; source-owned service/module/feature/contract grouping; Obsidian vault instructions. | Deterministic graph agrees with frontmatter; no color-only clustering or graph-root confusion. | QA-002 |
-| REL-001 | P0 | IN_REVIEW | Publish the accepted 0.7 package. | Version 0.7.0 aligned; coherent 0.6.2-based candidate and package builds verified. Normal publication is authorized by the master execution request. | Local candidate L2 accepted; source commit, normal push, public clone, tag and artifact receipt remain to be verified. See section 20. | GOV-001, scoped QA-001/QA-002, actual repository rules |
-| REL-002 | P0 | READY | Verify public Claude/Codex installation and active plugin. | Use published source, isolated fresh/brownfield flows, one 16-skill Codex surface, current cache/version, safe duplicate cleanup and a fresh-session capability check when available. | Required L2 installed-runtime evidence at the published revision; do not infer a desktop session reload from file copying alone. | REL-001 |
+| REL-001 | P0 | DONE | Publish the accepted 0.7 package. | Source commit 12fd58df2043ecccca8f7553c9c6dbe32e7299a4 pushed normally to GitHub main; annotated v0.7.0 and public release/source artifact published. | L4 package evidence: clean public clone 288 tests, smoke PASS, audit READY; artifact uploaded and public source/install verified. Hosted CI billing failure remains separately reported. | GOV-001, scoped QA-001/QA-002, actual repository rules |
+| REL-002 | P0 | DONE | Verify public 0.7 installation and active Codex discovery. | Codex installed 0.7.0+codex.local-20261019144933, enabled, one 16-skill surface; fresh CLI session read the new ingest skill. Claude package updated 0.5.0 to 0.7.0; its existing disabled preference was preserved. | Installed files match public 12fd58d. Both adapters pass fresh/brownfield runtime fixtures. This is not a live Claude model-cycle claim; existing desktop sessions still require restart. | REL-001 |
 | REL-003 | P1 | DONE | Align release guidance with the shortest sufficient path. | Published in v0.6.1 at 89f77f2; actual signing/auth requirements remain applicable, optional findings retain their scope. | Public clone and Codex installation verified; backend verdicts retained. CI/Pages jobs for that SHA did not start because GitHub reported a billing lock; live Claude model replay was not verified. | None |
 
 ## 11. Wave 3 - Pilots And v1.0 Quality
@@ -973,14 +973,53 @@ schema/AgentOps work remains preserved, not accepted by implication.
 
 ### Publication And Installation
 
-Candidate verified locally. Commit, public source, tag, hosted check and installed
-runtime results must be recorded after the corresponding actions, not inferred
-from local tests. No public 0.7 receipt exists at this entry's creation.
+- Accepted package source: 12fd58df2043ecccca8f7553c9c6dbe32e7299a4, normal
+  GitHub main push. Annotated tag v0.7.0 resolves to that exact commit.
+- Public release: https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.7.0.
+  Complete source asset alpha_wiki-0.7.0.tar.gz is uploaded with SHA-256
+  bea030de5bc4ff635890d8a4feb64a1ca30f0f7e5a3e71e51228f65f1e606b43.
+- A new public GitHub clone resolved to 12fd58d; uv sync --dev --locked installed
+  0.7.0. Its full suite passed: 288 tests in 66.07s. Smoke PASS, audit READY,
+  and governance against the 0.6.2 source base PASS.
+- Codex manager/cache version: 0.7.0+codex.local-20261019144933, enabled.
+  Sixteen adapted skills, no commands/ or standalone duplicate surface.
+  Tools/assets/references/quickstart match published source bytes. A fresh
+  ephemeral native CLI session discovered the exact cached ingest skill and
+  quoted its closed-loop acceptance instruction; this was not inferred from
+  a repository README. Existing desktop sessions must restart to reload.
+- Claude user package updated from 0.5.0 to 0.7.0. Enabled=false was preserved.
+  Cached tool/skill/assets match public source; no billing/auth/provider route
+  was changed. A live Claude model implementation remains unverified (402).
+- The package update exposed four configured but missing primary Claude hook
+  scripts. Only those absent files were restored from published assets;
+  settings and unfinished source work were preserved. Actual SessionEnd
+  returned 0; primary doctor now reports 27 pass/1 warn/0 fail. Its remaining
+  warning concerns absent optional generated wiki workflows, not plugin failure.
+- New hosted plugin-ci and docs-pages runs are 39271869745 and 39271869737.
+  GitHub again reports jobs did not start because the account is locked for
+  billing. These are failed/unavailable hosted gates, not local test failures
+  or CI success. Restore existing Actions billing and rerun; no new secrets,
+  GitLab mirror, signature or approval flow is introduced.
+- This post-publication receipt is documentation only. It does not move the
+  existing release tag or change the accepted 0.7 code, package or skill content.
 
 ### 0.8 Boundary
 
 DOC-003 remains P2 CANDIDATE. Existing plan/apply already supports an explicit
 bounded one-shot catch-up; no new scheduler/server is justified by this release.
-PILOT-001/PILOT-002 real-project adoption should identify the next measured
-friction before selecting a 0.8 feature. External HTTP integration requires its
-owning service and operation. Neither is a synthetic gate for 0.7 publication.
+PILOT-001/PILOT-002 remain the wider real-project adoption target. This run
+already measured one bounded UPG-001 follow-on: runtime-only upgrade does not
+restore absent scripts even when existing Alpha-Wiki routing explicitly names
+them. Next candidate: repair only missing, already-configured Alpha-Wiki hook
+paths; preserve existing scripts, schema, settings/routing and product
+dependencies. Required acceptance: stale/missing hook fixture, unrelated hook
+untouched, dry-run zero writes and repeat upgrade unchanged. The actual primary
+case was repaired locally, not silently presented as a new packaged capability.
+
+Native Codex also warned that the existing four defaultPrompt entries exceed
+its supported maximum of three. Skill discovery/execution still succeeds;
+metadata cleanup is a non-blocking follow-on, not a reason to retag 0.7.
+Other unrelated local MCP startup warnings are not Alpha-Wiki release gates.
+No 0.8 feature or release is claimed from these observations. External HTTP
+integration still requires its owning service/operation; it is not a synthetic
+gate for the completed CLI/package release.
