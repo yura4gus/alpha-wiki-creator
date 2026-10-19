@@ -13,6 +13,11 @@ Give the user a fast, honest picture of wiki health. Status should teach what ne
 
 `status` means "observe and summarize current health". It does not edit source wiki pages. It may refresh generated graph artifacts (`edges.jsonl`, `context_brief.md`, `open_questions.md`) before reporting so health is measured from current pages, not stale derived files.
 
+For an explicit strict read-only request, add `--read-only`, do not save a report,
+and follow `references/concept.md` (Strict Read-Only Operations). That mode reads
+current pages without refreshing generated files. Do not bootstrap a runtime or
+write bytecode inside the target while promising zero repository writes.
+
 ## Workflow
 
 Lead with the result and decisive evidence in the user's language. Preserve
@@ -109,7 +114,7 @@ Status should recommend concrete next steps:
 
 ## Codex Native Delegation
 
-Do not spawn subagents for status. Refresh derived graph files and run the
+Do not spawn subagents for status. Respect the requested write mode and run the
 deterministic backend once so counts and gaps come from one wiki state. Status
 may recommend a later parallel review or audit, but it must not fan out while
 measuring health.

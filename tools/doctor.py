@@ -38,6 +38,7 @@ TOOL_MODULES = [
     "tools.backlog",
     "tools.handoff",
     "tools.release_check",
+    "tools.document_worker",
 ]
 
 GRAPH_ARTIFACTS = [
@@ -207,7 +208,18 @@ def _check_project_config(project_dir: Path, platform: str) -> list[DoctorCheck]
     except yaml.YAMLError as exc:
         return [DoctorCheck("config", FAIL, f".alpha-wiki/config.yaml is invalid YAML: {exc}")]
     entity_count = len(data.get("entity_types", []))
-    return [DoctorCheck("config", PASS, f".alpha-wiki/config.yaml loaded ({entity_count} entity type(s))")]
+    checks = [DoctorCheck("config", PASS, f".alpha-wiki/config.yaml loaded ({entity_count} entity type(s))")]
+    governance = data.get("document_governance") or {}
+    if not isinstance(governance, dict):
+        return checks + [DoctorCheck("document governance", FAIL, "document_governance must be a YAML mapping")]
+    if governance.get("enabled") and governance.get("global_log") and governance.get("canonical_roots"):
+        checks.append(DoctorCheck("document governance", PASS, "canonical document set and global change log are configured"))
+    else:
+        checks.append(DoctorCheck(
+            "document governance", WARN, "canonical document worker is not configured",
+            "Keep existing project configuration; merge an explicit document_governance policy only when enabling maintenance.",
+        ))
+    return checks
 
 
 def _check_wiki(project_dir: Path, wiki_dir: Path, refresh: bool, platform: str) -> list[DoctorCheck]:

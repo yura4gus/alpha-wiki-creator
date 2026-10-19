@@ -134,3 +134,14 @@ def test_codex_doctor_uses_codex_operation_hints(tmp_path: Path):
     assert "$alpha-wiki:init" in (config.action or "")
     assert "$alpha-wiki:init" in (wiki.action or "")
     assert "/alpha-wiki:init" not in (wiki.action or "")
+
+
+def test_doctor_reports_malformed_document_policy_without_traceback(tmp_path: Path):
+    from tools.doctor import _check_project_config
+
+    (tmp_path / ".alpha-wiki").mkdir()
+    (tmp_path / ".alpha-wiki/config.yaml").write_text(
+        "entity_types: []\ndocument_governance: [invalid]\n"
+    )
+    checks = _check_project_config(tmp_path, "codex")
+    assert any(check.name == "document governance" and check.status == "FAIL" for check in checks)

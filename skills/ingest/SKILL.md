@@ -7,7 +7,7 @@ description: "Convert durable source material into maintained wiki pages with pr
 
 ## Mission
 
-Turn raw evidence into durable, typed markdown memory. Ingest is the main growth mechanism of Alpha-Wiki: every useful source should become one or more pages that future agents can read, cite, link, lint, and evolve.
+Turn durable sources into maintained, typed Markdown memory. Reuse the page that already owns the topic. Not every source needs another page: some are evidence for an existing document, and some should remain working material.
 
 ## Name Contract
 
@@ -53,6 +53,7 @@ apply `references/concept.md` (Release Decisions).
    - `.alpha-wiki/config.yaml`
 
 3. For each source:
+   - Check existing `source_file`/`source_files` bindings before importing. A repeated pipeline call preserves an existing owner; it does not refresh its prose or create a numbered sibling.
    - Run the pipeline only for a requested source import. A narrow repair of an
      existing document needs its applicable checks, not another ingest batch.
      A diagnosis-only request does not authorize import or dependency changes.
@@ -64,6 +65,10 @@ apply `references/concept.md` (Release Decisions).
    - Use `--slot <dir>` when the target directory is obvious.
    - Use `--belongs-to <slug>` when attaching the page to a service/repo/module cluster.
    - Use `--resume` for interrupted batches; resume state lives in `<wiki_dir>/graph/ingest_state.json`.
+   - Preserve pending ingest state after failure. Retry with its original source;
+     source/page drift requires explicit reconciliation, not deleting the state.
+     Each new page is indexed, journaled and graph-refreshed before its completion
+     checkpoint. Already owned pages remain curated maintenance targets.
    - Read enough surrounding wiki pages to avoid duplicates.
    - Extract durable facts, decisions, open questions, risks, contracts, dependencies, dates, owners, and claims.
    - Keep uncertain statements marked as `assumption`, `risk`, or `open`.
@@ -77,6 +82,43 @@ apply `references/concept.md` (Release Decisions).
    - Wikilinks for related modules, decisions, contracts, claims, people, tasks, and sources.
    - Status: `draft`, `active`, `accepted`, `stable`, `deprecated`, or `stub` as appropriate.
 
+### Existing Documents And Compaction
+
+Use the installed `tools.document_worker plan/apply` capability when available;
+older packages may only provide `check/record`. Inspect `--help` before using an
+unreleased capability. Do not install dependencies in the product environment.
+
+- Plan one bounded document/domain batch. `plan --document <path>` resolves
+  repository-relative `source_file`/`source_files` and pins their content hashes.
+- Read the actual sources and prepare JSON `updates` with each `document` and
+  full replacement `text`, plus a concise `summary`. Apply only reviewed edits.
+- `--compact` requires explicit documents. Preserve frontmatter except
+  `date_updated`, all references, and protected normative sections verbatim.
+  Use ordinary reviewed refresh for changes to requirements or decisions; neither
+  mode provides semantic truth resolution or authority to accept a proposal.
+- `apply --plan <json> --edits <json>` updates existing documents, journals actual
+  edits once, refreshes graph/brief/questions, and checkpoints success. Repeated
+  unchanged inputs need no model run. Apply changed source owners first, then
+  re-plan their dependent projections.
+- If interrupted, retain the original plan, edits, and pending transaction.
+  Resume that apply. Do not reset progress or overwrite concurrent human edits.
+
+Treat the request as one closed-loop job, not a series of operator-owned CLI
+steps. Establish scope, authorized writes, relevant sources, acceptance, and
+requested final environment. Review the source, plan and apply the bounded
+updates, then run governance/lint, current status/review, and a targeted cited
+query. Verify no-op replay where maintenance repeatability is in scope. Close
+the owning task only after its acceptance passes; an apply checkpoint proves
+that batch, not the whole task. If synchronization fails after a source edit,
+retain resumable progress and report partial completion. A checked no-change
+job creates no document-change journal entry. Report actual writes, checks,
+remaining gaps, and local/published/installed capability separately. Use
+`references/concept.md` (Delivery Evidence And Contract Ownership) for contract
+or delivery work; ingestion does not authorize ratification or deployment.
+- Use the project's configured journal. A cross-repository overview links to
+  local records instead of copying complete histories. Do not create another
+  research report merely to describe a successful maintenance run.
+
 5. Maintain the graph:
    - Run `rebuild-edges`.
    - Run `rebuild-context-brief`.
@@ -86,6 +128,7 @@ apply `references/concept.md` (Release Decisions).
 6. Update service files:
    - Add discoverable entries to `<wiki_dir>/index.md` if the current index process requires it.
    - Append `<wiki_dir>/log.md`: `## [YYYY-MM-DD] ingest | <source> | <pages>`.
+   - Run `python3 .alpha-wiki/run.py -m tools.document_worker check --root . --config .alpha-wiki/config.yaml` so every canonical edit is paired with the global log and every log claim is backed by a real edit.
 
 ## Graph And Obsidian Discipline
 

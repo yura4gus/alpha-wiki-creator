@@ -9,7 +9,6 @@ import re
 import shutil
 import subprocess
 import sys
-from datetime import date
 from pathlib import Path
 from typing import Any
 
@@ -158,20 +157,38 @@ def _session_end(project: Path, wiki_dir: str) -> None:
     wiki = project / wiki_dir
     if not wiki.exists():
         return
-    try:
-        result = _run(
-            project,
-            ["-m", "tools.lint", "--wiki-dir", wiki_dir, "--config", ".alpha-wiki/config.yaml", "--suggest"],
-            timeout=2,
+    lint = _run(
+        project,
+        ["-m", "tools.lint", "--wiki-dir", wiki_dir, "--config", ".alpha-wiki/config.yaml", "--suggest"],
+        timeout=3,
+    )
+    governance = _run(
+        project,
+        [
+            "-m",
+            "tools.document_worker",
+            "check",
+            "--root",
+            str(project),
+            "--config",
+            ".alpha-wiki/config.yaml",
+        ],
+        timeout=4,
+    )
+    errors = lint.stdout.count("ERROR")
+    warnings = lint.stdout.count("WARN")
+    if lint.returncode or governance.returncode or errors or warnings:
+        governance_summary = (
+            governance.stdout.strip().splitlines()[0]
+            if governance.stdout.strip()
+            else governance.stderr.strip().splitlines()[0]
+            if governance.stderr.strip()
+            else "document governance check failed"
         )
-        errors = result.stdout.count("ERROR")
-        warnings = result.stdout.count("WARN")
-        log = wiki / "log.md"
-        if log.exists():
-            with log.open("a") as stream:
-                stream.write(f"\n## [{date.today().isoformat()}] session-end | codex lint errors={errors} warnings={warnings}\n")
-    except (subprocess.TimeoutExpired, OSError):
-        return
+        _emit(
+            f"Alpha-Wiki session check: lint errors={errors} warnings={warnings}; "
+            f"{governance_summary}. Resolve before commit."
+        )
 
 
 def main() -> None:
@@ -201,6 +218,8 @@ if __name__ == "__main__":
     try:
         main()
     except Exception as exc:
+        # Lifecycle maintenance is advisory. An unexpected adapter error must
+        # not break every Codex tool call; doctor provides the blocking check.
         _emit(
             "Alpha-Wiki hook skipped after an unexpected "
             f"{type(exc).__name__}. Run $alpha-wiki:doctor to diagnose the project hooks."

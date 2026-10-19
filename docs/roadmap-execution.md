@@ -1,348 +1,986 @@
-# Roadmap — Execution Plan
+# Alpha-Wiki Product Roadmap And Backlog
 
-> Pure execution. Phases, tasks, acceptance criteria, gates. No reasoning. Reasoning lives in `design/`.
->
-> Reference: `design/00-architecture.md` for architecture, `design/01-alpha-wiki.md` / `design/02-agentops.md` / `design/03-superpowers-adapter.md` / `design/04-state-backend-contract.md` for specs, `design/adr/ADR-001..006` for decisions.
+Status: canonical development roadmap
 
----
+Updated: 2026-10-19
 
-## Phase status legend
+Alpha-Wiki is repo-native Markdown memory for AI agents and teams. This file is
+the single maintained roadmap and backlog for the Alpha-Wiki product. Dated
+plans, audits, case logs, and research notes are evidence for this roadmap, not
+competing execution plans.
+
+## 1. Product Boundary
+
+Alpha-Wiki core remains deliberately small:
+
+```text
+repository sources
+-> maintained Markdown memory
+-> deterministic lifecycle tools
+-> agent-readable context
+-> human-readable docs and lightweight graph
+```
+
+Core scope:
+
+- install, init, doctor, ingest, query, lint, status, review, rollup, and render;
+- product, architecture, feature, API, code, integration, decision, risk, and
+  release memory;
+- Claude Code and Codex adapters;
+- deterministic graph, HTML, contract, provenance, release, and document checks;
+- an optional lightweight AgentOps namespace that is never required for first
+  value.
+
+Not core scope:
+
+- RAG, embeddings, SaaS UI, remote control plane, or enterprise workflow engine;
+- automatic owner approval, ratification, merge, runtime, staging, or production
+  authorization;
+- a second issue tracker or a full copy of Spec Kit artifacts;
+- a large standalone AgentOps product, universal team-role catalog, or mandatory
+  multi-agent execution.
+
+## 2. Authority And Planning Rules
+
+1. `wiki/specs/alpha-wiki-product-spec.md` defines product behavior.
+2. This file defines priority, dependency order, and task state.
+3. `wiki/log.md` records accepted changes to canonical documents.
+4. `CHANGELOG.md` records package and release changes.
+5. Dated plans and audits provide evidence. They do not override this roadmap.
+6. Source code and tests prove observed behavior. Accepted contracts define
+   intended behavior. Wiki pages orient the agent but do not manufacture owner
+   decisions or runtime evidence.
+7. Update an existing canonical document before creating another one.
+8. Use `wiki/agentops/` backlog entities only for an explicitly activated,
+   multi-track execution wave. Planning alone stays in this file.
+
+### Engineering Delivery Ownership
+
+The R4 request consolidates earlier R2/R3 work here, not in another plan. The
+goal is verified user outcomes; Alpha-Wiki observes and reconciles existing
+engineering systems rather than replacing them.
+
+| Concern | Authoritative source |
+|---|---|
+| Product intent and accepted decisions | Existing canonical specifications and ADRs. |
+| Priorities, dependencies, execution state | This roadmap, or the observed project's existing tracker. |
+| HTTP/event/data interfaces | Versioned contract or generation source in its owning repository. |
+| Configuration and deployment intent | Application schema or existing infrastructure/GitOps repository. |
+| Implementation and quality | Exact code snapshot, applicable tests, independent review, CI. |
+| What actually runs | Identified build/deployment plus runtime and business-scenario observations. |
+| Maintained memory and package history | Wiki journal; package changelog, tags and releases respectively. |
+
+YAML is a serialization format, not an authority class. Discover OpenAPI,
+JSON Schema/config, AsyncAPI/events, GraphQL/Protobuf, and Helm/GitOps by their
+actual purpose. Reuse the owning toolchain and accepted format/version. Review
+compatibility against an identified accepted revision before testing actual
+consumers. Existing `tools/contracts_check.py` checks wiki structure; it does
+not validate HTTP implementations or resolve semantic truth.
+
+Use `references/concept.md` (Delivery Evidence And Contract Ownership) for the
+shared Claude/Codex evidence contract. No mandatory provider split, new service,
+tracker, approval chain, schema migration, or deployment follows from R4.
+
+### Shortest Sufficient Path To Release
+
+Choose the smallest complete change that meets the requested outcome. Reuse
+existing tools and configuration. Add a mode, dependency, provider, service,
+configuration option, or approval step only when the task or existing project
+contract requires it.
+
+Use these release rules:
+
+1. State the release scope and required outcome before selecting checks.
+2. Check the changed behavior and affected shared paths. A documentation edit
+   needs document/link checks; a runtime or packaging change needs the relevant
+   executable lifecycle and release checks. Reuse current results against the
+   same unchanged inputs; rerun after relevant changes or new failure evidence.
+3. For Alpha-Wiki package publication, the minimal evidence is a reviewable
+   change, aligned version/changelog, relevant passing tests and smoke, the
+   existing package audit, and verification that public installation uses the
+   published source. Existing branch protection and repository rules still apply.
+4. Treat static docs deployment as a separate outcome. A Pages outage blocks
+   docs deployment; it blocks package publication only when the task or an
+   existing project rule explicitly requires that dependency.
+5. Label a release blocker only when an applicable mandatory step is prevented.
+   Give its requirement source, failure evidence, affected step, and smallest
+   corrective action. Use a command error, path, or existing CI link; do not add
+   another report template or receipt service. Unchecked behavior is unverified,
+   not proof of failure.
+6. Do not invent signing keys, certificates, tokens, new secrets, extra votes,
+   security ceremonies, or approval chains. Use existing authentication and
+   publishing mechanisms. Diagnose actual permission errors without exposing
+   secret values. If signing is already required, cite the existing requirement.
+7. Cosmetic changes, speculative hardening, optional integrations, new config
+   systems, and extra dashboards stay outside the current release scope unless
+   they resolve an observed acceptance failure.
+8. Continue independent work when one external action is unavailable. Existing
+   user authorization carries across steps; request only a missing decision that
+   materially changes scope or authority.
+9. Stop when the applicable acceptance checks pass. Report the result, decisive
+   evidence, and any remaining required action briefly.
+
+### Caveman Research And Adoption
+
+Reviewed on 2026-10-15 at upstream commit
+`d262ab3882952a59312ff3537cd86d894523c5ab`.
+
+Adopt three practices in existing Alpha-Wiki skills:
+
+- Lead with the result, use the user's language, and remove repeated narrative.
+  Preserve exact commands, paths, numbers, errors, negation, and evidence limits.
+- Read relevant sections and summarize noisy output while retaining access to
+  originals. A summary must preserve the exit code, failures, skipped checks,
+  and decisive diagnostics; reopen the original when needed.
+- Reuse current verification and stop after the required outcome is proven.
+  Do not extend a completed fix with unrelated cleanup or speculative controls.
+
+Canonical specifications, contracts, and source evidence retain complete,
+readable language. Reduced token count is a hypothesis to measure against normal
+concise operation; upstream savings are not Alpha-Wiki measurements.
+
+The current upstream repository also includes proxy, cloud, routing, and output
+compression components. This plan adopts writing and execution practices only.
+It does not install those components, add accounts/secrets, or introduce a new
+runtime dependency. Existing `doctor`, lint, and release tools remain the
+execution path. Any later code reuse must respect the upstream license.
+
+Sources: [Caveman README](https://github.com/juliusbrussee/caveman/blob/d262ab3882952a59312ff3537cd86d894523c5ab/README.md),
+[voice rules](https://github.com/juliusbrussee/caveman/blob/d262ab3882952a59312ff3537cd86d894523c5ab/skills/caveman/SKILL.md),
+[lean-build](https://github.com/juliusbrussee/caveman/blob/d262ab3882952a59312ff3537cd86d894523c5ab/skills/lean-build/SKILL.md),
+[verify-and-stop](https://github.com/juliusbrussee/caveman/blob/d262ab3882952a59312ff3537cd86d894523c5ab/skills/verify-and-stop/SKILL.md).
+
+## 3. Standard Backlog Model
+
+### Priority
+
+| Priority | Meaning |
+|---|---|
+| P0 | Blocks the next maintenance release or can make normal use unsafe. |
+| P1 | Required for a credible v1.0 candidate or for reliable real-project use. |
+| P2 | Valuable after pilots; must not delay the current release. |
+| P3 | Research candidate with no delivery commitment. |
+
+### Status
 
 | Status | Meaning |
 |---|---|
-| `done` | Completed, evidence recorded |
-| `in-progress` | Started, not finished |
-| `ready` | Dependencies met, can start |
-| `blocked` | Dependency open |
-| `deferred` | Out of current scope, scheduled later |
-
----
-
-## Phase 0 — Close audit
-
-Goal: zero P0 unknowns before Phase 1 starts.
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends | Status |
-|---|---|---|---|---|---|---|---|
-| T0.1 | Inspect `alpha-wiki-creator` repo: enumerate `skills/`, `commands/`, `tools/`, `tests/`, `scripts/`, `references/`, `.claude-plugin/`, `.github/workflows/`. Produce verified inventory document. | `audit-verified-inventory.md` | Verified inventory recorded in `docs/audit-verified-inventory.md`. | User reviews verified inventory. | N/A (inspection only). | None | done |
-| T0.2 | Verify whether `/alpha-wiki:review` and `/alpha-wiki:rollup` are full skills, commands-only, CI-only, or planned-only. | `audit-verified-inventory.md` | Initial audit found CI-template-only old-namespace artifacts; Phase 1a P0 now backs both with skills, commands, and deterministic tools. | User reviews. | N/A. | T0.1 | done |
-| T0.3 | Approve ADRs 001–006 (already drafted in `design/adr/`). | `design/adr/ADR-001..006.md` | Each ADR marked Status: Accepted by user. | User approval. | N/A. | None | done (drafted Etap 2) |
-| T0.4 | Marketplace topology decision. | `design/adr/ADR-005-marketplace-topology-deferred.md` | Recorded as deferred to Phase 5. | None — closed by ADR. | N/A. | None | done |
-| T0.5 | spawn-agent boundary lock. | `design/adr/ADR-006-spawn-agent-boundary.md` | Frozen pre-Phase 1a per ADR-006. | None — closed by ADR. | N/A. | None | done |
-| T0.6 | Skill content audit: revisit all 10 backed Alpha-Wiki skills by name and body, strengthening operational logic, teaching behavior, graph discipline, Obsidian color semantics, and Karpathy LLM-Wiki principles before Phase 1a implementation work. | `skills/*/SKILL.md` | All 10 backed skill bodies rewritten as richer operational manuals with mission, boundaries, workflow, graph/color discipline, safety gates, and done criteria. | User reviews skill bodies. | Existing test suite remains green. | T0.1, T0.2 | done |
-| T0.7 | Human-readable command and graph/status clarity pass: make slash command descriptions understandable, lock Obsidian graph colors to repo/service/module/feature/document/contract semantics, and require a cross-cutting Gap Check in status. | `commands/*.md`, `skills/status/SKILL.md`, `skills/render/SKILL.md`, `assets/obsidian/*`, `tools/status.py`, `README.md` | Commands retain stable machine names but expose human meanings; Obsidian colors match red repos/services, green modules/domains, blue features/flows, black docs, orange contracts; status output always includes `Gap Check`. | User reviews command wording and graph legend. | Unit tests cover status gap output and Obsidian color contract. | T0.6 | done |
-| T0.8 | Codex/OpenAI adapter pass: add Codex install instructions, prefixed Codex skill installation, and Claude/Codex command mapping. | `README.md`, `docs/codex-adapter.md`, `scripts/install_codex.py`, `tests/unit/test_install_codex.py` | User can install Claude Code plugin or Codex skills from README; Codex skill names are prefixed as `$alpha-wiki-*`; installer is tested. | User reviews install UX. | Unit tests cover Codex skill transform/install. | T0.7 | done |
-| T0.9 | Best-practices gap scan: identify operator and AI ergonomics still missing before Phase 1a. | `docs/best-practices-gap-analysis-2026-04-30.md` | Added actionable gap list covering doctor checks, prompt cards, pressure fixtures, provenance scoring, graph QA snapshots, context budgets, and platform compatibility. | User reviews prioritization. | N/A. | T0.8 | done |
-| T0.10 | Karpathy LLM-Wiki compliance audit: verify simple markdown memory, `ingest/query/lint`, `index.md`/`log.md`, no embeddings, and fast context orientation through `context_brief.md`. | `docs/karpathy-llm-wiki-compliance-audit-2026-05-01.md` | Audit records pass/partial/gap status with repo evidence and Phase 1a follow-ups. | User reviews audit verdict. | Existing test suite remains green. | T0.9 | done |
-
-Phase 0 gate: T0.1 through T0.10 closed. → Phase 1a starts.
-
----
-
-## Phase 1a — Alpha-Wiki hardening (in-place)
-
-Goal: 10 backed skills upgraded to deep operational manuals; 3 new skills added.
-
-Repo: `yura4gus/alpha-wiki-creator` (in place, no rename).
-
-### Phase 1a.1 — Skill audit pass on backed 10
-
-Each task follows the same shape: build on the Phase 0 skill-content audit, bring SKILL.md to full 15-dimension standard from `design/00-architecture.md` §5.2, reformulate trigger description to trigger conditions only, and add pressure tests.
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1a.1 | Skill audit on `init`. Add migration mode for existing repos. Add rollback plan. Enforce "first lint + first graph + first status" checklist. | `skills/init/SKILL.md`, `skills/init/references/*`, `tools/init_audit.py` (new) | All 15 dimensions documented; trigger description ≤2 sentences, conditions only; 5 pressure scenarios pass. | User skim of SKILL.md. | `tests/skills/test_init_pressure.py` (5 scenarios). | T0 closed |
-| T1a.2 | Skill audit on `ingest`. Add claim extraction with provenance, contradiction detection against existing claims, risk extraction, stale-claim auto-flag. | `skills/ingest/SKILL.md`, `tools/ingest_pipeline.py` (new), `tools/classifier.py` (new), `tools/contradiction_detector.py` (new) | 15 dimensions; pipeline matches `01-alpha-wiki.md` §4.2; 7 pressure scenarios pass. | User skim. | `tests/skills/test_ingest_pressure.py` (7 scenarios: PDF, OpenAPI, transcript, ADR, contradicting claim, oversized, unparseable). | T1a.1 |
-| T1a.3 | Skill audit on `query`. Add truth-status taxonomy in output (accepted / assumption / risk / open / stale). Add contradiction surfacing. Define citation policy (file path + line range). | `skills/query/SKILL.md`, `tools/wiki_search.py` (new) | 15 dimensions; output sections explicit; citation policy documented; 4 pressure scenarios pass. | User skim. | `tests/skills/test_query_pressure.py` (4 scenarios). | T1a.1 |
-| T1a.4 | Skill audit on `lint`. Formalize severity model (🔴/🟡/🟢) as data. Add `--suggest` LLM-assisted mode. Verify all 15 checks from `01-alpha-wiki.md` §4.4 are present. | `skills/lint/SKILL.md`, `tools/lint.py`, `tools/lint_checks/*.py` | All 15 checks present; 5 modes work (`--fix`, `--suggest`, `--dry-run`, `--ci`, `--pre-commit`); 45 existing tests pass; new tests for added checks pass. | User skim. | Existing 45 + new per check (≥10 added). | T1a.1 |
-| T1a.5 | Skill audit on `evolve`. Add migration plan generation for existing pages on schema change. Add optional generated child skill. | `skills/evolve/SKILL.md`, `tools/wiki_engine.py` (extend) | 15 dimensions; migration plan written when schema change affects existing entity type; 3 pressure scenarios pass. | User skim. | `tests/skills/test_evolve_pressure.py` (3 scenarios). | T1a.1 |
-| T1a.6 | Skill audit on `status`. Add health score formula. Add suggested-next-actions logic. Add integration-status section (only when AgentOps detected). | `skills/status/SKILL.md`, `tools/status_report.py` (new) | 15 dimensions; output matches `01-alpha-wiki.md` §4.5; 4 pressure scenarios pass (empty, 1-page, 100-page, broken-links). | User skim. | `tests/skills/test_status_pressure.py` (4). | T1a.1, T1a.4 |
-| T1a.7 | Skill audit on `spawn-agent`. Implement ADR-006 boundary: zero references to AgentOps team-role names; detect AgentOps presence informationally only. | `skills/spawn-agent/SKILL.md` | 15 dimensions; source contains zero AgentOps team-role references; standalone path and helper-path both pass. | User skim + grep check. | `tests/skills/test_spawn_agent_boundary.py` (2 scenarios: standalone, helper-mode with payload). | T1a.1 |
-| T1a.8 | Skill audit on `render`. Add Mermaid output. Add static HTML export. | `skills/render/SKILL.md`, `tools/render_html.py` (new), `tools/render_mermaid.py` (new) | 15 dimensions; 4 modes work (`obsidian`, `html`, `mermaid`, `dot`); snapshot tests pass. | User skim. | `tests/skills/test_render_snapshots.py` (4 modes × sample wiki). | T1a.1 |
-
-### Phase 1a.2 — New skills
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1a.9 | Implement `contracts-check` skill: contract page has service owner, consumers bidirectionally consistent, version bumps have migration notes. | `skills/contracts-check/SKILL.md`, `tools/contracts_check.py` (new) | 15 dimensions; 3 detection cases work (no consumer, version-bump-no-migration, overlapping definition). | User skim. | `tests/skills/test_contracts_check.py` (3). | T1a.4 |
-| T1a.10 | Implement `claims-check` skill: detect contradicting claims, stale claims by frontmatter date, claims missing provenance. | `skills/claims-check/SKILL.md`, `tools/claims_check.py` (new) | 15 dimensions; 3 detection cases work. | User skim. | `tests/skills/test_claims_check.py` (3). | T1a.2 |
-| T1a.11 | Implement `daily-maintenance` skill: idempotent bundle (lint --fix + context_brief rebuild + log append + stale surface). | `skills/daily-maintenance/SKILL.md` | 15 dimensions; idempotent (run twice → identical state on second run); failure non-destructive. | User skim. | `tests/skills/test_daily_maintenance_idempotency.py` (1). | T1a.4, T1a.6 |
-
-### Phase 1a.3 — Contingent skills (resolve per T0.2)
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1a.12 | Resolve `review` status. If exists: harden to 15-dimension standard. If absent: write SKILL.md from scratch covering wiki-level review (stale, link rot, schema drift, gaps). | `skills/review/SKILL.md`, `commands/review.md`, `tools/review.py` | Backed minimal implementation exists; full 15-dimension hardening remains P1. Clearly distinguished from AgentOps `cto-review`. | User skim. | `tests/unit/test_review_rollup.py`. | T0.2 |
-| T1a.13 | Resolve `rollup` status. Same treatment. | `skills/rollup/SKILL.md`, `commands/rollup.md`, `tools/rollup.py` | Backed minimal implementation exists; full 15-dimension hardening remains P1. Writes idempotent period rollup. | User skim. | `tests/unit/test_review_rollup.py`. | T0.2 |
-
-### Phase 1a.4 — Release prep
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1a.14 | Update README with hardened skill list, new skills, removed ambiguities. | `README.md` | README accurate; all skills listed match repo. | User skim. | N/A. | T1a.1 – T1a.13 |
-| T1a.15 | Update CHANGELOG. Bump semver minor. Tag release. | `CHANGELOG.md`, git tag | Tag pushed; release notes describe hardening + new skills. | User approval. | N/A. | T1a.14 |
-| T1a.16 | Smoke test on a real project (Seldon-CRM raw materials). | N/A | `init` + `ingest` + `query` + `lint` + `status` end-to-end works on Seldon-CRM PRD + AUDIT_TASKS without errors. | User runs and confirms. | Manual run, output captured. | T1a.15 |
-
-Phase 1a gate: all tests green; CI passes; smoke test on Seldon-CRM passes; semver bump tagged.
-
----
-
-## Phase 1b — AgentOps MVP (new repo)
-
-Goal: AgentOps installable as separate plugin; standalone (Markdown fallback) functional. Sequential after Phase 1a.
-
-Repo: new (working name `agentops`, owner TBD before kickoff).
-
-### Phase 1b.1 — Plugin scaffold
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.1 | Create new repo. Initialize plugin scaffold per `design/02-agentops.md` §2. | Whole `agentops/` repo | `claude plugins marketplace add <owner>/agentops && claude plugins install agentops` works. Plugin loads. | User runs plugin add. | N/A. | T1a closed |
-| T1b.2 | Set up Python 3.12+ + uv. Mirror `pyproject.toml` style from alpha-wiki-creator. | `pyproject.toml`, `uv.lock` | `uv sync --dev` succeeds. | None. | N/A. | T1b.1 |
-| T1b.3 | Set up CI (GitHub Actions) for lint + tests. | `.github/workflows/ci.yml` | CI green on empty test run. | None. | N/A. | T1b.2 |
-
-### Phase 1b.2 — Tier 1 skill: `init-project`
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.4 | Implement `init-project` SKILL.md per `design/02-agentops.md` §3.1, all 10 operations. | `skills/_tier1/init-project/SKILL.md`, `skills/_tier1/init-project/references/*`, `skills/_tier1/init-project/scripts/*` | 15 dimensions; 10 ops enumerated; 4 gates implemented; 8 interview questions wired; resumability via `.claude/agentops-init-state.json`. | User skim. | `tests/skills/test_init_project_pressure.py` (6 scenarios per §3.1 tests row). | T1b.3 |
-| T1b.5 | Implement `tools/state_init.py` for state file initialization. | `tools/state_init.py` | Initializes 7 living state files + 2 ADR + first plan template. | None. | `tests/tools/test_state_init.py`. | T1b.4 |
-| T1b.6 | Implement `tools/classifier.py` for project-specific agent detection. | `tools/classifier.py` | Detects 13 signals from `design/02-agentops.md` §6.1 with confidence scoring. | None. | `tests/tools/test_classifier.py` (per signal). | T1b.4 |
-
-### Phase 1b.3 — Tier 1 skills: remaining 4
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.7 | Implement `onboard` SKILL.md. | `skills/_tier1/onboard/SKILL.md` | 15 dimensions; ≤500-word summary on test project; 3 pressure scenarios pass. | User skim. | `tests/skills/test_onboard.py`. | T1b.4 |
-| T1b.8 | Implement `plan-slice` SKILL.md with 3 gates and native brainstorm + decomposition fallback. | `skills/_tier1/plan-slice/SKILL.md` | 15 dimensions; native brainstorm works without Superpowers; 3 pressure scenarios pass. | User skim. | `tests/skills/test_plan_slice.py`. | T1b.4 |
-| T1b.9 | Implement `execute-slice` SKILL.md with native discipline (TDD, two-stage review, verification-before-done embedded). | `skills/_tier1/execute-slice/SKILL.md` | 15 dimensions; runs end-to-end without Superpowers; 5 pressure scenarios pass. | User skim. | `tests/skills/test_execute_slice.py`. | T1b.8 |
-| T1b.10 | Implement `cto-review` SKILL.md with 7-question audit. | `skills/_tier1/cto-review/SKILL.md` | 15 dimensions; produces review document at correct path; 3 pressure scenarios pass. | User skim. | `tests/skills/test_cto_review.py`. | T1b.4, T1b.7 |
-
-### Phase 1b.4 — Tier 2 skills (P0 subset)
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.11 | Implement `canon-install` Tier 2 skill: generate 8 architecture canon docs (Clean + Hexagonal). | `skills/_tier2_internal/canon-install/SKILL.md`, `tools/canon_install.py`, `templates/architecture/*.md.tmpl` | 15 dimensions; 8 docs generated with project-specific placeholder substitution. | User skim. | `tests/skills/test_canon_install.py`. | T1b.4 |
-| T1b.12 | Implement `domain-freeze` Tier 2 skill: 4 freeze docs + packages skeleton. | `skills/_tier2_internal/domain-freeze/SKILL.md`, `templates/domain/*.md.tmpl` | 15 dimensions; 4 docs generated; ADR-002 created. | User skim. | `tests/skills/test_domain_freeze.py`. | T1b.4 |
-| T1b.13 | Implement `adr-write` Tier 2 skill: standardized ADR with 6 required sections. | `skills/_tier2_internal/adr-write/SKILL.md`, `templates/communication/adr.md.tmpl` | 15 dimensions; ADR template enforced. | User skim. | `tests/skills/test_adr_write.py`. | T1b.4 |
-| T1b.14 | Implement `agent-handoff` Tier 2 skill. | `skills/_tier2_internal/agent-handoff/SKILL.md`, `templates/communication/handoff.md.tmpl` | 15 dimensions; handoff frontmatter + 6 sections enforced. | User skim. | `tests/skills/test_agent_handoff.py`. | T1b.9 |
-| T1b.15 | Implement `state-files-update` Tier 2 skill: atomic update of 7 living state files. | `skills/_tier2_internal/state-files-update/SKILL.md` | 15 dimensions; atomic (all-or-nothing) update; concurrency-safe. | User skim. | `tests/skills/test_state_files_update.py`. | T1b.4 |
-| T1b.16 | Implement `agent-skills-bootstrap` Tier 2 skill: 9 universal + N project-specific. Native path (no spawn-agent helper for now). | `skills/_tier2_internal/agent-skills-bootstrap/SKILL.md` | 15 dimensions; 9 universal agents written to `.claude/skills/agent-*/SKILL.md`; project-specific agents detected via `tools/classifier.py`. | User skim. | `tests/skills/test_agent_skills_bootstrap.py`. | T1b.6 |
-| T1b.17 | Implement `wiki-backend-adapter` Tier 2 skill (initial: detection only, paths resolve to `docs/agentops/` always — full wiki integration in Phase 2). | `skills/_tier2_internal/wiki-backend-adapter/SKILL.md` | 15 dimensions; detection works; paths resolve correctly with no-Alpha-Wiki fallback only. | User skim. | `tests/skills/test_wiki_backend_adapter_detection.py`. | T1b.4 |
-
-### Phase 1b.5 — Tier 2 skills (P1, native only)
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.18 | Implement `tdd-cycle` Tier 2 skill (native, RED-GREEN-REFACTOR). | `skills/_tier2_internal/tdd-cycle/SKILL.md` | 15 dimensions; deletes code written without test; enforces gate. | User skim. | `tests/skills/test_tdd_cycle.py`. | T1b.9 |
-| T1b.19 | Implement `two-stage-review` Tier 2 skill (native). | `skills/_tier2_internal/two-stage-review/SKILL.md` | 15 dimensions; 2 passes; critical issues block. | User skim. | `tests/skills/test_two_stage_review.py`. | T1b.9 |
-| T1b.20 | Implement `verification-before-done` Tier 2 skill (native). | `skills/_tier2_internal/verification-before-done/SKILL.md` | 15 dimensions; verification commands run; output attached to handoff. | User skim. | `tests/skills/test_verification_before_done.py`. | T1b.9 |
-| T1b.21 | Implement `dependency-rule-check` Tier 2 skill. | `skills/_tier2_internal/dependency-rule-check/SKILL.md`, `tools/dependency_check.py` | 15 dimensions; detects Clean+Hexagonal violations; respects strict/lenient/off modes. | User skim. | `tests/skills/test_dependency_rule_check.py` (per violation type). | T1b.11 |
-| T1b.22 | Implement `contract-change-request` Tier 2 skill. | `skills/_tier2_internal/contract-change-request/SKILL.md`, `templates/communication/ccr.md.tmpl` | 15 dimensions; CCR file created; Domain Agent dispatched. | User skim. | `tests/skills/test_contract_change_request.py`. | T1b.12 |
-| T1b.23 | Implement `integration-issue` Tier 2 skill. | `skills/_tier2_internal/integration-issue/SKILL.md`, `templates/communication/integration-issue.md.tmpl` | 15 dimensions; II file created. | User skim. | `tests/skills/test_integration_issue.py`. | T1b.4 |
-| T1b.24 | Implement `pre-integration-check` Tier 2 skill. | `skills/_tier2_internal/pre-integration-check/SKILL.md` | 15 dimensions; 7 checks per `02-agentops.md` §9.3; blocks merge if 🔴. | User skim. | `tests/skills/test_pre_integration_check.py`. | T1b.21, T1b.12 |
-
-### Phase 1b.6 — Tier 2 skills (P2, deferred to end of 1b)
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.25 | Implement `release-readiness` Tier 2 skill: 9-step check. | `skills/_tier2_internal/release-readiness/SKILL.md` | 15 dimensions; readiness report generated. | User skim. | `tests/skills/test_release_readiness.py`. | T1b.10 |
-| T1b.26 | Implement `audit-challenge` Tier 2 skill (devil's advocate). | `skills/_tier2_internal/audit-challenge/SKILL.md` | 15 dimensions; produces challenge doc. | User skim. | `tests/skills/test_audit_challenge.py`. | T1b.10 |
-| T1b.27 | Implement `superpowers-adapter` Tier 2 skill (initial: detection only, no phase mapping yet — full mapping in Phase 3). | `skills/_tier2_internal/superpowers-adapter/SKILL.md` | 15 dimensions; detection works; logs result; no active mapping yet. | User skim. | `tests/skills/test_superpowers_adapter_detection.py`. | T1b.4 |
-
-### Phase 1b.7 — Universal agents (9)
-
-Each task: write the SKILL.md per `design/02-agentops.md` §5 with 15 dimensions and the role's specific bounded context, communication mechanisms, allowed tools.
-
-| ID | Agent | File | Acceptance | Tests | Depends |
-|---|---|---|---|---|---|
-| T1b.28 | CTO Integration | `skills/agents/cto-integration/SKILL.md` | 15 dimensions; weekly 7-question audit responsibility documented. | `tests/agents/test_cto_integration.py`. | T1b.10 |
-| T1b.29 | Product / Business Analyst | `skills/agents/product-business-analyst/SKILL.md` | 15 dimensions. | `tests/agents/test_product.py`. | T1b.4 |
-| T1b.30 | Domain & Contracts | `skills/agents/domain-and-contracts/SKILL.md` | 15 dimensions; CCR gatekeeper logic. | `tests/agents/test_domain.py`. | T1b.22 |
-| T1b.31 | Technical Analyst | `skills/agents/technical-analyst/SKILL.md` | 15 dimensions. | `tests/agents/test_tech_analyst.py`. | T1b.13 |
-| T1b.32 | Security Architect | `skills/agents/security-architect/SKILL.md` | 15 dimensions; pre-merge security check (level 6). | `tests/agents/test_security.py`. | T1b.24 |
-| T1b.33 | QA / Integration | `skills/agents/qa-integration/SKILL.md` | 15 dimensions; pre-slice integration review (level 4). | `tests/agents/test_qa.py`. | T1b.24 |
-| T1b.34 | Documentation | `skills/agents/documentation/SKILL.md` | 15 dimensions. | `tests/agents/test_documentation.py`. | T1b.4 |
-| T1b.35 | Release Manager | `skills/agents/release-manager/SKILL.md` | 15 dimensions; release readiness (level 8). | `tests/agents/test_release.py`. | T1b.25 |
-| T1b.36 | Audit / Challenge | `skills/agents/audit-challenge/SKILL.md` | 15 dimensions. | `tests/agents/test_audit_challenge_agent.py`. | T1b.26 |
-
-### Phase 1b.8 — Project-specific agent templates
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.37 | Write 13 project-specific agent templates per `design/02-agentops.md` §6.1. | `templates/project-specific-agents/*.md.tmpl` (13 files) | All 13 templates exist; placeholder substitution works. | User skim. | `tests/templates/test_project_specific_agents.py`. | T1b.6 |
-
-### Phase 1b.9 — Tools
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.38 | Implement `tools/canon_install.py`. | `tools/canon_install.py` | Generates 8 canon docs from templates. | None. | `tests/tools/test_canon_install.py`. | T1b.11 |
-| T1b.39 | Implement `tools/dependency_check.py`. | `tools/dependency_check.py` | Detects Clean+Hexagonal violations on test fixtures. | None. | `tests/tools/test_dependency_check.py`. | T1b.21 |
-| T1b.40 | Implement `tools/contract_check.py`. | `tools/contract_check.py` | Native AgentOps contract check (used when Alpha-Wiki absent). | None. | `tests/tools/test_contract_check.py`. | T1b.22 |
-| T1b.41 | Implement `tools/audit_aggregator.py`. | `tools/audit_aggregator.py` | Aggregates handoffs over period for `cto-review`. | None. | `tests/tools/test_audit_aggregator.py`. | T1b.10 |
-
-### Phase 1b.10 — Templates
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.42 | Write 7 living state file templates. | `templates/state/*.md.tmpl` (7 files) | Template syntax valid; placeholder substitution works. | User skim. | N/A. | T1b.5 |
-| T1b.43 | Write 4 communication templates (handoff, ccr, adr, integration-issue). | `templates/communication/*.md.tmpl` (4 files) | Frontmatter + sections per `02-agentops.md` §7. | User skim. | N/A. | T1b.13, T1b.14, T1b.22, T1b.23 |
-| T1b.44 | Write 8 architecture canon templates. | `templates/architecture/*.md.tmpl` (8 files) | Project-placeholder substitution; reflects Clean+Hexagonal docs from `_references.md`. | User skim. | N/A. | T1b.11 |
-| T1b.45 | Write 4 domain freeze templates. | `templates/domain/*.md.tmpl` (4 files) | Templates per `02-agentops.md` §3.1.1 Op 8. | User skim. | N/A. | T1b.12 |
-| T1b.46 | Write frontmatter schemas for 10 entity types. | `templates/frontmatter/*.yaml` (10 files) | Schemas valid YAML; each entity type covered. | User skim. | N/A. | T1b.4 |
-
-### Phase 1b.11 — References
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.47 | Write `references/operating-model.md`. | `references/operating-model.md` | Full operating model from `design/02-agentops.md` §§3–9. | User skim. | N/A. | All Phase 1b done |
-| T1b.48 | Write `references/communication-protocol.md`. | `references/communication-protocol.md` | Detailed 4 mechanisms with examples. | User skim. | N/A. | T1b.43 |
-| T1b.49 | Write `references/architecture-canon.md`. | `references/architecture-canon.md` | Clean+Hexagonal patterns, dependency matrix, anti-patterns. | User skim. | N/A. | T1b.44 |
-| T1b.50 | Write `references/classifier-taxonomy.md`. | `references/classifier-taxonomy.md` | 11 raw artifact categories + detection signals. | User skim. | N/A. | T1b.6 |
-| T1b.51 | Write `references/review-levels.md` and `references/rhythms.md`. | `references/review-levels.md`, `references/rhythms.md` | 9 review levels + 5 rhythms documented. | User skim. | N/A. | None |
-
-### Phase 1b.12 — Smoke test and release
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T1b.52 | Smoke test on Seldon-CRM: standalone AgentOps `init-project` end-to-end without Alpha-Wiki. | N/A | All 10 operations complete; 9 universal agents installed; project-specific agents detected; first slice plan generated; handoff report output. | User runs and confirms. | Manual run, output captured. | All Phase 1b skills done |
-| T1b.53 | Write README, INSTALL, CHANGELOG. Tag v0.1.0. | `README.md`, `INSTALL.md`, `CHANGELOG.md` | README + INSTALL accurate; v0.1.0 tagged. | User approval. | N/A. | T1b.52 |
-
-Phase 1b gate: AgentOps standalone init runs end-to-end on a clean project without Alpha-Wiki, without Superpowers; v0.1.0 tagged.
-
----
-
-## Phase 2 — Alpha-Wiki ↔ AgentOps integration
-
-Goal: AgentOps uses Alpha-Wiki as backend cleanly when both installed.
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T2.1 | Extend `wiki-backend-adapter` with full detection + path routing to `wiki/agentops/`. | `agentops/skills/_tier2_internal/wiki-backend-adapter/SKILL.md` | Detection + routing per `design/04-state-backend-contract.md` §4. | User skim. | `tests/integration/test_wiki_backend_routing.py`. | T1b done |
-| T2.2 | Implement integration: AgentOps `init-project` Op 3 delegates to Alpha-Wiki `ingest`. | `agentops/skills/_tier1/init-project/SKILL.md` (update) | When Alpha-Wiki present, raw materials ingested via `alpha-wiki:ingest`. | User skim. | `tests/integration/test_init_with_alpha_wiki.py`. | T2.1 |
-| T2.3 | Implement integration: AgentOps `agent-skills-bootstrap` uses Alpha-Wiki `spawn-agent` as helper (per ADR-006). | `agentops/skills/_tier2_internal/agent-skills-bootstrap/SKILL.md` (update) | When Alpha-Wiki present, agent registration goes through `spawn-agent` with team-role payload. | User skim. | `tests/integration/test_spawn_agent_helper.py`. | T2.1, T1a.7 |
-| T2.4 | Implement integration: AgentOps `cto-review` invokes Alpha-Wiki `contracts-check` and `claims-check`. | `agentops/skills/_tier1/cto-review/SKILL.md` (update) | When Alpha-Wiki present, both checks run; results in review doc. | User skim. | `tests/integration/test_cto_review_with_alpha_wiki.py`. | T2.1, T1a.9, T1a.10 |
-| T2.5 | Implement integration: AgentOps `onboard` reads `wiki/graph/context_brief.md` directly when Alpha-Wiki present. | `agentops/skills/_tier1/onboard/SKILL.md` (update) | Context loaded from Alpha-Wiki when present. | User skim. | `tests/integration/test_onboard_with_alpha_wiki.py`. | T2.1 |
-| T2.6 | Implement migration helper: `agentops:migrate-to-wiki`. | `agentops/skills/_tier2_internal/wiki-backend-adapter/migrate.py` | Moves `docs/agentops/` to `wiki/agentops/` cleanly. | User runs and confirms. | `tests/integration/test_migration_to_wiki.py`. | T2.1 |
-| T2.7 | Update Alpha-Wiki `status` to surface AgentOps integration status section when AgentOps detected. | `alpha-wiki-creator/skills/status/SKILL.md` (update) | Section appears when AgentOps installed; informational only. | User skim. | `tests/skills/test_status_with_agentops.py`. | T2.1, T1a.6 |
-| T2.8 | Integration test suite covering all 6 plugin combinations from `design/00-architecture.md` §3.1. | `agentops/tests/integration/test_combinations.py` | All 6 combinations verified. | User reviews. | The test itself. | T2.1 – T2.7 |
-| T2.9 | Smoke test on Seldon-CRM: AgentOps + Alpha-Wiki combined mode end-to-end. | N/A | Combined mode init produces correct paths, integration capabilities work. | User runs and confirms. | Manual run, output captured. | T2.8 |
-
-Phase 2 gate: T2.8 + T2.9 pass; both plugins versioned with combined-mode notes in CHANGELOG.
-
----
-
-## Phase 3 — Superpowers integration
-
-Goal: AgentOps uses Superpowers when present via process-level adapter.
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T3.1 | Extend `superpowers-adapter` with full detection per `design/03-superpowers-adapter.md` §3. | `agentops/skills/_tier2_internal/superpowers-adapter/SKILL.md` | Detection works for plugin marker + skill availability. | User skim. | `tests/integration/test_superpowers_detection.py`. | T1b done |
-| T3.2 | Implement phase mapping for `plan-slice`: instruct invocation of `superpowers:brainstorming` + `superpowers:writing-plans`. | `agentops/skills/_tier1/plan-slice/SKILL.md` (update) | When Superpowers present, instructions emitted; native fallback when absent. | User skim. | `tests/integration/test_plan_slice_with_superpowers.py`. | T3.1 |
-| T3.3 | Implement phase mapping for `execute-slice`: instruct invocation of `superpowers:subagent-driven-development` + `superpowers:test-driven-development` + `superpowers:requesting-code-review`. | `agentops/skills/_tier1/execute-slice/SKILL.md` (update) | When Superpowers present, instructions emitted at each phase. | User skim. | `tests/integration/test_execute_slice_with_superpowers.py`. | T3.1 |
-| T3.4 | Implement phase mapping for `pre-integration-check`: instruct invocation of `superpowers:verification-before-completion` alongside AgentOps contract checks. | `agentops/skills/_tier2_internal/pre-integration-check/SKILL.md` (update) | When Superpowers present, both run. | User skim. | `tests/integration/test_pre_integration_with_superpowers.py`. | T3.1 |
-| T3.5 | Implement backend-choice logging to `decision_log.md`. | `agentops/tools/_logging.py` | Every Tier 1 invocation logs backend choice. | None. | `tests/tools/test_backend_logging.py`. | T3.1 |
-| T3.6 | Verify hard guarantees: no programmatic API call, no override of project rules, no override of Alpha-Wiki schema. | `agentops/tests/integration/test_superpowers_guarantees.py` | All 5 guarantees from `03-superpowers-adapter.md` §7 enforced. | User reviews. | The test itself. | T3.1 – T3.5 |
-| T3.7 | Smoke test on Seldon-CRM: full mode (AgentOps + Alpha-Wiki + Superpowers) end-to-end. | N/A | Full mode produces backend-choice logs; Superpowers used at correct phases. | User runs and confirms. | Manual run, output captured. | T3.6 |
-
-Phase 3 gate: T3.6 + T3.7 pass; AgentOps works identically with and without Superpowers, just slower/less polished without.
-
----
-
-## Phase 4 — Automation and CI
-
-Goal: All hooks and CI workflows reliable.
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T4.1 | Implement `init-project` hooks installation: session-start, pre-tool-use, post-tool-use, session-end. | `agentops/templates/hooks/*.sh` | Hooks installed when `automation_level=full`; functional. | User skim. | `tests/integration/test_hooks_installed.py`. | T2 done |
-| T4.2 | Implement pre-commit hook chain: alpha-wiki lint + agentops dependency-rule-check + pre-integration-check. | `agentops/templates/hooks/pre-commit.sh` | Chain runs; blocks 🔴; respects mode settings. | User runs commit. | `tests/integration/test_pre_commit_chain.py`. | T4.1 |
-| T4.3 | Implement GitHub Actions workflow: `agentops-lint.yml` (on push/PR). | `agentops/templates/workflows/agentops-lint.yml` | Lint runs in CI; fails build on 🔴 in strict mode. | User reviews CI run. | The workflow itself. | T4.2 |
-| T4.4 | Implement GitHub Actions workflow: `agentops-review.yml` (weekly cron). | `agentops/templates/workflows/agentops-review.yml` | Weekly cron triggers `cto-review`; result posted as issue. | User reviews CI run. | The workflow itself. | T4.3 |
-| T4.5 | Implement Alpha-Wiki CI workflows hardening: `wiki-lint.yml`, `wiki-review.yml`, `wiki-rollup.yml`. | `alpha-wiki-creator/.github/workflows/*` | Workflows match Phase 1a hardened skills. | User reviews CI run. | Workflows themselves. | T1a done, T1a.12, T1a.13 |
-| T4.6 | Health report generation skill / cron. | `agentops/skills/_tier2_internal/release-readiness/SKILL.md` (extend) or new | Report generated on demand and weekly; published to `<state-backend>/agentops/state/health-report.md`. | User skim. | `tests/integration/test_health_report.py`. | T4.4 |
-| T4.7 | Mock-project test: full automation chain runs green on a synthetic project. | `agentops/tests/integration/test_automation_e2e.py` | All hooks + CI green. | User reviews. | The test itself. | T4.1 – T4.6 |
-
-Phase 4 gate: T4.7 passes; documentation describes automation in detail.
-
----
-
-## Phase 5 — Packaging and marketplace
-
-Goal: Distributable plugins; users can install and follow quickstart.
-
-| ID | Objective | Files | Acceptance | Gate | Tests | Depends |
-|---|---|---|---|---|---|---|
-| T5.1 | Finalize `plugin.json` for Alpha-Wiki (existing — verify Phase 1a additions reflected). | `alpha-wiki-creator/.claude-plugin/plugin.json` | All hardened + new skills listed; version current. | User skim. | N/A. | T1a done |
-| T5.2 | Finalize `plugin.json` for AgentOps. | `agentops/.claude-plugin/plugin.json` | All Tier 1 + Tier 2 + agent skills listed; version 1.0.0. | User skim. | N/A. | T3 done, T4 done |
-| T5.3 | Decide marketplace topology (revisit ADR-005). | `design/adr/ADR-005-marketplace-topology-deferred.md` (update or supersede) | Decision recorded with criteria evaluated. | User approval. | N/A. | T5.1, T5.2 |
-| T5.4 | If umbrella decided: create marketplace repo and manifest. | `<umbrella-repo>/` | Marketplace lists both plugins; users install via single marketplace add. | User runs full install flow. | `tests/integration/test_marketplace_install.py`. | T5.3 (only if Yes) |
-| T5.5 | Write INSTALL docs per platform (Claude Code primary; Codex / Gemini CLI compatibility notes). | `agentops/INSTALL.md`, `alpha-wiki-creator/INSTALL.md` (update) | Per-platform install instructions; known limitations documented. | User skim. | N/A. | T5.2 |
-| T5.6 | Write compatibility matrix doc: which AgentOps capabilities work on which platforms. | `agentops/docs/compatibility.md` | Matrix accurate per release. | User skim. | N/A. | T5.5 |
-| T5.7 | Write migration guide for existing alpha-wiki-creator users. | `alpha-wiki-creator/docs/migration-from-v0.x.md` | Guide covers any breaking changes from Phase 1a. | User skim. | N/A. | T1a.15 |
-| T5.8 | Write examples directory with at least 3 example projects demonstrating different combinations. | `agentops/examples/`, `alpha-wiki-creator/examples/` | Examples cover: Alpha-Wiki only, AgentOps only, both combined. | User runs each example. | Manual run. | T5.6 |
-| T5.9 | Versioning policy + release notes. | `agentops/CHANGELOG.md`, `alpha-wiki-creator/CHANGELOG.md` (update) | Semver discipline documented; release notes complete for v1.0.0. | User approval. | N/A. | T5.8 |
-| T5.10 | Public release: tag v1.0.0 for AgentOps; tag v1.x.0 for Alpha-Wiki. | Tags + release notes | Both plugins installable from tagged release. | User runs install on a fresh machine. | Manual install. | T5.9 |
-
-Phase 5 gate: External user installs from public release, follows quickstart, succeeds.
-
----
-
-## Phase 6 — Advanced (deferred items)
-
-Goal: Add only after MVP proves stable in real usage.
-
-Items below are placeholders — each becomes a full Phase 6.x task list when prioritized.
-
-| ID | Item | Triggered by |
+| DONE | Acceptance verified for the stated task scope; publication is required only for a publication task. |
+| IN_REVIEW | Implemented locally or partially, but not yet accepted/published. |
+| READY | Agreed and sufficiently specified to execute. |
+| BLOCKED | Cannot progress without a named external action or accepted dependency. |
+| CANDIDATE | Useful proposal; needs evidence or a scope decision before execution. |
+| DEFERRED | Explicitly outside the current delivery horizon. |
+| REJECTED | Conflicts with the product boundary or duplicates another system. |
+
+### Required Task Fields
+
+Every executable task must have:
+
+- stable ID and domain;
+- user or product outcome;
+- bounded scope and explicit non-scope;
+- implementation subtasks;
+- acceptance criteria;
+- verification evidence;
+- dependencies and owner;
+- priority, status, and release target.
+- required final environment and evidence level; actual demonstrated level and
+  earliest unmet applicable transition.
+
+An implementation, a passing import, `--help`, a CI badge, a wiki status, and an
+owner vote are different evidence types. None substitutes for another.
+
+Keep task status separate from delivery evidence. L1 SPEC_READY, L2
+CODE_VERIFIED, L3 INTEGRATION_VERIFIED, L4 MERGED_BUILD, L5 DEPLOYED_VERIFIED,
+and L6 PROD_ACCEPTED use the definitions in `references/concept.md`. A local
+document pilot can close at L2; a production feature requiring a live business
+journey cannot close at L2 or from a health probe alone. Record NOT_APPLICABLE
+for irrelevant stages, UNVERIFIED for unchecked behavior, and FAILED for an
+observed failed check. BLOCKED additionally needs the mandatory gate, failure
+evidence, impact, owner, minimum fix and clearing condition. These labels do
+not migrate existing task enums or optional AgentOps statuses.
+
+## 4. Consolidated Decision Ledger
+
+| Topic | State | Consolidated decision |
 |---|---|---|
-| P6.A | Claim confidence levels (high / medium / low + provenance grade) | Real usage shows ambiguity in claim status |
-| P6.B | Source confidence (primary / secondary / tertiary) | Real usage shows source-quality conflicts |
-| P6.C | Supersession model (claim formally supersedes another) | Real usage shows claim evolution patterns |
-| P6.D | Contradiction graph | Real usage shows persistent unresolved contradictions |
-| P6.E | Multi-project memory | User has multiple `<framework>` projects and wants cross-project recall |
-| P6.F | Static web UI | Obsidian + GitHub web view insufficient for some users |
-| P6.G | Richer Obsidian graph customization | User feedback on graph view |
-| P6.H | Repo import skill (`import-github-repo`) | Use case validated |
-| P6.I | Transcript import structured pipeline | Use case validated |
-| P6.J | Structured research agents | OmegaWiki-like research workflows requested |
-| P6.K | BM25 backend | File search proves insufficient at scale |
-| P6.L | Vector / embedding backend | BM25 proves insufficient at scale (very high bar; revisit ADR-003) |
-| P6.M | Cross-project agent memory | Use case validated |
-| P6.N | Cross-platform tool name mapping (Read → read_file etc.) for Codex / Gemini | User demand |
+| Repo-native Markdown memory | ACCEPTED | Plain files remain the primary memory and review surface. |
+| Karpathy core operations | ACCEPTED | `ingest`, `query`, and `lint` remain the conceptual center. |
+| Graph semantics | ACCEPTED | Typed links form clusters; color labels node role, not cluster membership. |
+| Canonical document lifecycle | IN_REVIEW | Finite canon, one ownership parent, separate evidence/candidates/projections; local worker plans source deltas, applies reviewed edits, preserves normative sections during compaction, journals and checkpoints. Not published in 0.6.2. |
+| Claude and Codex | ACCEPTED | Both are supported; platform differences must remain explicit. |
+| Agent task priority | ACCEPTED | The requested deliverable overrides generic skill choreography. A skill mention does not imply fan-out. |
+| Concise communication | ACCEPTED | Result first, exact technical facts, bounded context, and a short verification result. Apply through WF-004; token savings remain unmeasured. |
+| Proportionate release checks | ACCEPTED | Use applicable existing requirements, prove blockers, and stop after sufficient verification. Do not invent signing, secrets, approvals, or speculative release gates. Implement alignment through REL-003. |
+| Wiki authority | ACCEPTED | Wiki is orientation and maintained memory; exact source, Git snapshot, runtime, and owner authority outrank stale summaries. |
+| Native subagents | ACCEPTED | Use only for independent material scopes with a pinned snapshot, bounded permissions, one writer, and controller synthesis. |
+| Model routing | CANDIDATE | Lower-cost models may handle narrow mechanical/read-heavy work when the runtime supports explicit selection; decisive security, authority, and release judgments stay with the controller. |
+| Optional AgentOps | ACCEPTED | Keep the lightweight namespaced control layer optional and outside first-run. |
+| Standalone enterprise AgentOps | REJECTED | The old multi-repo, many-role product plan is not the Alpha-Wiki roadmap. |
+| Spec Kit source adapter | CANDIDATE | Consider a read-only source adapter after the maintenance release and real-project pilots. |
+| Spec Kit workflow clone | REJECTED | Do not reproduce specify/plan/tasks/implement/converge inside Alpha-Wiki. |
+| Semantic search / embeddings | DEFERRED | Revisit only after file search and optional BM25 fail at measured scale. |
+| Hosted/SaaS product | REJECTED for current scope | No evidence justifies moving the memory source of truth out of the repo. |
 
-Phase 6 has no fixed gate. Each item is independently triaged based on real-usage signals and prioritized into a future phase.
+## 5. Observations Converted Into Requirements
 
----
+| Observation | Product requirement | Backlog link |
+|---|---|---|
+| A bare `spawn-agent` mention caused premature parallel wiki review. | Delegation requires explicit mode plus independent scope; the controller continues the user's main deliverable. | WF-001 |
+| Helpers found useful facts but delayed the primary task. | Fan-out is optional optimization, not a mandatory phase; wait only when the next decision needs the result. | WF-001, WF-003 |
+| A stale wiki page can conflict with exact versioned sources. | Expose the gap and provenance; never stop the task merely to make wiki and source agree. | EVI-001 |
+| Existing target repos may not contain `click`, Jinja2, or PyYAML. | Alpha-Wiki tools run from one declared runtime without modifying target dependencies. | RUN-001 |
+| In-process smoke and `--help` did not prove target execution. | Release smoke must use separate processes and brownfield dependency fixtures. | QA-002 |
+| Generic 17-section audit output conflicted with a requested A-G report. | User output contract and strict read-only permissions override a default report skeleton. | WF-002 |
+| Untracked or missing sources were treated too confidently. | Attribute every snapshot to a repository and label unversioned material as candidate/unknown. | EVI-002 |
+| CI, owner acceptance, merge, runtime, and production were conflated. | Store and report these gates separately. | EVI-001 |
+| Session-end hooks appended technical heartbeat noise. | Hooks report maintenance gaps; only meaningful document changes enter the global log. | DOC-001 |
+| Dated plans accumulated and competed for priority. | One canonical roadmap; supporting documents are labelled historical, research, or case evidence. | GOV-002 |
+| Repeated narrative and broad output can consume context without improving the result. | Result-first answers, targeted reads, source-preserving output summaries, and a clear stop condition. | WF-004 |
+| Speculative hardening can grow a release into extra config, secrets, signatures, and approvals. | Every mandatory release condition must trace to the task, existing repository rules, or an observed failure of a required step. | REL-003 |
 
-## Cross-cutting acceptance criteria
+## 6. Domain Map
 
-These apply to **every** task across all phases. A task is not complete unless these hold:
+| Domain | Prefix | Outcome | Current focus |
+|---|---|---|---|
+| Governance and scope | GOV | One product boundary, roadmap, and canonical document set. | Reconcile the dirty baseline and retire competing priority claims. |
+| Runtime and installation | RUN | Tools start reliably without contaminating target dependencies. | Dependency-aware launcher and executable diagnostics. |
+| Document and memory lifecycle | DOC | Memory stays compact, current, traceable, and non-duplicative. | Accept and publish document worker behavior. |
+| Agent workflow | WF | Agents follow the task, use context efficiently, and delegate only when useful. | Task-first skill contracts and adaptive output. |
+| Evidence and trust | EVI | Statuses and claims remain source-backed and authority-aware. | Gate vocabulary, provenance, freshness, unknowns. |
+| Graph and presentation | GPH | Humans and agents can orient quickly without graph complexity. | Real-project cluster QA and artifact consistency. |
+| Quality and pilots | QA | Release claims are backed by isolated and real-project evidence. | Case replays, subprocess smoke, 15-minute pilot. |
+| Packaging and release | REL | Public source, tag, installed plugin, docs, and tested SHA agree. | Compatible maintenance release. |
+| Upgrade safety | UPG | Updates preserve user-owned files and expose active version/path. | Managed-file inspection and repeatability. |
+| Optional integrations | INT | External processes contribute sources without taking over Alpha-Wiki. | Spec Kit adapter decision after pilots. |
+| Optional AgentOps | AOP | Multi-track execution state remains bounded and optional. | Compatibility/status hardening only. |
 
-1. SKILL.md (if applicable) follows the 15-dimension operating-manual standard from `design/00-architecture.md` §5.2.
-2. Skill description is trigger conditions only, not workflow summary.
-3. Tests written and passing (pressure scenarios, not gameshow quizzes).
-4. No "done" claim without verification evidence (command output, test pass, explicit user approval).
-5. No deterministic work uses LLM where pure Python would suffice.
-6. No hidden coupling: layer ownership respected per `design/00-architecture.md` §2.
-7. No writes outside the layer's namespace (Alpha-Wiki: `wiki/`; AgentOps: `<state-backend>/agentops/`).
-8. Backend choice logged to `decision_log.md` for any conditional behavior.
-9. Pressure scenarios cover the failure modes documented in the spec.
-10. Documentation updated alongside code; no "docs later".
+## 7. Delivery Waves
 
-A task that passes acceptance but violates a cross-cutting criterion is reopened.
+```text
+Wave 0: reconcile baseline and canonical plan
+  -> Wave 1: runtime + task-first behavior + evidence fixes
+  -> Wave 2: isolated proof + public maintenance release
+  -> Wave 3: real-project pilots and v1.0 quality
+  -> Wave 4: optional integrations selected from evidence
+```
 
----
+No Wave 3 or Wave 4 item may become a maintenance-release blocker unless a
+pilot exposes a data-loss, security, install, or core lifecycle failure.
 
-## What is not in this document
+## 8. Wave 0 - Baseline And Governance
 
-- Reasoning / rationale → `design/`
-- Architecture diagrams → `design/00-architecture.md`
-- Spec details (15 dimensions per skill) → `design/01..04-*.md`
-- Decisions and alternatives → `design/adr/ADR-001..006`
-- Pattern extraction (Karpathy / OmegaWiki / Superpowers) → `design/_references.md`
-- Boundary discussions → all closed in design + ADRs
-- Open questions about scope → escalate before next gate
+| ID | P | Status | Outcome | Subtasks | Acceptance / evidence | Depends |
+|---|---|---|---|---|---|---|
+| GOV-001 | P0 | DONE | Isolate a reviewable 0.7 delivery boundary. | Candidate codex/release-0.7.0 starts at published 36df49e; both worker modules, additive governance, ingest recovery, read-only reports and necessary adapters/tests are included. | Local L2: 288 tests, smoke/audit and archive checks pass. All 380 preserved primary files are unchanged. Entity schema, AgentOps and runtime-only upgrade remain compatible; see section 20. | None |
+| GOV-002 | P0 | IN_REVIEW | Make this file the only active roadmap. | Replace legacy mixed Alpha-Wiki/AgentOps phases; update docs index and product links; mark dated plans as supporting evidence; keep rejected work out of active tasks. | Document worker passes; docs index names one canonical roadmap; no second active priority list. | GOV-001 for commit |
+| DOC-001 | P0 | IN_REVIEW | Enforce finite canonical documents and bidirectional change records. | Fix NUL-delimited Git paths and custom wiki/index slugs; validate record/check, explicit registration, ownership hierarchy, and meaningful journal records. | Regression tests and cross-platform lifecycle must pass on the current implementation. Existing broad worktree remains unpublished; no new release authorized by this task. | GOV-001 |
+| GOV-003 | P1 | READY | Define idea-to-task promotion without document proliferation. | Keep hypotheses in this roadmap; require owner/outcome/acceptance/dependency before READY; create AgentOps task files only for an activated wave. | No one-file-per-idea backlog; active wave can be projected deterministically when needed. | GOV-002 |
+| OPS-001 | P0 | IN_REVIEW | Attribute hosted CI and Pages correctly. | GitHub API confirms main is unprotected; latest 36df49e check never started because GitHub reports an account billing lock. Existing GitHub origin/auth work; no GitLab project is invented. | Hosted CI is unavailable, not green. Local applicable package checks run independently; Pages remains a separate deployment outcome. Record new release check results after push. | GOV-001 |
 
-This document is execution. Reasoning belongs upstream.
+## 9. Wave 1 - Runtime, Workflow, And Trust
+
+### Runtime And Installation
+
+| ID | P | Status | Outcome | Subtasks | Acceptance / evidence | Depends |
+|---|---|---|---|---|---|---|
+| RUN-001 | P0 | DONE | One dependency-aware launcher for project tools. | Published separately as 0.6.2 at 36df49e; remote main verified at that SHA on 2026-10-18. This dirty primary checkout remains on 0.6.1 plus pending work; do not confuse it with the released tree. | Release-specific public/install proof belongs to 0.6.2. The document worker and pending schema/AgentOps work were excluded. | GOV-001 |
+| RUN-002 | P0 | IN_REVIEW | Keep hooks operational through source/runtime changes. | Retained 0.6.2 stale-cwd behavior and runtime-only upgrade; added advisory governance and removed technical session heartbeat logs. | Local L2: fresh/brownfield Claude/Codex subprocess/hook cases pass. Global installed result belongs to REL-002; no live Claude proof implied. | RUN-001 |
+| RUN-003 | P1 | CANDIDATE | Machine-readable runtime and capability inspection. | Report package version, runtime path, active skill surface, config, hooks, managed files, and supported features through existing doctor/install interfaces. | JSON or structured output is stable and does not add a broad management command family. | RUN-001 |
+
+### Task-First Agent Workflow
+
+| ID | P | Status | Outcome | Subtasks | Acceptance / evidence | Depends |
+|---|---|---|---|---|---|---|
+| WF-001 | P0 | READY | Skills assist the task instead of replacing it with wiki work. | Remove conflicting default modes/counts; bare skill mention does not imply fan-out; stale wiki becomes a gap; controller continues independent work. | Ratification replay starts candidate/source work and does not launch unsolicited parallel wiki audits. | GOV-001 |
+| WF-002 | P1 | IN_REVIEW | Audit and review adapt to the user's output and write contract. | Added explicit status/review `--read-only`, fresh in-memory counts, no `--out`, and prepared-runtime/bytecode guidance for both platforms. | Local no-write regressions cover missing/stale graph and CLI subprocesses. Full A-G model replay remains unverified; required L2. | WF-001 |
+| WF-003 | P1 | READY | Native subagents are economical, bounded, and reusable. | Pin one snapshot per repo; label repository on every receipt; avoid repeated remote polling; reuse coherent workers; choose model only after scope; controller verifies decisive evidence. | One-worker, explicit parallel, stale snapshot, partial result, and unavailable worker cases pass. | WF-001, EVI-002 |
+| WF-004 | P1 | DONE | Keep communication and context proportional to the task. | Published in v0.6.1 at 89f77f2: 16 skills, shared references, generated contract, and affected Claude wrappers. | Public clone: 204 tests, smoke PASS, audit READY; installed Codex 0.6.1 skill copies matched release. Token savings unmeasured; live Claude model replay remains unverified after OAuth expiry. | Broader dispatch cases remain under WF-001 |
+
+### Evidence And Status
+
+| ID | P | Status | Outcome | Subtasks | Acceptance / evidence | Depends |
+|---|---|---|---|---|---|---|
+| EVI-001 | P0 | IN_REVIEW | Separate execution progress from acceptance and release authority. | Shared evidence levels L1-L6 and scope-specific DoD accepted in product/concept/roadmap; distinguish UNKNOWN/UNVERIFIED/FAILED from real blockers. Optional AgentOps migrations remain separate. | Required L2 for instruction replays. No production or owner acceptance inferred from local checks. Broad model replay remains unverified. | GOV-001 |
+| EVI-002 | P1 | IN_REVIEW | Every delivery conclusion has attributable provenance. | Shared contract identifies repository, SHA/worktree, source/generator, consumers, accepted prior revision, compatibility, checks, time, and applicable artifact/environment/runtime. | Local repository/remote and GitLab access inspected; multi-repo A-G replay still unverified. Required L2 for evidence extraction, not L6 deployment. | EVI-001 |
+| EVI-003 | P1 | CANDIDATE | Surface memory quality without semantic overclaims. | Consolidate provenance, freshness, open-question owner/timebox, source drift, and contract links in status/review. | Deterministic fields only; reports explain limits and do not claim semantic truth resolution. | EVI-001, pilots |
+
+## 10. Wave 2 - Integrated Proof And Maintenance Release
+
+| ID | P | Status | Outcome | Subtasks | Acceptance / evidence | Depends |
+|---|---|---|---|---|---|---|
+| QA-001 | P0 | IN_REVIEW | Replay task, permission and evidence failures. | Twelve held-out native Codex response replays were compared with existing expectations; all matched. Backend no-write/recovery/upgrade tests pass in subprocesses. | L2 for observed Codex responses and deterministic backends only. Real external operations were not executed by the replay; live Claude remains under WF-003.1. | RUN-001, WF-001, EVI-001 |
+| QA-002 | P0 | IN_REVIEW | Verify fresh/brownfield lifecycle in separate processes. | Candidate 0.7 full suite: 288 passed. Four isolated Claude/Codex scenarios cover runtime, maintenance, hooks, graphs/HTML and preservation of product manifests/environment. | Local L2 achieved. Clean public source and real installed plugin verification remain release-stage evidence, not claims from fixtures. | RUN-001, DOC-001 scoped 0.7 implementation |
+| QA-003 | P1 | READY | Prove graph and HTML remain useful on real data. | Mixed-role cluster snapshot; orphan detection; relative HTML links; source-owned service/module/feature/contract grouping; Obsidian vault instructions. | Deterministic graph agrees with frontmatter; no color-only clustering or graph-root confusion. | QA-002 |
+| REL-001 | P0 | IN_REVIEW | Publish the accepted 0.7 package. | Version 0.7.0 aligned; coherent 0.6.2-based candidate and package builds verified. Normal publication is authorized by the master execution request. | Local candidate L2 accepted; source commit, normal push, public clone, tag and artifact receipt remain to be verified. See section 20. | GOV-001, scoped QA-001/QA-002, actual repository rules |
+| REL-002 | P0 | READY | Verify public Claude/Codex installation and active plugin. | Use published source, isolated fresh/brownfield flows, one 16-skill Codex surface, current cache/version, safe duplicate cleanup and a fresh-session capability check when available. | Required L2 installed-runtime evidence at the published revision; do not infer a desktop session reload from file copying alone. | REL-001 |
+| REL-003 | P1 | DONE | Align release guidance with the shortest sufficient path. | Published in v0.6.1 at 89f77f2; actual signing/auth requirements remain applicable, optional findings retain their scope. | Public clone and Codex installation verified; backend verdicts retained. CI/Pages jobs for that SHA did not start because GitHub reported a billing lock; live Claude model replay was not verified. | None |
+
+## 11. Wave 3 - Pilots And v1.0 Quality
+
+| ID | P | Status | Outcome | Acceptance trigger | Depends |
+|---|---|---|---|---|---|
+| PILOT-001 | P1 | READY | Measure first useful memory on one greenfield and one brownfield project. | Both reach install -> init -> doctor -> ingest one source -> query -> status -> HTML in under 15 minutes or produce classified friction. | REL-002 |
+| PILOT-002 | P1 | READY | Measure agent onboarding quality. | New agent answers purpose, scope, modules, contracts, risks, forbidden changes, status, and next action with citations and bounded context. | PILOT-001 |
+| DOC-002 | P1 | IN_REVIEW | Maintain source-bound documents incrementally and compact redundant prose without erasing evidence. | Local plan/apply, bounded batches, source/config/document hashes, cooperative writer lock, resumable transactions, no-op checkpoints, four-layer guidance, and source drift notices. Verify unit regressions, fresh/brownfield Claude/Codex subprocess flows, and a self-pilot. The large screenshot corpus remains uninspected; external-corpus compaction is unverified. | DOC-001, RUN-001; external pilot before wider rollout |
+| DOC-002.1 | P1 | DONE | Prove a closed-loop local worker job on the existing retrieval/health domain. | Pilot A closed by the Codex controller on 2026-10-19 at L2: three source-bound pages reviewed/applied/journaled, graph reconciled, cited retrieval and zero-job/no-op verified. Recovery/compaction/stale-input tests and four isolated platform/runtime scenarios pass. See section 18 for evidence and limits; live Claude remains a separate Pilot C failure. | Local acceptance only; DOC-002, publication and external-corpus acceptance are not implied |
+| DOC-002.2 | P1 | DONE | Reconcile ingest memory without expanding the canonical set. | Source-reviewed existing ingest page applied through pinned worker transactions; per-page recovery, portable bindings, reimport identity and controller acceptance are documented. | Local L2: cited retrieval, governance/lint and no-op pass; selected plan has zero jobs. Four bound pages are current, 34 inventory documents remain unchecked. | DOC-002.1 |
+| EVI-002.1 | P1 | IN_REVIEW | Trace one real interface from requirement through executing implementation. | Pilot B uses this repository, as selected by the user. Inspect real contracts and reuse validators; verify an existing CLI operation locally. No HTTP service or OpenAPI source exists here, so HTTP/deployed conformance is NOT_APPLICABLE to this scope, not manufactured proof. Required L2 for local CLI behavior; real HTTP L3+ requires a service-bearing scope. | EVI-001, EVI-002 |
+| WF-003.1 | P1 | BLOCKED | Prove one bounded live Claude/Codex implementation and review cycle. | Pilot C's actual Claude call failed on 2026-10-19: `API Error: 402 insufficient balance, please top up at /panel`. Existing CLI authentication was inspected; no source proposal was produced. Required live writer step cannot run through the configured provider. Operator restores existing provider access, then controller retries the same bounded test task. Required L2; all local work continues independently. | WF-003, QA-002; configured Claude provider must accept the live request |
+| DOC-003 | P2 | CANDIDATE | Catch up registered maintenance scopes without idle model calls. | Pilot D: reuse hook/source-drift primitives; inspect missed events, multiple worktrees, interruption/recovery, and idle NO_CHANGE. Current worker is request-driven, not a session-discovery daemon. Add only minimal local recoverable state after an observed need; no server or Temporal. | DOC-002, scoped pilot authorization |
+| EVI-004 | P1 | CANDIDATE | Add alias/glossary support only for observed rename/synonym failures. | At least two pilot failures come from unresolved aliases; deterministic lookup solves them. | PILOT-002 |
+| EVI-005 | P2 | CANDIDATE | Add small/medium/large context profiles. | Measured context cost or truncation harms onboarding; profiles preserve answer quality. | PILOT-002 |
+| UPG-001 | P1 | IN_REVIEW | Preserve user-owned project state through upgrades. | Retained and tested runtime-only dry-run/upgrade, user docs/contracts/config/routing and product dependency preservation. Added explicit managed-tool replacement guidance and packaged maintenance quickstart. | Local L2 fixtures pass; real public install result remains under REL-002. Broader modified-managed-tool detection is not claimed. | RUN-001, REL-002 |
+| GPH-001 | P1 | READY | Close remaining graph quality gaps from real projects. | Pilots show correct mixed-color clusters, understandable labels, bounded isolated nodes, and deterministic rebuilds. | PILOT-001 |
+| V1-001 | P1 | READY | Decide v1.0 from evidence, not feature count. | Two pilots pass core journey; release/install receipts are repeatable; docs are honest; no open P0. | All Wave 3 P1 required items |
+
+## 12. Wave 4 - Optional Integrations
+
+| ID | P | Status | Outcome | Start condition | Non-scope |
+|---|---|---|---|---|---|
+| INT-001 | P2 | CANDIDATE | Detect `.specify/` and `specs/` as an external source family. | Maintenance release stable plus one real project using both products. | Never edit Spec Kit sources or mirror every task. |
+| INT-002 | P2 | CANDIDATE | Project one active feature into concise linked memory. | INT-001 proves source versions/digests and idempotency. | No Spec Kit workflow engine inside Alpha-Wiki. |
+| INT-003 | P3 | DEFERRED | Optional explicit Spec Kit sync extension. | Two successful combined pilots and demonstrated demand. | No silent writes or mandatory AgentOps. |
+| AOP-001 | P2 | CANDIDATE | Harden optional AgentOps status/evidence compatibility. | A real multi-track Alpha-Wiki project uses the namespace. | Not part of first-run or core v1.0 gate. |
+| AOP-002 | P3 | DEFERRED | Additional orchestration roles/templates. | Repeated real demand that native subagents plus current control layer cannot meet. | No universal nine-role team by default. |
+
+## 13. Hypothesis Ledger
+
+| ID | Hypothesis | Validation | Decision rule | State |
+|---|---|---|---|---|
+| H-001 | Task-first skill contracts reduce detours and total context. | Replay the ratification, Work 3, and A-G audit cases; compare tool calls, elapsed steps, and deliverable fidelity. | Adopt if correctness is retained with fewer irrelevant reads/fan-outs. | testing planned |
+| H-002 | A deterministic document worker prevents standards drift without process overhead. | Run in fresh/brownfield pilots; measure false positives and extra operator steps. | Keep blocking pre-commit/CI only if false positives stay low and recovery is clear. | local implementation |
+| H-003 | Explicit provenance/freshness fields improve trust more than semantic contradiction tooling. | Ask agents to resolve stale/conflicting cases with and without fields. | Promote EVI-003 if answers become more accurate and source-backed. | candidate |
+| H-004 | Lower-cost subagents reduce cost for bounded work without weakening decisions. | Use only runtime-supported explicit model selection on extraction/comparison fixtures; controller verifies outputs. | Document profiles only if quality and savings are measurable. | candidate |
+| H-005 | Context budget profiles improve multi-agent onboarding. | Measure token use, truncation, and answer completeness on pilot wikis. | Implement EVI-005 only after observed need. | candidate |
+| H-006 | A read-only Spec Kit adapter reduces duplicate reading and preserves cross-feature memory. | One combined project, one active feature, repeated ingest, source drift. | Start INT-002 only if summary remains concise and idempotent. | deferred until pilots |
+| H-007 | BM25 is needed before embeddings. | Measure file search miss rate on large real wikis. | Add BM25 only after repeatable search failures; embeddings require a separate decision. | deferred |
+| H-008 | Result-first communication and proportionate checks reduce context and release effort without losing correctness. | Compare WF-004/REL-003 replays against ordinary concise behavior: input/output tokens where available, tool calls, acceptance accuracy, and invented blockers. | Adopt instructions when exact facts and real failures remain visible, unsupported blockers disappear, and work is measurably reduced. No fixed saving percentage promised. | evaluation planned |
+
+## 14. Deferred And Rejected Inventory
+
+Deferred until a measured trigger:
+
+- PDF/DOCX/web ingestion;
+- BM25 and embeddings;
+- multi-project memory;
+- richer semantic contradiction analysis;
+- hosted docs beyond static deployment;
+- broader agent/platform catalogs;
+- automatic model routing;
+- advanced graph UI.
+
+Rejected from the Alpha-Wiki core roadmap:
+
+- SaaS knowledge platform;
+- enterprise knowledge graph;
+- autonomous daemon that edits standards without an explicit task;
+- duplicate task tracker for every external task;
+- full codebase parser;
+- full Spec Kit or Superpowers clone;
+- owner votes, ratification, merge, or production authorization inferred from
+  wiki, CI, or agent output.
+
+## 15. Legacy Roadmap Disposition
+
+| Previous area | Disposition |
+|---|---|
+| Phase 0 audit | Completed historically; current regression facts live in tests and this backlog. |
+| Phase 1a Alpha-Wiki hardening | Mostly delivered; remaining runtime/workflow/release work is normalized into Waves 0-2. |
+| Phase 1b standalone AgentOps MVP | Superseded by the optional lightweight AgentOps boundary; not active. |
+| Phase 2 Alpha-Wiki/AgentOps integration | Reduced to optional AOP candidates after core pilots. |
+| Phase 3 Superpowers integration | Historical/optional; not an active Alpha-Wiki dependency. |
+| Phase 4 automation | Core hook/CI work retained under RUN, DOC, QA, and REL. |
+| Phase 5 packaging | Current release tasks retained under REL and UPG. |
+| Phase 6 advanced | Moved to the hypothesis/deferred inventory with evidence triggers. |
+
+## 16. Promotion And Completion Policy
+
+Idea flow:
+
+```text
+observation -> hypothesis -> candidate -> ready task -> active wave
+-> verified implementation -> accepted/public state -> done
+```
+
+Rules:
+
+1. Observations do not become tasks until they have an outcome and evidence gap.
+2. Candidates do not enter an active wave without acceptance and dependencies.
+3. A task becomes DONE only when its acceptance evidence exists at the required
+   state: local, merged, public, installed, or runtime.
+4. Documentation changes update this file and `wiki/log.md`; do not create a new
+   roadmap for each review.
+5. When a wave needs parallel execution, project only that wave into the optional
+   AgentOps backlog with the same IDs. The controller remains the owner of shared
+   files, gates, and synthesis.
+6. Close or reclassify tasks after every release and pilot. Do not preserve stale
+   READY items merely because they were once proposed.
+
+## 17. Immediate Execution Order
+
+1. Preserve the dirty primary checkout. Its published runtime baseline is
+   0.6.2 at 36df49e; reconcile release-only differences separately, not by
+   overwriting pending migration or AgentOps changes.
+2. Preserve DOC-002.1's verified local acceptance and source-pinned checkpoints.
+   Do not repeat completed work unless its relevant inputs change. DOC-001 and
+   DOC-002 still require acceptance of their wider unpublished delivery scope.
+3. GOV-001's selected 0.7 boundary is now locally verified; use section 20 for
+   current release execution. Wider unfinished schema/AgentOps work is excluded.
+4. DOC-002.2 is locally complete. Preserve its checkpoints; execute the remaining
+   publication/install acceptance. Section 19 keeps the task contracts, not a
+   competing current-state report.
+5. Resume WF-003.1 after the operator restores existing Claude provider access.
+   Continue independent work in the meantime. Inspect any later supplied HTTP
+   project or external corpus before extending its pilot claims.
+6. Release, push, plugin installation,
+   schema migration, and AgentOps publication require their own authorized scope.
+7. Consider an existing scheduler only after the explicit maintenance run is
+   useful. A server/API/Temporal adapter needs a demonstrated durable-execution
+   requirement; none is required for this implementation.
+
+### DOC-002.1 - Closed-Loop Worker Contract And Pilot A
+
+Status: DONE for the bounded local Codex-controller pilot on 2026-10-19.
+Owner: the executing controller; product owner: Alpha-Wiki maintainer. The
+requirements below remain the acceptance contract. Results and limits are in
+section 18; this is not acceptance of all DOC-002 or live Claude behavior.
+
+Historical planning baseline on 2026-10-19: the existing ingest-page maintenance
+plan has zero pending jobs, one source-bound document, and 37 unmapped canonical
+documents. That is bounded coverage, not proof that the complete wiki is fresh.
+The previous 2026-10-18 implementation run recorded 274 passing tests and a
+passing release smoke; those runs are historical evidence, not a new test run
+for this planning edit.
+
+The outcome is a completed user request, not successful invocation of a helper.
+The current `plan/apply` backend supplies important deterministic stages, but
+does not independently interpret a user request, author reviewed semantic
+changes, run all job acceptance checks, or close the owning task. Treat that
+controller/worker integration as an agent-owned workflow, not an autonomous
+backend. This local pilot verified that workflow; publication and wider
+operating cases remain distinct. Product requirements are maintained in
+`wiki/specs/alpha-wiki-product-spec.md` (Closed-Loop Worker Outcome).
+
+#### User Stories And Acceptance Cases
+
+| ID | User story | Observable acceptance |
+|---|---|---|
+| US-DOC-01 | As a project owner, I want to submit a document-maintenance task once and receive a checked outcome without manually coordinating every tool. | Given explicit scope, sources, permissions, and acceptance, one existing Claude/Codex workflow carries the job through its applicable stages and reports DONE, NO_CHANGE, NEEDS_INPUT, or FAILED with evidence. It does not stop at a plan, proposed text, or `apply` exit code. |
+| US-DOC-02 | As a developer, I want a changed specification to remain consistent with the wiki and linked project entities. | Given an authorized change to a canonical source, update its existing owner first, pin the resulting source, then refresh dependent wiki pages and generated graph/context. If synchronization fails, the overall job remains unfinished even when the source edit succeeded. Raw evidence is never rewritten. |
+| US-DOC-03 | As an operator with an overgrown corpus, I want repeated explanations consolidated without losing requirements or generating more standards. | Given a bounded set of existing documents, classify canon/evidence/candidates/generated views, identify actual redundancy, and compact reviewed prose in place. Preserve requirements, contracts, decisions, risks, open questions, provenance, identity, and hierarchy. Do not manufacture a new research report or claim semantic completeness from a size reduction. |
+| US-DOC-04 | As an operator, I want a meaningful shared history instead of technical heartbeat noise. | Actual canonical edits receive one concise attributable project-journal record per coherent batch. Use CHANGELOG.md only for a package/release behavior change when applicable. A query or unchanged rerun creates no document-change entry. The record identifies affected documents, reason, and source evidence. |
+| US-DOC-05 | As a user, I want interrupted work to resume without losing human edits or duplicating output. | Stop the job after an intermediate write or before final validation, then resume from its recorded step. Preserve completed work, detect changed inputs/concurrent edits, avoid repeated journal entries, and never mark the overall task DONE while synchronization or required checks remain incomplete. |
+| US-DOC-06 | As a new agent or engineer, I want to find the current answer and its authoritative source quickly. | After the job, retrieve the changed facts through targeted query and the current brief; follow valid ownership/cross-links to sources. Separate accepted facts, local implementation, published behavior, and unresolved gaps. Zero pending work for selected pages must not imply freshness for unbound documents. |
+| US-DOC-07 | As a user asking only for an audit or answer, I want the workflow to respect read-only scope. | A strict read-only request produces an answer and evidence without repository writes, log entries, graph refreshes, task-state edits, or implicit import. Use suitable read-only tools; do not invoke a write-producing backend merely because it is normally part of maintenance. |
+
+#### Closed-Loop Job Contract
+
+Reuse the existing skill/controller entry point and backend operations. Do not
+add another public command family, server, scheduler, model SDK, or AgentOps
+control plane merely to demonstrate a worker. A worker may be one agent using
+deterministic tools; the pilot does not require multiple agents.
+
+At intake, bind a task reference (the existing backlog subtask is sufficient),
+the requested outcome, repository and allowed paths, input evidence, write
+permissions, applicable acceptance checks, and a stop condition. An explicit
+task is sufficient authorization within its scope; ask only for a missing
+decision, source, or permission that actually prevents completion.
+
+One user-visible run carries these internal stages:
+
+1. Inspect the scoped inputs and recover an existing pending job if present.
+2. Resolve the current canonical owner, provenance, hierarchy, and dependencies.
+3. Prepare and review the smallest edits that satisfy the requested outcome.
+4. Apply authorized source-owner edits first when required; then re-plan and
+   apply dependent projections against the resulting hashes. Do not place a
+   changing owner and its dependent in the same stale-input batch.
+5. Record actual document changes and refresh the applicable wiki, index if
+   navigation changed, typed links, graph, brief, and open questions. Refresh
+   static exports only if they are part of the task's declared output.
+6. Verify the requested result through relevant structural checks and retrieval.
+   Pre-existing unrelated gaps remain visible without hijacking the task.
+7. Persist the minimal successful job outcome and update the owning backlog
+   subtask when it is part of the write scope. Only then report completion.
+8. Return a concise result: outcome, changed paths, decisive checks, unresolved
+   gaps, and any next required action. Do not produce another standalone report.
+
+The journal records meaningful changes, while checkpoints record technical
+progress; neither substitutes for checking the user's outcome. Reuse local
+worker state and the existing backlog/journal rather than inventing a second
+task tracker. A successful batch checkpoint is not proof that the whole job is
+complete. Determinism means pinned inputs, explicit transitions and permissions,
+repeat-safe effects, and reproducible checks; LLM wording and semantic judgment
+are not guaranteed to be deterministic.
+
+Intended job outcomes (not a migration of AgentOps status enums): DONE means all
+applicable acceptance passed; NO_CHANGE means the same acceptance passed and
+needed no content edits; NEEDS_INPUT identifies the exact missing prerequisite; FAILED
+records the failing step and recovery action. An interrupted job remains pending
+at its last durable step. Partial progress, an open transaction, unresolved
+in-scope acceptance, or a plan alone is never DONE.
+
+#### Pilot Workers And Owned Scope
+
+Pilot A is one maintenance worker/controller job in this repository. Its source
+pages remain the existing three-page domain:
+
+- `wiki/specs/alpha-wiki-query-operation.md`
+- `wiki/specs/alpha-wiki-status-operation.md`
+- `wiki/specs/alpha-wiki-review-operation.md`
+
+Pilot B now names the R4 contract-lifecycle pilot, not the earlier proposed
+external-document batch. The user selected this local repository on 2026-10-19.
+Use its real CLI/file interfaces; an HTTP endpoint/OpenAPI/deployment is absent.
+Do not add a server just to satisfy that example. An external large-corpus
+document test remains a separate DOC-002 follow-on, with no inspected corpus yet.
+
+Pilot C is the bounded live cross-agent cycle under WF-003.1. Pilot D remains
+the optional catch-up/recovery/idle experiment under DOC-003. Pilots validate
+user outcomes, not headcount. Query/status/review pages remain Pilot A's corpus;
+their user-facing operations are also checked for the requested write contract.
+
+If the pilot exposes missing job-level coordination, adjust the existing shared
+ingest/controller instructions, affected Claude wrapper, and focused regression
+tests only as needed. Add a narrowly scoped backend change only for an observed
+acceptance failure. Keep source-page review, source-owner edits, and tool-runtime
+changes attributable; do not hide schema migration or AgentOps work inside this
+pilot. Pilot A exposed the strict read-only gap and verified the bounded local
+fix; later runs must assess their own inputs rather than generalizing that proof.
+
+Subtasks, in order:
+
+1. Inspect each page's existing provenance against its command, skill, and
+   backend (`tools/wiki_search.py`, `tools/status.py`, `tools/review.py`). Read
+   only relevant shared helpers. Distinguish current local behavior, accepted
+   requirements, and published 0.6.2 behavior.
+2. Add verified repository-relative `source_files` to these existing pages.
+   Preserve stable slugs, ownership, and status. Register this metadata change
+   in the project journal; do not infer source authority from filenames alone.
+3. Align the existing worker/controller entry point with the intake, closure,
+   evidence, and recovery contract above. Prefer existing skill orchestration;
+   do not create a new provider runner just to automate a sequence the active
+   agent can execute. Identify any remaining real runtime capability gap.
+4. Plan one bounded worker batch. Review requirements, output sections,
+   source-page versus generated-artifact mutability, and source-drift limits.
+   Apply only evidence-backed corrections. Compact only demonstrated redundant
+   prose; do not force a token-reduction target or change protected requirements
+   through compact mode.
+5. Verify document governance, lint, status/review, targeted retrieval, and
+   graph/context consistency. Replay apply without changes and confirm no
+   additional page, journal entry, or changed checkpoint. Reuse previous
+   runtime tests unless relevant code or execution inputs change.
+6. Close the overall scoped job only after its acceptance checks pass. Record
+   the bounded result in the existing task and meaningful journal, keeping
+   unresolved source gaps explicit. Do not mark parent tasks DONE solely
+   because this pilot passes.
+
+#### Definition Of Done
+
+- A single invocation of the existing Claude/Codex workflow has carried the
+  bounded job from intake to checked outcome, without operator hand-running
+  the normal plan/edit/apply/journal/refresh/check sequence. A genuine ambiguity
+  may end in NEEDS_INPUT, but that is not successful task completion.
+- Each applicable user story above has a concrete acceptance result and source
+  evidence. Claude and Codex behavior are checked separately; simulated workflow
+  or subprocess tests are not described as live model-session proof.
+- All three selected pages have checked source bindings and one clear existing
+  ownership parent; references resolve without ownership cycles.
+- Selected pages reflect reviewed source behavior. `date_updated` changes only
+  after substantive review, never as a bulk freshness reset.
+- No new canonical document, source-evidence rewrite, dependency injection,
+  unrelated migration, or AgentOps change occurs.
+- Actual edits have matching journal records. Generated graph/context files
+  are rebuilt by tools, not hand-edited.
+- The requested facts can be retrieved with citations. Required in-scope checks
+  pass before the task is closed; baseline or unrelated findings are separately
+  attributed. A checked source edit with failed wiki synchronization is partial
+  progress, not DONE.
+- A second apply is unchanged, and a fresh plan for the selected pages has zero
+  pending jobs. Unmapped or stale documents outside the batch remain visible.
+- Resume after interruption without duplicate edits or logs; reject observed
+  stale sources and concurrent human changes without overwriting them. A
+  repeat of the completed job creates no new canonical document or log entry.
+- The final result names completed scope, actual writes, checks, and remaining
+  gaps. The owning subtask reflects that result; no broader completion is
+  inferred. Commit, push, release, and deployment are required only when the
+  requested outcome includes them and authorization exists.
+- Local implementation, published package, and installed plugin capabilities
+  remain separately labelled.
+
+Pilot acceptance order: normal changed-input run; checked no-change run;
+interruption and recovery; stale/concurrent-input refusal; strict read-only
+request; cited retrieval and remaining-gap check. Exercise both fresh and
+existing-project Claude/Codex execution where the changed workflow requires it.
+
+Follow-on order: select one explicitly supplied external corpus and validate
+DOC-002 on it; review GOV-001's focused delivery boundary; verify UPG-001 and
+QA-002 for that boundary; then execute REL-001/REL-002 only when publication and
+installation are requested. Missing external paths do not block the local pilot
+or unrelated work. The external pilot is not retroactively a gate for 0.6.2.
+
+Apply the release rules above throughout execution. WF-004 and REL-003 were
+published in 0.6.1; keep their behavior while reviewing further changes. They
+add no prerequisite service, new secret, approval flow, or benchmark campaign
+to publishing the existing compatible fixes.
+
+The next release is a maintenance release only if the accepted diff remains
+backward-compatible. The version is chosen from actual scope during REL-001; this
+roadmap does not pre-authorize a tag, merge, or publication.
+
+## 18. R4 Local Verification - 2026-10-19
+
+Owner: Alpha-Wiki maintainer, with the current Codex controller executing the
+authorized local work. This is acceptance evidence in the existing roadmap,
+not a new report or tracker. Published package and installed-plugin state are
+not changed by this local result.
+
+### Baseline And Source Authority
+
+- Primary checkout: `89f77f2d7cfc17da90090dec894c85ce5a461379`, dirty, behind
+  `origin/main` by one commit. Remote main was read directly at
+  `36df49efb6b14a07734e4336978ae0b60bba17a2` (published 0.6.2).
+- Origin is `https://github.com/yura4gus/alpha-wiki-creator.git`. GitLab
+  `value8.dev` authentication succeeds as `George_Gus`; accessible project
+  search did not locate Alpha-Wiki. Existing GitLab processes can be reused
+  after identifying the owning project; no mirror, CI project, or remote was
+  invented. That absence does not block the local pilot.
+- Installed Codex package remains `0.6.2+codex.local-20261018153031`, 16 skills,
+  plugin-only. New worker/read-only/evidence instructions remain unpublished.
+- Pre-R4 work was preserved in `/tmp/alpha-wiki-before-r4-20261019.tar.gz`.
+  Comparison found no unexpected changes to existing files; both raw evidence
+  files and the previously dirty HTML snapshots were preserved.
+
+### Pilot Results
+
+| Scope | Required / observed evidence | Result and limits |
+|---|---|---|
+| A: DOC-002.1 | L2 local document acceptance / L2 verified | Current Codex job completed intake, source review/binding, bounded plan/apply, journal/graph refresh, lint/governance, cited retrieval and no-op. Three existing operation pages changed; no new canonical page. |
+| B: EVI-002.1 | Local CLI L2 / L2 verified; HTTP and deployment NOT_APPLICABLE here | User selected this repository. Existing status/review CLI plus Markdown/file inputs are the actual interface; command/skill/backend ownership is pinned by the Pilot A plan. Compared the published 0.6.2 backend: defaults still refresh graph; new `--read-only` is additive. Existing default and new failure-path/subprocess tests pass. No production HTTP endpoint, OpenAPI source, accepted API migration, or deployed service was fabricated. Original HTTP integration remains unverified outside this scope. |
+| C: WF-003.1 | Live writer/reviewer cycle L2 / not attained | Claude Code 2.1.220 reports authenticated, but the configured provider rejected the bounded test-source request with HTTP 402. No implementation, review/fix cycle or live Claude completion is claimed. Restore existing provider access and rerun; do not add secrets or billing controls to Alpha-Wiki. |
+| D: DOC-003 | Optional catch-up/recovery/idle experiment / not run | Request-driven source-drift/recovery primitives exist. Session discovery, periodic catch-up and multi-worktree coordination are not implemented by this pass. No daemon, scheduler or Temporal added. |
+
+### Reproducible Acceptance Evidence
+
+- `.venv/bin/python -m pytest`: **283 passed in 196.21s**. This includes
+  `tests/unit/test_document_worker.py` for protected compaction, interruption,
+  recovery, stale/config/concurrent changes and no-op; and
+  `tests/integration/test_isolated_runtime.py` for fresh/brownfield projects
+  under Claude and Codex adapters. Product dependencies remain untouched.
+  These subprocess flows are not live model-session evidence.
+- `tests/unit/test_read_only_reports.py`: nine new cases cover absent/stale
+  graph, current edge/question counts, rejection of `--read-only --out`, and
+  status/review/query subprocesses with zero target changes.
+- Primary prepared-runtime status/review/query were also executed with
+  `PYTHONDONTWRITEBYTECODE=1`. Before/after comparison of 4,778 filesystem
+  entries, including file content and modification times, found zero target
+  mutations. Query `strict zero-write` retrieved all three updated operation
+  pages with line citations. Status/review reported 31 pages and 57 edges;
+  review had zero errors/warnings and wiki-quality READY.
+- Generated maintenance evidence: `.alpha-wiki/maintenance/r4-operations-plan.json`
+  and `r4-operations-edits.json`. The plan pins config, source and document
+  hashes. Replay returns `status=unchanged`; pages, graph, journal and checkpoint
+  remain unchanged. A fresh plan for these three pages has zero jobs/deferred
+  work and no hierarchy/source gaps. State/proposals remain local ignored
+  artifacts, not another canonical specification.
+- `tools.document_worker check`: PASS. `tools.lint --dry-run`: zero errors and
+  warnings. Four edited skills pass the skill frontmatter validator.
+- `tools.release_smoke`: PASS, including Mermaid/DOT/HTML exports.
+  `tools.release_audit --root .`: READY, 8 pass, 0 warn/fail, **local metadata
+  version 0.6.1**. This checks the dirty local package layout, not publication
+  of the pending worker changes.
+- `tools.doctor --platform both --refresh`: 26 pass, 2 warn, 0 fail. The
+  primary checkout lacks installed Claude hook scripts and generated wiki
+  CI workflows; isolated generated-project hook execution passes. Those
+  warnings do not prove live-provider access or block this local document job.
+
+### Remaining Scope And Next Slice
+
+Only four canonical documents currently have source bindings; 34 inventory
+documents remain unmapped. One previously bound ingest page became pending
+after its skill/quickstart sources changed outside Pilot A. This bounded result
+does not establish whole-wiki freshness or external-corpus compaction quality.
+
+EVI-001/EVI-002 retain IN_REVIEW: the shared instructions and ownership model
+are consolidated, but broad multi-repo/model replays are not complete.
+EVI-002.1 retains IN_REVIEW for the original HTTP contract-lifecycle outcome;
+the selected local CLI sub-scope is verified. QA-002's local subprocess proof
+does not accept the broad unpublished migration or authorize publication.
+
+Next executable slice: under GOV-001, isolate a reviewable maintenance boundary
+against published 0.6.2 while preserving schema/AgentOps work, then execute the
+applicable existing release checks only when publication is requested. In
+parallel, the operator can restore the configured Claude provider for WF-003.1.
+GitLab CI adoption needs a verified owning-project path, not a new control plane.
+
+## 19. Next Task Specifications
+
+Specified on 2026-10-19. This section refines existing backlog items; it does not
+start their implementation, authorize publication, or change their status by
+description alone. Section 18 remains the previous execution evidence.
+
+### Shared Execution Contract
+
+- Product owner: Alpha-Wiki maintainer. Executor: the active controller;
+  independent reviewers receive bounded read-only scopes when useful.
+- Intake records the requested outcome, source repository/snapshot, allowed
+  paths, accepted constraints, final environment, and required evidence level.
+  Reuse the current runtime, task IDs, source bindings, journal, and checkpoints.
+- A task closes only after the outcome, applicable checks, canonical/wiki
+  synchronization, and concise evidence are complete. Preserve interrupted
+  transactions and concurrent human changes; checked no-change creates no
+  document journal entry. Update this roadmap's task row, not a second tracker.
+- The DoD for this specification pass is unambiguous inputs, scope/non-scope,
+  steps, acceptance, dependencies, and owner for each next task. An implementation
+  task's L2 or higher acceptance is not satisfied merely by writing this section.
+- Use existing tests proportional to the changed surface. A fixture replay is
+  not a live model, deployed API, public-install, or production proof. Record
+  missing decisions as NEEDS_INPUT/UNVERIFIED unless a mandatory action has an
+  observed failure. Do not invent credentials, approvals, or infrastructure.
+
+### GOV-001 - Isolate The Next Reviewable Delivery Boundary
+
+**User story:** As the maintainer, I can review and release one coherent change
+without losing pending work or accidentally shipping schema/AgentOps changes.
+
+**Target:** Local preparation, L2. Existing status remains IN_REVIEW.
+**Inputs:** Dirty primary checkout, published 0.6.2 reference, current tests and
+the existing preservation evidence. Inspect any suitable managed worktree before
+creating another. Pin repository/SHA plus dirty digest before classification.
+
+**Steps:** Compare actual files/hunks with 0.6.2; classify released runtime,
+document maintenance, shared instructions, schema migration, optional AgentOps,
+and generated snapshots. Trace imports, templates, bootstrap and test dependencies.
+Select the smallest functional slice and retain excluded changes in the original
+checkout and a recoverable backup. Record the inclusion/exclusion rationale here.
+
+**DoD:** The selected tree can be reproduced from the published base, contains
+every required dependency, passes its relevant tests/smoke/audit, and preserves
+unrelated work byte-for-byte. No staged-file surprise or unrelated generated
+output enters the slice. If worker code needs pending schema/bootstrap changes,
+identify that dependency and resolve the boundary explicitly; do not promise
+independence or copy a broken subset. Commit/push/tag/install are not this task.
+
+### DOC-002.2 - Bring Existing Ingest Memory Current
+
+**User story:** As an agent resuming work, I retrieve the current import and
+maintenance workflow, rather than instructions already superseded by source edits.
+
+**Target:** This repository, L2. READY; can run independently of release preparation.
+**Inputs/scope:** `wiki/specs/alpha-wiki-ingest-operation.md` and its existing
+`source_files`. Read current pending state; the previous count is evidence, not
+a reason to skip fresh planning. Source owners are read-only in this task.
+
+**Steps:** Review the actual skill, worker, import pipeline and quickstart;
+plan the existing page; prepare the smallest reviewed replacement; apply;
+run governance/lint and a cited query for closed-loop task acceptance. Inspect
+the remaining coverage report without adding guessed or self-referential sources.
+
+**DoD:** The page distinguishes import from refresh, controller task acceptance
+from apply checkpoints, and local capability from public 0.6.2. Identity,
+ownership, status and provenance survive. Journal and generated views match
+actual edits; replay is unchanged and the selected fresh plan has zero jobs.
+Unmapped documents remain explicitly unchecked; authoritative root documents
+are not assigned fabricated source bindings to improve a percentage. No new
+canonical page, raw rewrite, bulk date reset, runtime or provider change.
+
+### QA-001 With WF-001/WF-002/EVI-001/EVI-002 - Replay Task And Evidence Rules
+
+**User story:** As an operator, my requested deliverable and permissions survive
+skill invocation, stale memory, delegation, and incomplete external evidence.
+
+**Target:** L2 local regression evidence. QA-001 remains READY; linked items
+retain their existing state until their own acceptance is proved.
+**Inputs:** Existing case evidence, shared skills/references, current test
+fixtures, and a pinned snapshot. Do not manufacture owner votes or service state.
+
+**Cases:** Ratification plus bare spawn-agent mention does not launch unsolicited
+wiki auditors; stale wiki routes to current sources without replacing the task;
+an A-G no-write audit preserves its output contract and target files; an explicit
+bounded helper has one owner and no nested fan-out; unversioned sources remain
+candidates; passing CI is not merge, ratification, deployment or production.
+
+**Steps:** Reuse existing deterministic tests, add only missing behavior cases,
+and inspect affected Claude wrappers and Codex skills. For semantic instruction
+behavior, run a bounded native-provider replay when available; do not substitute
+keyword assertions for an observed model outcome. Controller checks final facts.
+
+**DoD:** Each case records expected/actual outcome, writes, snapshot, diagnostics,
+and terminal result. Fix only demonstrated discrepancies and rerun affected
+checks. Label static/fixture and live-provider evidence separately. A missing
+live replay stays unverified and does not block independent backend work.
+
+### WF-003.1 - Finish The Live Cross-Agent Cycle
+
+**User story:** As a maintainer, I can distinguish real independent implementation
+and review from one agent simulating both roles.
+
+**Target:** One isolated local change, L2. BLOCKED by the recorded provider 402
+until existing access works; operator owns access, controller owns the pilot.
+**Inputs:** A pinned implementation, one bounded regression-test task, existing
+Claude/Codex adapters and credentials. Do not change billing, tokens, or providers.
+
+**Steps:** Check the configured access once; Claude produces the scoped change;
+Codex reviews its exact snapshot; Claude resolves actionable findings if any;
+controller runs final tests and reconciles the owning task. Invalidate stale
+approval after source changes. No artificial bug is required to force a fix cycle.
+
+**DoD:** Evidence attributes each actual provider step, diff, finding/disposition
+and final checked snapshot. Zero actionable findings is valid. Another provider
+failure retains the exact error and unfinished scope; no fake implementation,
+role switch, retry loop, merge or deployment is claimed.
+
+### EVI-002.1 And OPS-001 - Bind Real Contracts And Hosted Processes
+
+**User story:** As a developer, I can trace an actual interface and its CI results
+to the owning repository without confusing a local check with a deployed service.
+
+**Target:** Local CLI L2 is already verified. HTTP integration needs an explicitly
+selected service/operation and L3 evidence; deployment levels apply only when
+requested. Existing task states remain unchanged by this specification.
+**Inputs:** Current Alpha-Wiki origin remains GitHub. GitLab work needs the
+verified `value8.dev` group/project path; authenticated access alone is not a
+project mapping. A service-bearing repository is required for the HTTP variant.
+
+**Steps:** Read existing contract/generation sources, owner, consumers and
+accepted prior revision. Reuse its validator and compatibility/consumer tests;
+query existing MR/CI jobs read-only with exact SHA. Run against the actual
+implementation in the authorized environment. Synchronize only the useful
+contract summary and evidence into existing memory.
+
+**DoD:** CLI, HTTP, CI, artifact, deployment and business acceptance are separately
+labelled. HTTP proof includes actual request/auth/error/response and applicable
+consumer results, not just schema validation or health 200. No fabricated server,
+OpenAPI migration, GitLab mirror/project, new pipeline or remote change. An
+unidentified project/operation is NEEDS_INPUT, not a global release blocker.
+
+### REL-001/REL-002 And UPG-001 - Publish And Prove The Accepted Slice
+
+**User story:** As a user, updating Alpha-Wiki loads the tested skills/tools and
+preserves my project documents, settings and product dependencies.
+
+**Target:** Published artifact and clean install, L4 for this package; a hosted
+service deployment or L6 is not applicable. Execute only after publication is
+requested and GOV-001's slice plus applicable checks are accepted.
+
+**Steps:** Choose version from actual compatibility; align existing metadata and
+changelog; use normal repository review/push rules; verify the exact public
+revision in a clean clone and isolated Claude/Codex fresh/brownfield installs.
+Inspect active version/path and one skill surface; test one maintained-document
+operation, hook behavior, graph/HTML and repeat upgrade. Keep Pages separate.
+
+**DoD:** Source, version, tag/artifact and installed runtime identify the accepted
+release. Modified user-owned files are preserved or explicitly surfaced, and
+no product dependency changes or duplicate fallback skills appear. Record
+real CI/auth failures with their own scope. Do not require a live Claude model
+or docs deployment for package publication unless an applicable release
+requirement makes that evidence mandatory. No force push or unsolicited install.
+
+### DOC-003 - Candidate For One-Shot Catch-Up, Not A New Service
+
+**User story:** As an operator, I can catch missed source changes and resume a
+bounded maintenance job without a model running while nothing changed.
+
+**Target:** P2 CANDIDATE; specification only, not a commitment to a daemon.
+**Start condition:** An observed missed-event/repeated-maintenance case and an
+explicitly selected repository/worktree. Reuse existing plan/apply first.
+
+**Proposed first slice:** One explicit local scan of registered source bindings;
+pin repository/worktree/source identity; report bounded pending jobs; invoke
+reviewed writing only within the authorized task; finish the shared closed loop.
+Multiple worktrees have separate input snapshots and must not share stale
+approval/checkpoints. Test recovery and contention before scheduling anything.
+
+**DoD for a later implementation:** Changed-source, missed-hook, interrupted,
+concurrent-edit and two-worktree cases pass; idle repetition has zero model
+calls, canonical writes, journal entries or report proliferation. Source/event
+discovery is read-only and allowlisted; do not scan all home directories or
+ingest private transcripts implicitly. No server, API, broker, Temporal, mandatory
+scheduler or new tracker. Session discovery and scheduling remain separate
+future scope unless the pilot demonstrates a need.
+
+### Dispatch Order
+
+1. GOV-001 reviewable boundary; DOC-002.2 may run independently with disjoint writes.
+2. QA-001 and linked WF/EVI cases on the selected snapshot. Keep EVI-002.1's
+   local proof; extend to GitLab/HTTP only after the required target is identified.
+3. Resume WF-003.1 when configured provider access works. It does not block
+   unrelated local maintenance or automatically become a package-release gate.
+4. REL-001/REL-002/UPG-001 only after a publication request and applicable checks.
+5. DOC-003 only after its measured start condition; it must not delay that release.
+
+GOV-001 was the first implementation entry point for this specification.
+Its selected 0.7 result and next release action are maintained in section 20.
+
+## 20. Release 0.7 Execution
+
+Observed on 2026-10-19. This execution receipt supersedes the earlier
+primary-checkout planning state for the selected release only. Wider pending
+schema/AgentOps work remains preserved, not accepted by implication.
+
+### Boundary And Authority
+
+- Source base: published 0.6.2 at 36df49efb6b14a07734e4336978ae0b60bba17a2.
+  Candidate branch: codex/release-0.7.0 in a dedicated managed worktree.
+- Primary checkout remains at 89f77f2 with its unfinished work. Backup:
+  /tmp/alpha-wiki-before-release-070-20261019.tar.gz. Comparison found all 380
+  non-cache baseline files unchanged, including raw sources and dirty HTML.
+- Included: both document-worker modules; source-binding/ownership policy;
+  source-pinned maintenance/recovery/compaction; portable, resumable ingest;
+  strict read-only status/review; necessary bootstrap/preset/hook/CI/installer
+  integration, source memory, tests and aligned 0.7.0 metadata.
+- Excluded: AgentOps fields/status changes, entity-schema migration, removal of
+  CLAUDE.md generation, evolution-helper changes, unrelated navigation-schema
+  exemptions, dated research additions and existing dirty HTML snapshots.
+  Additive document_governance does not alter entity_types/cross_ref_rules.
+- Published runtime launcher, bootstrap --runtime-only and its preservation
+  tests are retained. Existing configs opt into maintenance explicitly; no
+  full bootstrap is required to replace user schema.
+
+### Verification And Findings
+
+- Final local suite: 288 passed. Fresh/brownfield Claude/Codex subprocess
+  scenarios cover actual isolated runtime, hooks, source maintenance, rendering
+  and repeat upgrades without changing product dependencies.
+- The partial-ingest failure reproduced in normal and resume modes. Per-page
+  pending finalization now precedes completion checkpoints; crash retries and
+  stale/concurrent refusal have focused regressions.
+- Independent review identified relocated absolute bindings and historical
+  slug deduplication. New relative bindings, explicit legacy gaps and transaction
+  identities were implemented; relocation and retire/reimport governance tests
+  pass. These findings are resolved by runtime evidence, not waived.
+- Package inspection found private ignored maintenance payloads in source
+  builds. Explicit source-distribution exclusions and a clean-copy canary
+  regression now prevent them. Both 0.7 build formats are produced; the Git
+  source/plugin remains the supported complete bootstrap distribution.
+- Smoke PASS; release audit READY, 8 pass/0 warn/0 fail; Claude manifest
+  validation PASS. Mermaid/DOT/HTML exports are exercised by smoke/tests.
+- Strict status/review/query comparison covered 1,518 target entries with zero
+  mutations. Four bound documents have zero pending jobs; 34 canonical inventory
+  documents remain unchecked, not declared fresh. Cited ingest retrieval passes.
+- Twelve native Codex responses to existing case inputs matched held-out
+  expectations: bounded docs, supplied research, mandatory test/signing failure,
+  authorized publication, access denial, optional Pages/hooks, ratification
+  without automatic fan-out, A-G read-only provenance, missing click and wiki
+  versus runtime authority. The replay did not execute external scenario
+  commands or prove real production behavior. Live Claude remains unaccepted:
+  one availability call returned API Error: 402 insufficient balance.
+- GitHub main is unprotected and has no required-check protection. The latest
+  inspected check at 36df49e never started: "The job was not started because
+  your account is locked due to a billing issue." Local checks are not labelled
+  hosted CI; current provider/billing configuration is not changed.
+
+### Publication And Installation
+
+Candidate verified locally. Commit, public source, tag, hosted check and installed
+runtime results must be recorded after the corresponding actions, not inferred
+from local tests. No public 0.7 receipt exists at this entry's creation.
+
+### 0.8 Boundary
+
+DOC-003 remains P2 CANDIDATE. Existing plan/apply already supports an explicit
+bounded one-shot catch-up; no new scheduler/server is justified by this release.
+PILOT-001/PILOT-002 real-project adoption should identify the next measured
+friction before selecting a 0.8 feature. External HTTP integration requires its
+owning service and operation. Neither is a synthetic gate for 0.7 publication.

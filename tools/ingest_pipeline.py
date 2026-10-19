@@ -2,7 +2,9 @@
 from __future__ import annotations
 
 import json
+import hashlib
 import re
+import uuid
 from collections.abc import Iterable
 from dataclasses import dataclass, replace
 from datetime import date
@@ -13,7 +15,7 @@ import click
 from tools._models import LintSeverity
 from tools.classify import classify
 from tools.lint import run_all_checks
-from tools.wiki_engine import rebuild_context_brief, rebuild_edges, rebuild_open_questions
+from tools.wiki_engine import rebuild_context_brief, rebuild_edges, rebuild_open_questions, scan_wiki
 
 
 @dataclass(frozen=True)
@@ -24,6 +26,7 @@ class IngestResult:
     slug: str
     lint_errors: int
     lint_warnings: int
+    created: bool = True
 
 
 MAX_EXCERPT_LINES = 80
@@ -37,25 +40,34 @@ def ingest_files(
     resume: bool = False,
 ) -> list[IngestResult]:
     results: list[IngestResult] = []
-    state = _load_state(wiki_dir) if resume else {"completed": []}
+    state = _load_state(wiki_dir)
+    recovered = None
+    if state.get("pending"):
+        if state["pending"]["source"] not in {str(source.resolve()) for source in sources}:
+            raise ValueError("unfinished ingest: retry with the original pending source")
+        recovered = _finish_pending(wiki_dir, state)
+        results.append(recovered)
+        state = _load_state(wiki_dir)
     completed = set(state.get("completed", []))
+    source_hashes = state.get("source_hashes", {})
     for source in sources:
         source_key = str(source.resolve())
-        if resume and source_key in completed:
+        source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+        if recovered and source_key == str(recovered.source.resolve()):
             continue
-        results.append(_ingest_one(wiki_dir, source, slot=slot, belongs_to=belongs_to))
-        if resume:
-            completed.add(source_key)
-            _write_state(wiki_dir, sorted(completed), failed=[])
-    _update_index(wiki_dir, results)
-    rebuild_edges(wiki_dir)
-    rebuild_context_brief(wiki_dir)
-    rebuild_open_questions(wiki_dir)
+        if resume and source_key in completed and source_hashes.get(source_key) == source_hash:
+            continue
+        result = _ingest_one(wiki_dir, source, slot=slot, belongs_to=belongs_to)
+        if result.created:
+            result = _finish_pending(wiki_dir, _load_state(wiki_dir))
+            state = _load_state(wiki_dir)
+            completed = set(state.get("completed", []))
+            source_hashes = state.get("source_hashes", {})
+        results.append(result)
     findings = run_all_checks(wiki_dir, schema={}, dir_to_type={}, dependency_rules=[])
     lint_errors = sum(1 for finding in findings if finding.severity == LintSeverity.ERROR)
     lint_warnings = sum(1 for finding in findings if finding.severity == LintSeverity.WARNING)
     results = [replace(result, lint_errors=lint_errors, lint_warnings=lint_warnings) for result in results]
-    _append_log(wiki_dir, results)
     return results
 
 
@@ -113,6 +125,8 @@ def ingest_report(
         lines.append(f"- `{result.source}` -> `{result.page.relative_to(wiki_dir)}` slot={result.slot}")
         lines.append(f"  - slug: [[{result.slug}]]")
         lines.append(f"  - lint: {result.lint_errors} error(s), {result.lint_warnings} warning(s)")
+        if not result.created:
+            lines.append("  - Existing source owner preserved. Use document_worker plan for source drift; no import or journal entry was created.")
     lines.extend([
         "",
         "## Next Actions",
@@ -126,16 +140,48 @@ def ingest_report(
 def _ingest_one(wiki_dir: Path, source: Path, slot: str | None, belongs_to: str | None) -> IngestResult:
     if not source.exists() or not source.is_file():
         raise FileNotFoundError(f"source not found: {source}")
-    if wiki_dir.resolve() in source.resolve().parents and "graph" in source.parts:
-        raise ValueError("refusing to ingest generated graph artifacts")
+    if source.resolve().is_relative_to(wiki_dir.resolve()):
+        relative = source.resolve().relative_to(wiki_dir.resolve())
+        if any(part in {"graph", "render", "outputs"} or part.startswith(".") for part in relative.parts[:-1]):
+            raise ValueError("refusing to ingest generated graph/render artifacts")
     body = _read_text_source(source)
+    owners = []
+    for candidate in scan_wiki(wiki_dir):
+        stored = candidate.frontmatter.get("source_files") or []
+        stored = [stored] if isinstance(stored, str) else stored
+        if not isinstance(stored, list):
+            raise ValueError(f"{candidate.path}: source_files must be a path list")
+        stored = list(stored)
+        if candidate.frontmatter.get("source_file"):
+            stored.append(candidate.frontmatter["source_file"])
+        for value in stored:
+            path = Path(str(value))
+            project = _project_root(wiki_dir)
+            path = path if path.is_absolute() else project / path
+            if path.resolve() == source.resolve():
+                owners.append(candidate)
+                break
+    if len(owners) > 1:
+        raise ValueError(f"source has multiple existing wiki owners; select and reconcile them explicitly: {source}")
+    if owners:
+        page = Path(owners[0].path)
+        return IngestResult(source, page, str(page.parent.relative_to(wiki_dir)), owners[0].slug, 0, 0, created=False)
     artifact = classify(source)
     target_slot = slot or artifact.suggested_slot or _default_slot(wiki_dir, artifact.kind)
     slug = _unique_slug(wiki_dir, _slugify(source.stem))
     title = _title_from_source(source, body)
     page = wiki_dir / target_slot / f"{slug}.md"
-    page.parent.mkdir(parents=True, exist_ok=True)
-    page.write_text(_page_text(source, title, slug, target_slot, artifact.kind, belongs_to, body))
+    relative_page = str(page.relative_to(wiki_dir))
+    _pending_page(wiki_dir, relative_page)
+    state = _load_state(wiki_dir)
+    _write_state(wiki_dir, state.get("completed", []), state.get("failed", []),
+                 state.get("source_hashes", {}), pending={
+                     "source": str(source.resolve()),
+                     "transaction_id": uuid.uuid4().hex,
+                     "source_sha256": hashlib.sha256(source.read_bytes()).hexdigest(),
+                     "page": relative_page, "slot": target_slot, "slug": slug,
+                     "text": _page_text(source, title, slug, target_slot, artifact.kind, belongs_to, body, wiki_dir=wiki_dir),
+                 })
     return IngestResult(
         source=source,
         page=page,
@@ -146,7 +192,45 @@ def _ingest_one(wiki_dir: Path, source: Path, slot: str | None, belongs_to: str 
     )
 
 
+def _pending_page(wiki_dir: Path, relative: str) -> Path:
+    path = Path(relative)
+    if path.is_absolute() or any(part in {"..", "graph", "render", "outputs"} or part.startswith(".") for part in path.parts):
+        raise ValueError("ingest page must remain inside a source-page directory")
+    target = wiki_dir / path
+    if target.is_symlink() or not target.resolve().is_relative_to(wiki_dir.resolve()):
+        raise ValueError("ingest page must remain inside the wiki")
+    return target
+
+
+def _finish_pending(wiki_dir: Path, state: dict) -> IngestResult:
+    """Finalize one captured page before checkpointing, including crash retries."""
+    from tools.document_maintenance import _atomic_text
+
+    pending = state["pending"]
+    source = Path(pending["source"])
+    if hashlib.sha256(source.read_bytes()).hexdigest() != pending["source_sha256"]:
+        raise ValueError("stale pending ingest source; preserve ingest_state.json and reconcile the source")
+    page = _pending_page(wiki_dir, pending["page"])
+    if page.exists() and page.read_text() != pending["text"]:
+        raise ValueError("concurrent edit to pending ingest page; preserve it and reconcile before retry")
+    page.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_text(page, pending["text"])
+    result = IngestResult(source, page, pending["slot"], pending["slug"], 0, 0)
+    _update_index(wiki_dir, [result])
+    _append_log(wiki_dir, [result], transaction_id=pending["transaction_id"])
+    rebuild_edges(wiki_dir)
+    rebuild_context_brief(wiki_dir)
+    rebuild_open_questions(wiki_dir)
+    completed = set(state.get("completed", [])) | {pending["source"]}
+    hashes = dict(state.get("source_hashes", {}))
+    hashes[pending["source"]] = pending["source_sha256"]
+    _write_state(wiki_dir, sorted(completed), [], hashes)
+    return result
+
+
 def _update_index(wiki_dir: Path, results: list[IngestResult]) -> None:
+    from tools.document_maintenance import _atomic_text
+
     if not results:
         return
     index = wiki_dir / "index.md"
@@ -165,18 +249,32 @@ def _update_index(wiki_dir: Path, results: list[IngestResult]) -> None:
         additions.append(f"- {link} -> `{result.slot}/`")
     if additions:
         text += "\n" + "\n".join(additions)
-    index.write_text(text.rstrip() + "\n")
+    _atomic_text(index, text.rstrip() + "\n")
 
 
-def _page_text(source: Path, title: str, slug: str, slot: str, kind: str, belongs_to: str | None, body: str) -> str:
+def _project_root(wiki_dir: Path) -> Path:
+    return next((parent for parent in wiki_dir.resolve().parents
+                 if (parent / ".alpha-wiki/config.yaml").is_file()), wiki_dir.resolve().parent)
+
+
+def _source_binding(wiki_dir: Path, source: Path) -> str:
+    path = source.resolve()
+    try:
+        return path.relative_to(_project_root(wiki_dir)).as_posix()
+    except ValueError:
+        return str(path)
+
+
+def _page_text(source: Path, title: str, slug: str, slot: str, kind: str, belongs_to: str | None, body: str, *, wiki_dir: Path) -> str:
     today = date.today().isoformat()
+    source_binding = _source_binding(wiki_dir, source)
     frontmatter = {
         "title": title,
         "slug": slug,
         "status": "draft",
         "date_updated": today,
         "source": f"[[{_slugify(source.stem)}]]",
-        "source_file": str(source),
+        "source_file": json.dumps(source_binding, ensure_ascii=False),
         "kind": kind,
     }
     if belongs_to:
@@ -199,7 +297,7 @@ def _page_text(source: Path, title: str, slug: str, slot: str, kind: str, belong
         "",
         "## Provenance",
         "",
-        f"- Source file: `{source}`",
+        f"- Source file: `{source_binding}`",
         f"- Ingested: {today}",
         f"- Classifier kind: `{kind}`",
         "",
@@ -283,16 +381,22 @@ def _risk_lines(text: str) -> list[str]:
     return risks
 
 
-def _append_log(wiki_dir: Path, results: list[IngestResult]) -> None:
+def _append_log(wiki_dir: Path, results: list[IngestResult], *, transaction_id: str | None = None) -> None:
+    from tools.document_maintenance import _atomic_text
+
     if not results:
         return
     log = wiki_dir / "log.md"
     log.parent.mkdir(parents=True, exist_ok=True)
     if not log.exists():
         log.write_text("# Log\n")
+    text = log.read_text()
+    marker = f" | import={transaction_id}" if transaction_id else ""
+    if marker and any(line.endswith(marker) for line in text.splitlines()):
+        return
     today = date.today().isoformat()
     pages = ", ".join(f"[[{result.slug}]]" for result in results)
-    log.write_text(log.read_text().rstrip() + f"\n\n## [{today}] ingest | deterministic pipeline | pages={pages}\n")
+    _atomic_text(log, text.rstrip() + f"\n\n## [{today}] ingest | deterministic pipeline | pages={pages}{marker}\n")
 
 
 def _unique_slug(wiki_dir: Path, base: str) -> str:
@@ -327,13 +431,22 @@ def _load_state(wiki_dir: Path) -> dict:
     return json.loads(path.read_text())
 
 
-def _write_state(wiki_dir: Path, completed: list[str], failed: list[str]) -> None:
+def _write_state(wiki_dir: Path, completed: list[str], failed: list[str], source_hashes: dict | None = None,
+                 pending: dict | None = None) -> None:
+    from tools.document_maintenance import _atomic_text
+
     path = _state_path(wiki_dir)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps({
+    ignore = path.parent / ".gitignore"
+    ignore_text = ignore.read_text() if ignore.exists() else ""
+    if "/ingest_state.json" not in ignore_text.splitlines():
+        _atomic_text(ignore, ignore_text.rstrip() + "\n/ingest_state.json\n")
+    _atomic_text(path, json.dumps({
         "updated": date.today().isoformat(),
         "completed": completed,
         "failed": failed,
+        "source_hashes": source_hashes or {},
+        "pending": pending,
     }, indent=2, sort_keys=True) + "\n")
 
 

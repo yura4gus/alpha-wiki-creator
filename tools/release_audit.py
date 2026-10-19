@@ -44,6 +44,7 @@ EXPECTED_TOOLS = {
     "backlog.py",
     "handoff.py",
     "release_check.py",
+    "document_worker.py",
 }
 
 RELEASE_DOCS = {

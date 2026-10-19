@@ -104,7 +104,9 @@ Append-only. One entry per line:
 ## [YYYY-MM-DD] op | description
 ```
 
-Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stub}`.
+Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, stub, document-update, document-register, document-rename, document-retire}`.
+Record actual durable changes, not technical session heartbeats. Follow the
+Canonical Documents section in AGENTS.md and document_governance in config.
 
 ## Constraints
 
@@ -148,7 +150,7 @@ multi-track delivery. Normal Alpha-Wiki initialization does not create
 - **session-start** loads `wiki/graph/context_brief.md` into agent context.
 - **pre-tool-use** validates frontmatter and reverse-link on writes to `wiki/`.
 - **post-tool-use** debounces (5s) full graph rebuild: `edges.jsonl`, `context_brief.md`, `open_questions.md`.
-- **session-end** runs `lint --suggest`, appends a session-end log entry, and prints a summary.
+- **session-end** reports lint and canonical-document gaps without technical heartbeat log entries.
 
 ## Schema-evolve mode
 

@@ -17,6 +17,14 @@ This repository uses Alpha-Wiki as its durable markdown memory layer.
 - `.alpha-wiki/config.yaml`, `CLAUDE.md`, `AGENTS.md`, `.claude/**`, and `.codex/**` are the runtime contract. Change them deliberately.
 - Preserve bidirectional wikilinks and run lint after wiki edits.
 
+## Canonical Documents
+
+- Maintain the existing canonical specifications in place; this repository uses docs/roadmap-execution.md as its only active roadmap.
+- Canonical documents and their wiki/log.md records must change together. Keep raw evidence immutable and generated views separate.
+- For source-bound maintenance use document_worker plan/apply, review actual sources, preserve pending transactions, and verify the complete user outcome.
+- Before commit run python3 .alpha-wiki/run.py -m tools.document_worker check --root . --config .alpha-wiki/config.yaml.
+- Checked no-change and idle hooks do not create journal entries or model calls.
+
 ## Codex Workflows
 
 Return the result and decisive evidence concisely in the user's language.

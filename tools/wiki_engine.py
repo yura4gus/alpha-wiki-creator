@@ -74,7 +74,7 @@ def scan_wiki(wiki_dir: Path) -> list[Page]:
     """
     return [
         parse_page(p)
-        for p in wiki_dir.rglob("*.md")
+        for p in sorted(wiki_dir.rglob("*.md"))
         if _is_wiki_page(p, wiki_dir)
     ]
 
@@ -114,7 +114,8 @@ FEATURE_CLUSTER_KEYS = {"implements", "target_module", "belongs_to", "affects", 
 MODULE_OWNER_KEYS = {"belongs_to", "owned_by", "service", "defined_in"}
 
 
-def rebuild_edges(wiki_dir: Path) -> list[Edge]:
+def collect_edges(wiki_dir: Path) -> list[Edge]:
+    """Derive current typed edges without writing generated artifacts."""
     edges: list[Edge] = []
     for page in scan_wiki(wiki_dir):
         for key, value in page.frontmatter.items():
@@ -122,6 +123,11 @@ def rebuild_edges(wiki_dir: Path) -> list[Edge]:
                 continue
             for target in _coerce_targets(value):
                 edges.append(Edge(source=page.slug, target=target, relation=key))
+    return edges
+
+
+def rebuild_edges(wiki_dir: Path) -> list[Edge]:
+    edges = collect_edges(wiki_dir)
     out_path = wiki_dir / "graph" / "edges.jsonl"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(e.to_jsonl() for e in edges) + ("\n" if edges else ""))
@@ -280,8 +286,8 @@ def rebuild_context_brief(wiki_dir: Path) -> Path:
     log_path = wiki_dir / "log.md"
     recent_log = ""
     if log_path.exists():
-        recent_log = "\n".join(log_path.read_text().splitlines()[-10:])
-    open_q = _collect_open_questions(pages)
+        recent_log = "\n".join(recent_log_entries(log_path.read_text(), 5))
+    open_q = collect_open_questions(pages)
 
     parts = [
         "# Context brief (auto-generated)\n",
@@ -299,10 +305,17 @@ def rebuild_context_brief(wiki_dir: Path) -> Path:
     return out_path
 
 
+def recent_log_entries(text: str, limit: int = 10) -> list[str]:
+    """Handle both historical prepended logs and current appended records."""
+    entries = [(match.group(1), index, line) for index, line in enumerate(text.splitlines())
+               if (match := re.match(r"^## \[(\d{4}-\d{2}-\d{2})\]", line))]
+    return [line for _, _, line in sorted(entries, reverse=True)[:limit]]
+
+
 def rebuild_open_questions(wiki_dir: Path) -> Path:
     """Extract all open questions from the wiki and write to a dedicated file."""
     pages = scan_wiki(wiki_dir)
-    text = "# Open questions (auto-generated)\n\n" + _collect_open_questions(pages)
+    text = "# Open questions (auto-generated)\n\n" + collect_open_questions(pages)
     out_path = wiki_dir / "graph" / "open_questions.md"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(text)
@@ -312,7 +325,7 @@ def rebuild_open_questions(wiki_dir: Path) -> Path:
 OPEN_Q_SECTION_RE = re.compile(r"^## Open questions\s*\n(.*?)(?=^## |\Z)", re.MULTILINE | re.DOTALL)
 
 
-def _collect_open_questions(pages: list[Page]) -> str:
+def collect_open_questions(pages: list[Page]) -> str:
     """Extract all open questions from page bodies and frontmatter."""
     lines: list[str] = []
     for p in pages:

@@ -30,10 +30,11 @@ def test_scan_wiki_excludes_generated_and_obsidian_files(tmp_path: Path):
     wiki = tmp_path / "wiki"
     (wiki / "specs").mkdir(parents=True)
     (wiki / "specs" / "kept.md").write_text("---\ntitle: Kept\nslug: kept\n---\n# Kept\n")
+    (wiki / "specs" / "_index.md").write_text("---\ntitle: Navigation\nslug: navigation-index\n---\n# Navigation\n")
     for folder in [".obsidian", "graph", "render", "outputs"]:
         (wiki / folder).mkdir(parents=True)
         (wiki / folder / "ignored.md").write_text("---\ntitle: Ignored\nslug: ignored\n---\n# Ignored\n")
 
     slugs = sorted(page.slug for page in scan_wiki(wiki))
 
-    assert slugs == ["kept"]
+    assert slugs == ["kept", "navigation-index"]

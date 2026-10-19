@@ -1,6 +1,6 @@
 {
   "name": "alpha-wiki",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "LLM-maintained wiki bootstrap (Karpathy + OmegaWiki inspired)",
   "author": {
     "name": "yura4gus",

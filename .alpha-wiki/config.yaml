@@ -1,5 +1,24 @@
 name: software-project
 description: Default preset for software/engineering projects
+document_governance:
+  enabled: true
+  global_log: wiki/log.md
+  canonical_files:
+  - README.md
+  - AGENTS.md
+  - CHANGELOG.md
+  - docs/README.md
+  - docs/quickstart.md
+  - docs/roadmap-execution.md
+  canonical_roots:
+  - wiki
+  excluded_files:
+  - wiki/index.md
+  - wiki/log.md
+  excluded_roots:
+  - wiki/graph
+  - wiki/render
+  - wiki/agentops
 entity_types:
 - name: module
   dir: modules

@@ -65,40 +65,26 @@ Use $alpha-wiki:doctor with platform both and refresh enabled.
 
 Expected result: no failures. Warnings are acceptable before the first ingest if they say the wiki has no durable content yet.
 
-Both platforms run initialized project tools through the isolated launcher:
+### Isolated Runtime (0.6.2)
+
+After init/upgrade, both platforms use the same project-local launcher:
 
 ```bash
 python3 .alpha-wiki/run.py -m tools.doctor --project-dir . --platform both --refresh
 python3 .alpha-wiki/run.py -m tools.status --wiki-dir wiki
 ```
 
-First setup and runtime dependency changes need `uv`. Dependencies are installed
-in `.alpha-wiki/runtime/.venv`, not the product virtualenv. The launcher leaves
-root `pyproject.toml`, `uv.lock`, `requirements.txt`, and `package.json` untouched.
-Fresh projects do not receive a root Python dependency manifest for wiki tools.
-Once prepared, the runtime can be reused without `uv`.
+The first call needs `uv` and installs dependencies under
+`.alpha-wiki/runtime/.venv`. Later calls can reuse that environment without
+`uv`. Root `pyproject.toml`, `uv.lock`, `requirements.txt`, `package.json`, and
+the product's `.venv` remain untouched. Fresh projects do not get a root
+Python project merely to host wiki dependencies. Before init, bootstrap still
+runs from the installed Alpha-Wiki plugin environment.
 
-Before init, run bootstrap from the installed plugin directory, passing the
-absolute target path. On upgrade, use the init workflow's existing-project
-preservation mode; review/trust refreshed Codex hooks with `/hooks`.
-
-For an existing Codex-installed wiki, run this from the target project:
-
-```bash
-runtime_root="$HOME/plugins/alpha-wiki"
-UV_PROJECT_ENVIRONMENT="$runtime_root/.venv" uv run --project "$runtime_root" \
-  --directory "$runtime_root" --no-dev python -m scripts.bootstrap_cli \
-  --target "$PWD" --runtime-only
-```
-
-Claude uses the same command with its installed Alpha-Wiki plugin directory.
-`--runtime-only --dry-run` previews the managed runtime/tool/script writes. It
-preserves schema, agent contracts, wiki/graph files, CI configuration, and hook
-routing. Existing custom CI invocation lines must be updated deliberately;
-reinstall existing Alpha-Wiki Git hooks only if that project uses them.
-
-0.6.2 retains `CLAUDE.md` generation and existing schema behavior. It does not
-include the separate document-worker or AgentOps extensions.
+Track `.alpha-wiki/run.py`, `.alpha-wiki/runtime/pyproject.toml`, and its
+generated `.gitignore`; the runtime environment and local lockfile are build
+outputs. For a missing dependency, rerun the repair command printed by the
+launcher. Do not install Alpha-Wiki dependencies into the product environment.
 
 ## 4. Ingest First Durable Source
 
@@ -162,6 +148,129 @@ Graph rule:
 - Color is node role: red service/repo, green module/domain, blue feature/flow, black document/evidence, orange contract.
 - Cluster is typed relationship: `belongs_to`, `service`, `implements`, `affects`, `owned_by`, `defined_in`.
 - A healthy service cluster can contain mixed colors. A color-only cluster is a modeling mistake.
+
+## Maintain Existing Documents (0.7)
+
+This extends the optional document worker in 0.7; older 0.6.2 installations need
+an upgrade. Use `document_worker --help` to inspect the available version.
+It needs no server, Temporal, or model SDK. The agent prepares semantic edits;
+the deterministic worker validates and applies them. Installation does not
+start a background author.
+
+Fresh software-project setup enables the canonical-document policy. Other
+presets and existing configurations do not silently gain one. Runtime-only
+upgrade preserves the user's config, contracts, wiki and hook routing:
+
+```bash
+uv run python -m scripts.bootstrap_cli --target /absolute/project --runtime-only --dry-run
+uv run python -m scripts.bootstrap_cli --target /absolute/project --runtime-only
+```
+
+Run those from the installed plugin environment, not the target product's
+environment. To opt an existing project into maintenance, deliberately merge
+only the following policy into its existing config, using its actual wiki path:
+
+```yaml
+document_governance:
+  enabled: true
+  global_log: wiki/log.md
+  canonical_files: [README.md, AGENTS.md, CLAUDE.md]
+  canonical_roots: [wiki]
+  excluded_files: [wiki/index.md, wiki/log.md]
+  excluded_roots: [wiki/graph, wiki/render, wiki/agentops]
+```
+
+Do not replace existing entity_types, cross_ref_rules or dependency_rules.
+Extend the canonical set to the project's accepted specifications only.
+Runtime-only upgrade replaces managed Alpha-Wiki tools/hook scripts; inspect
+its dry-run and preserve any intentional local customizations before applying.
+It does not overwrite user documentation or regenerate schema/routing.
+
+Keep four layers separate: canonical specifications/contracts maintained in
+place; immutable source evidence; unaccepted research/candidates; and generated
+wiki/graph/HTML projections. A maintained wiki page is not a competing API spec.
+Use one `belongs_to` parent where ownership exists. Dependency and evidence
+links remain separate. Root documents need no invented parent.
+
+For automatic source-drift routing, add `source_file: docs/product.md` or a
+`source_files` list to the existing page's frontmatter. Paths are repository
+relative; absolute in-repository legacy bindings are accepted. Missing bindings
+are reported as unchecked coverage, not proof of freshness. Register new
+canonical documents explicitly through ingest or `document-register` first.
+
+From the project root, plan one existing document:
+
+```bash
+python3 .alpha-wiki/run.py -m tools.document_worker plan \
+  --document wiki/specs/product.md --output .alpha-wiki/maintenance/plan.json
+```
+
+The plan pins source, document, and configuration hashes. The default batch
+limit is 10. Review the actual sources and prepare
+`.alpha-wiki/maintenance/edits.json` with this shape:
+
+```json
+{
+  "summary": "Reflect the reviewed source change without duplicating the spec",
+  "updates": [
+    {"document": "wiki/specs/product.md", "text": "FULL reviewed Markdown, including existing frontmatter"}
+  ]
+}
+```
+
+The text above is a placeholder, not an executable replacement. Keep identity,
+status, source bindings, and ownership metadata unchanged; only `date_updated`
+may change. Apply an explicit contract/schema/status change outside maintenance
+and log it normally. To compact redundant prose, plan with `--compact` and
+explicit `--document` scope. That mode rejects growth, lost references, and
+changes to protected normative sections, including nested subsections.
+
+```bash
+python3 .alpha-wiki/run.py -m tools.document_worker apply \
+  --plan .alpha-wiki/maintenance/plan.json --edits .alpha-wiki/maintenance/edits.json
+python3 .alpha-wiki/run.py -m tools.document_worker check
+python3 .alpha-wiki/run.py -m tools.status --wiki-dir wiki
+```
+
+`apply` edits existing canonical documents only, appends one project journal
+record for actual edits, refreshes graph/context/questions, and checkpoints
+success. An unchanged second apply creates no new entry. A reviewed no-change
+replacement can acknowledge an already accurate page without journal noise.
+Partial batches leave other jobs pending. Update a source owner before its
+dependent projections, then re-plan; do not update both against stale inputs.
+
+The executing Claude/Codex agent owns the complete requested outcome: scope and
+source review, bounded apply, governance/lint, status/review, and a cited query
+of the changed facts. A batch checkpoint is not task acceptance. Close the
+owning task only after the relevant checks pass; preserve partial progress when
+source edits succeed but memory synchronization fails. A local document job
+does not require a deployment, and this workflow does not ratify decisions.
+
+For a strict read-only audit of an already prepared runtime:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 .alpha-wiki/run.py -m tools.status --wiki-dir wiki --read-only
+PYTHONDONTWRITEBYTECODE=1 python3 .alpha-wiki/run.py -m tools.review --wiki-dir wiki --config .alpha-wiki/config.yaml --read-only
+```
+
+These modes compute current edges/questions without updating graph files and
+reject `--out`. Do not cold-install a runtime, save a report, or run refresh/fix
+commands during a zero-write audit. A prepared external Alpha-Wiki interpreter
+can run target tools with `-B` when the target runtime is not installed. These
+new modes require 0.7; they are not available in 0.6.2.
+
+After an interruption, rerun the same apply with its original files. Preserve
+`pending.json`; it records unfinished work. Observed concurrent changes stop
+recovery without overwriting them. A crashed process may leave `worker.lock`;
+verify its PID has stopped before removing that lock. Do not discard a pending
+transaction as a shortcut. State is local and ignored; losing it causes a fresh
+source review, not an assumption that memory is synchronized.
+
+For regular maintenance, run status/plan after a source batch or through an
+existing explicitly configured scheduler. This command does not schedule itself.
+No automatic deletion, archival, owner ratification, or semantic truth resolution
+is provided. A shared multi-repo overview should link to local journals, not
+duplicate their contents.
 
 ## 7. Release Gate For This Plugin
 

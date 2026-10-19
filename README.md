@@ -18,27 +18,27 @@ It is for teams that want a new Claude Code or Codex session to quickly answer: 
 
 Alpha-Wiki is published for real Claude Code and Codex use on active projects.
 
-Current release:
+Current release program:
 
 - Branch: `main`
-- Latest release: [`v0.6.2`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.6.2)
-- Status: isolated runtime and dependency-safe project tools; not v1.0
+- Release version: [`v0.7.0`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.7.0) (Reliable Engineering Lifecycle)
+- Status: source-bound document maintenance and dependency-safe tools; not v1.0
 - Workflows: **12 core + 4 optional AgentOps** (orchestrate, backlog, handoff, release-check)
 - Live docs: https://yura4gus.github.io/alpha-wiki-creator/
 
-Current verified gates:
+Verification (publication/install receipts are maintained in the roadmap):
 
-- Public clone validation: passed
+- Source and install evidence: [release execution](docs/roadmap-execution.md#20-release-07-execution)
 - Fresh install smoke: `PASS`
 - Release audit: `READY`
-- Test suite: `215 passed`
-- Docs Pages: live at https://yura4gus.github.io/alpha-wiki-creator/
+- Test suite: `288 passed`
+- Hosted CI / Pages: separate status; GitHub currently reports an account billing lock
 - Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
 - Codex runtime: one namespaced `$alpha-wiki:*` plugin surface, `AGENTS.md`, and trusted project hooks
 - Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
 - Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
 
-Version `0.6.2` retains the opt-in AgentOps v0.2 control layer for controlled
+Version `0.7.0` retains the opt-in AgentOps v0.2 control layer for controlled
 multi-track execution. It stores backlog items, session summaries, handoffs, and
 project release evidence under `wiki/agentops/`; normal init does not enable it.
 
@@ -54,8 +54,10 @@ First setup or a runtime manifest change requires `uv`; dependencies live in
 `.alpha-wiki/runtime/.venv`, never the product environment. A prepared runtime
 can work without `uv`. Product manifests and lockfiles stay unchanged.
 
-0.6.2 is runtime-only: it keeps `CLAUDE.md` generation and the existing schema
-and AgentOps contracts. Document-worker and schema-migration work is not included.
+0.7 adds reviewed `document_worker plan/apply`, source-preserving compaction,
+recovery/no-op checks and strict read-only status/review. It keeps existing
+`CLAUDE.md` generation, page schema and AgentOps contracts. No server, daemon
+or schema migration is required. See [maintenance](docs/quickstart.md#maintain-existing-documents-07).
 
 ## Quick Start
 

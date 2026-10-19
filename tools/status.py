@@ -7,8 +7,10 @@ import click
 
 from tools.wiki_engine import (
     cluster_gaps,
+    collect_edges,
+    collect_open_questions,
     page_role,
-    read_edges,
+    recent_log_entries,
     rebuild_context_brief,
     rebuild_edges,
     rebuild_open_questions,
@@ -19,19 +21,21 @@ STALE_THRESHOLD_DAYS = 30
 PROVENANCE_KEYS = {"source", "sources", "derived_from", "distilled_from", "evidence", "evidence_strength"}
 CLUSTER_EDGE_RELATIONS = {"belongs_to", "owned_by", "service", "defined_in"}
 
-def status_report(wiki_dir: Path) -> str:
-    rebuild_edges(wiki_dir)
-    rebuild_context_brief(wiki_dir)
-    rebuild_open_questions(wiki_dir)
+def status_report(wiki_dir: Path, *, refresh: bool = True) -> str:
+    """Report from current Markdown; optionally refresh generated views."""
+    if refresh:
+        edges = rebuild_edges(wiki_dir)
+        rebuild_context_brief(wiki_dir)
+        rebuild_open_questions(wiki_dir)
+    else:
+        edges = collect_edges(wiki_dir)
 
     pages = scan_wiki(wiki_dir)
     log_text = (wiki_dir / "log.md").read_text() if (wiki_dir / "log.md").exists() else ""
-    edges_path = wiki_dir / "graph" / "edges.jsonl"
-    edges = read_edges(edges_path) if edges_path.exists() else []
 
     # Recent activity (last 10 log entries)
     log_lines = [ln for ln in log_text.splitlines() if ln.startswith("## [")]
-    recent = log_lines[-10:]
+    recent = recent_log_entries(log_text, 10)
 
     # Schema-evolution events
     schema_events = [ln for ln in log_lines if "schema-change" in ln]
@@ -53,15 +57,13 @@ def status_report(wiki_dir: Path) -> str:
             no_date.append(p.slug)
 
     # Open questions
-    open_q_path = wiki_dir / "graph" / "open_questions.md"
-    open_q_count = 0
-    if open_q_path.exists():
-        open_q_count = sum(1 for ln in open_q_path.read_text().splitlines() if ln.startswith("- "))
+    open_questions = collect_open_questions(pages)
+    open_q_count = sum(1 for ln in open_questions.splitlines() if ln.startswith("- "))
 
     cluster_gap_count = sum(len(cluster_gaps(wiki_dir, page)) for page in pages)
     cluster_health = _cluster_health(wiki_dir, pages, edges, cluster_gap_count)
     provenance = _provenance_health(pages)
-    open_question_followup = _open_question_followup(open_q_path)
+    open_question_followup = _open_question_followup(open_questions)
     gap_items = _gap_check(
         pages,
         edges,
@@ -131,7 +133,34 @@ def status_report(wiki_dir: Path) -> str:
     parts.append("\n## Suggested Next Actions")
     parts.extend(_suggested_next_actions(gap_items, cluster_health, provenance, open_question_followup))
     parts.append(f"\n_Run `/alpha-wiki:lint --suggest` for structural gaps._")
+    parts.extend(_document_maintenance_health(wiki_dir))
     return "\n".join(parts) + "\n"
+
+
+def _document_maintenance_health(wiki_dir: Path) -> list[str]:
+    """Expose source drift without starting models or modifying worker state."""
+    from tools.document_maintenance import plan_maintenance
+    from tools.document_worker import load_policy
+    import yaml
+
+    root = next((parent for parent in wiki_dir.resolve().parents
+                 if (parent / ".alpha-wiki/config.yaml").is_file()), None)
+    if root is None:
+        return []
+    config = root / ".alpha-wiki/config.yaml"
+    heading = ["\n## Document Maintenance"]
+    try:
+        if not load_policy(config).enabled:
+            return []
+        plan = plan_maintenance(root, config, limit=1)
+        return heading + [
+            f"- Pending source-bound documents: {len(plan['jobs']) + plan['deferred']}",
+            f"- Documents without source bindings: {plan['unmapped_documents']} (not checked for source drift)",
+            *[f"- Gap: {gap}" for gap in plan["gaps"] + plan["hierarchy_findings"]],
+            "- Run document_worker plan, review a bounded batch, then apply. No background LLM worker is running implicitly.",
+        ]
+    except (OSError, RuntimeError, ValueError, yaml.YAMLError) as exc:
+        return heading + [f"- Pending/unknown: {exc}"]
 
 
 def _gap_check(
@@ -205,11 +234,9 @@ def _provenance_health(pages) -> dict[str, object]:
     }
 
 
-def _open_question_followup(open_q_path: Path) -> dict[str, int]:
-    if not open_q_path.exists():
-        return {"missing_owner_or_timebox": 0}
+def _open_question_followup(open_questions: str) -> dict[str, int]:
     missing = 0
-    for line in open_q_path.read_text().splitlines():
+    for line in open_questions.splitlines():
         if not line.startswith("- "):
             continue
         lower = line.lower()
@@ -243,8 +270,11 @@ def _suggested_next_actions(
 @click.command()
 @click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
 @click.option("--out", type=click.Path(path_type=Path), help="Optional report output path.")
-def cli(wiki_dir: Path, out: Path | None) -> None:
-    report = status_report(wiki_dir)
+@click.option("--read-only", is_flag=True, help="Compute from Markdown without refreshing or saving files.")
+def cli(wiki_dir: Path, out: Path | None, read_only: bool) -> None:
+    if read_only and out:
+        raise click.UsageError("--read-only cannot be combined with --out")
+    report = status_report(wiki_dir, refresh=not read_only)
     if out:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(report)

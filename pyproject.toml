@@ -1,6 +1,6 @@
 [project]
 name = "alpha-wiki"
-version = "0.6.2"
+version = "0.7.0"
 description = "Bootstraps an LLM-maintained wiki into any target project"
 requires-python = ">=3.12"
 dependencies = [
@@ -33,6 +33,9 @@ omit = ["tests/*"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["tools", "scripts"]
+
+[tool.hatch.build.targets.sdist]
+exclude = ["/.alpha-wiki/maintenance", "**/ingest_state.json", "/.alpha-wiki/runtime/.venv", "/.alpha-wiki/runtime/uv.lock"]
 
 [build-system]
 requires = ["hatchling"]

@@ -5,9 +5,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - run: pip install uv
       - run: uv sync --dev
       - run: uv run pytest --cov=tools --cov=scripts --cov-report=term-missing
+      - name: check canonical document log
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null; then
+            uv run python -m tools.document_worker check --root . --config .alpha-wiki/config.yaml --base "$BASE_SHA"
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            uv run python -m tools.document_worker check --root . --config .alpha-wiki/config.yaml --base HEAD^
+          else
+            echo "Initial repository commit: document governance starts after bootstrap."
+          fi

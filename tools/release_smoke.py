@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+import subprocess
 import tempfile
 from dataclasses import dataclass
 from datetime import date
@@ -13,6 +14,7 @@ from scripts.bootstrap import bootstrap
 from scripts.install_codex import install_codex
 from scripts.interview import InterviewConfig
 from tools.doctor import run_doctor
+from tools.document_worker import check_document_governance, record_change
 from tools.ingest_pipeline import ingest_files
 from tools.render_dot import write_dot
 from tools.render_html import render_html
@@ -79,6 +81,11 @@ def run_release_smoke(base_dir: Path | None = None) -> SmokeResult:
             schema_evolve_mode="gated",
         )
         bootstrap(target=project, config=cfg)
+        _git(project, "init")
+        _git(project, "config", "user.email", "alpha-wiki@example.test")
+        _git(project, "config", "user.name", "Alpha Wiki")
+        _git(project, "add", ".")
+        _git(project, "commit", "-m", "bootstrap")
         install_codex(
             skills_target=codex_skills,
             plugin_dir=codex_plugin,
@@ -115,6 +122,16 @@ def run_release_smoke(base_dir: Path | None = None) -> SmokeResult:
             "# Smoke Module\n",
         )
         _append_index_links(wiki, ["smoke-service", "smoke-module"])
+        record_change(
+            project,
+            project / ".alpha-wiki" / "config.yaml",
+            (
+                wiki / "modules" / "smoke-service.md",
+                wiki / "modules" / "smoke-module.md",
+            ),
+            "Register release smoke architecture fixtures",
+            allow_new=True,
+        )
         source = project / "raw" / "docs" / "release-smoke-prd.md"
         source.parent.mkdir(parents=True, exist_ok=True)
         source.write_text(
@@ -122,6 +139,10 @@ def run_release_smoke(base_dir: Path | None = None) -> SmokeResult:
             "The release smoke verifies bootstrap, Codex adapter install, ingest, query, status, review, and render exports.\n"
         )
         ingest = ingest_files(wiki, [source], slot="specs", belongs_to="smoke-service")
+        document_findings = check_document_governance(
+            project,
+            project / ".alpha-wiki" / "config.yaml",
+        )
         hits = search_wiki(wiki, "release smoke", limit=3)
         status = status_report(wiki)
         review = review_report(wiki)
@@ -130,6 +151,12 @@ def run_release_smoke(base_dir: Path | None = None) -> SmokeResult:
             "Ingest/query/status/review",
             bool(ingest) and bool(hits) and "Wiki Status Report" in status and "Wiki Review" in review,
             f"{len(ingest)} ingested page(s), {len(hits)} query hit(s)",
+        )
+        _record(
+            checks,
+            "Canonical document worker",
+            not document_findings,
+            "document edits and wiki/log.md are synchronized" if not document_findings else "; ".join(document_findings),
         )
 
         mermaid = write_mermaid(wiki)
@@ -163,6 +190,16 @@ def _append_index_links(wiki: Path, slugs: list[str]) -> None:
     additions = [f"- [[{slug}]]" for slug in slugs if f"[[{slug}]]" not in text]
     if additions:
         index.write_text(text.rstrip() + "\n\n## Smoke Fixtures\n" + "\n".join(additions) + "\n")
+
+
+def _git(root: Path, *args: str) -> None:
+    subprocess.run(
+        ["git", *args],
+        cwd=root,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
 
 
 @click.command()

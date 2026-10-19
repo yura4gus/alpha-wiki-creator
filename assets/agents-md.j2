@@ -17,6 +17,19 @@ This repository uses Alpha-Wiki as its durable markdown memory layer.
 - `.alpha-wiki/config.yaml`, `CLAUDE.md`, `AGENTS.md`, `.claude/**`, and `.codex/**` are the runtime contract. Change them deliberately.
 - Preserve bidirectional wikilinks and run lint after wiki edits.
 
+## Canonical Documents
+
+- Maintain existing specifications, contracts, decisions and standards in place; search before adding another document.
+- Use the project's existing roadmap or issue tracker. Do not create a competing backlog.
+- Configure the canonical set and journal through document_governance in .alpha-wiki/config.yaml.
+- Pair canonical edits with actual {{ wiki_dir }}/log.md records. Register additions explicitly; keep raw evidence immutable.
+- Use one belongs_to ownership parent; keep dependencies and decision authority distinct.
+- Run document_worker plan, review pinned sources and bounded JSON edits, then apply. Compact redundant prose, not requirements, risks, open questions or provenance.
+- Resume interrupted apply with the original plan and edits; preserve pending transactions and concurrent human changes.
+- The controller verifies the full requested outcome, governance/lint and cited retrieval before closing the task. A checkpoint alone is not acceptance.
+- Checked no-change and idle hooks create no journal noise or model calls. No background author is installed.
+- Before commit: python3 .alpha-wiki/run.py -m tools.document_worker check --root . --config .alpha-wiki/config.yaml.
+
 ## Codex Workflows
 
 Return the result and decisive evidence concisely in the user's language.

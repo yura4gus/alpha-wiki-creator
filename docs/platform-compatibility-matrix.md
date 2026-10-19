@@ -1,8 +1,8 @@
 # Platform Compatibility Matrix
 
-Date: 2026-09-10
+Date: 2026-10-19
 
-Scope: Alpha-Wiki v0.6.x runtime and Codex adaptation.
+Scope: Alpha-Wiki v0.7 candidate; compatible with the 0.6.2 runtime and existing agent contracts.
 
 ## Verdict
 
@@ -23,7 +23,8 @@ Claude Code remains the primary interactive runtime. Current Codex CLI and deskt
 | Ingest/query/lint/status/review | Supported | Supported through plugin/skills and tools | Manual tools only |
 | Obsidian/Mermaid/DOT/HTML | Supported | Supported | Manual tools only |
 | Spawn wiki-aware subagent | `.claude/agents/*.md` | Native run-now/run-parallel plus optional `.codex/agents/*.toml` profiles | Not supported |
-| Optional AgentOps control | Native agents plus summarized Markdown state | Native subagents plus summarized Markdown state; 2-4 agents by default, 6 only by explicit request | Not supported |
+| Source-bound maintenance | Reviewed plan/apply when governance is configured | Same deterministic worker and full task acceptance | Not packaged |
+| Optional AgentOps control | Native agents plus summarized Markdown state | Bounded native scopes; no mandatory count or automatic fan-out | Not supported |
 
 ## Codex First Run
 
@@ -54,6 +55,11 @@ After init, open `/hooks` once to review and trust the generated project hooks.
 - Review/rollup scheduling remains deterministic CI, not background Codex sessions.
 - AgentOps is opt-in and uses native platform agents; it is not a second runtime and is not part of first run.
 - Gemini packaging is deferred.
+- Fresh/brownfield subprocess tests verify tools and adapters, not live provider
+  reasoning. The configured Claude provider returned HTTP 402 on 2026-10-19;
+  the live cross-agent implementation/review pilot remains unaccepted.
+- Runtime-only upgrades preserve the existing config. Maintenance requires an
+  explicit document_governance policy; do not replace user schema to enable it.
 
 ## Release Language
 

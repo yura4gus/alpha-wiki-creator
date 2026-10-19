@@ -64,6 +64,12 @@ apply `references/concept.md` (Release Decisions).
    action only when a concrete evidence gap affects the answer.
 8. Append log entry only when the query materially changes wiki state or writes an output.
 
+For strict no-write requests, follow `references/concept.md` (Strict Read-Only
+Operations), including the prepared-runtime and bytecode constraints. A search
+result labelled `accepted` means an accepted/stable page matched; verify its
+source, freshness, and applicable acceptance before treating it as approval or
+runtime proof.
+
 ## Graph Hygiene
 
 - Do not create new pages during query unless the user explicitly asks to save the synthesis.

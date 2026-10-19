@@ -4,6 +4,37 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-19
+
+### Reliable Engineering Lifecycle
+
+- Added source-pinned document_worker plan/apply, conservative compaction,
+  recoverable transactions, stale/concurrent-input rejection and no-op
+  checkpoints. The agent supplies reviewed edits and owns final acceptance.
+- Paired canonical changes with the project journal through optional configured
+  governance, pre-commit/CI checks and advisory lifecycle hooks. Idle hooks no
+  longer append technical heartbeat records.
+- Repeated ingest preserves the existing source owner and curated page;
+  changed source hashes invalidate path-only resume assumptions.
+- Interrupted ingest captures one pending page before writing, finalizes its
+  index/journal/graph before checkpointing, and refuses stale or concurrently
+  edited recovery inputs. A later batch failure no longer strands prior pages.
+- New source bindings are repository-relative. Legacy moved/external bindings
+  become explicit maintenance gaps instead of blocking unrelated governance.
+  Reimports deduplicate by transaction identity rather than historical slug.
+- Source builds explicitly exclude local recovery payloads, including ignored
+  maintenance proposals/checkpoints. A clean-copy canary regression covers this.
+- Added status/review --read-only with fresh in-memory graph/question counts
+  and rejection of saved output in strict read-only mode.
+- Consolidated one product roadmap, task-first instructions and scoped delivery
+  evidence. Wiki readiness, package publication and production remain distinct.
+- Retained the 0.6.2 isolated runtime, runtime-only upgrade, existing CLAUDE.md
+  generation, page-schema behavior and optional AgentOps enums. The additive
+  document_governance policy does not migrate entity types or session statuses.
+- No daemon, server, Temporal, model SDK, implicit transcript ingestion or HTTP
+  service added. Live Claude collaboration remains unverified after the
+  configured provider returned HTTP 402; fixture/runtime evidence is separate.
+
 ## [0.6.2] - 2026-10-18
 
 ### Runtime Fixes

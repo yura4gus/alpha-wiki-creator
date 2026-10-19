@@ -93,6 +93,7 @@ def test_install_codex_builds_plugin_and_personal_marketplace(tmp_path: Path):
     assert (result.plugin_dir / "assets/runtime/pyproject.toml").is_file()
     assert (result.plugin_dir / "docs" / "project-audit.md").exists()
     assert (result.plugin_dir / "docs" / "codex-adapter.md").exists()
+    assert "Maintain Existing Documents" in (result.plugin_dir / "docs/quickstart.md").read_text()
     assert (
         result.plugin_dir
         / "docs"

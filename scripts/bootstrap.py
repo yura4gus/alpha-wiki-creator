@@ -124,7 +124,7 @@ def _resolve_merged_config(config: InterviewConfig) -> dict:
                   "sections_required": t.sections_required} for t in (config.custom_entity_types or [])],
               "cross_ref_rules": []}
     if config.overlay == "none":
-        return preset
+        return _retarget_document_governance(preset, config.wiki_dir)
     overlay_names = config.overlay.split("+")
     if "clean" in overlay_names and "hexagonal" in overlay_names:
         raise ValueError("clean+hexagonal not combinable")
@@ -136,7 +136,28 @@ def _resolve_merged_config(config: InterviewConfig) -> dict:
         merged["overlay_dirs"].extend(ov.get("top_level_dirs", []))
         merged["dependency_rules"].extend(ov.get("dependency_rules", []))
         merged["cross_ref_rules"].extend(ov.get("extra_cross_ref_rules", []))
-    return merged
+    return _retarget_document_governance(merged, config.wiki_dir)
+
+
+def _retarget_document_governance(merged: dict, wiki_dir: str) -> dict:
+    governance = merged.get("document_governance")
+    if not isinstance(governance, dict) or wiki_dir == "wiki":
+        return merged
+
+    def retarget(value: str) -> str:
+        if value == "wiki":
+            return wiki_dir
+        if value.startswith("wiki/"):
+            return f"{wiki_dir}/{value.removeprefix('wiki/')}"
+        return value
+
+    updated = dict(merged)
+    updated_governance = dict(governance)
+    updated_governance["global_log"] = retarget(governance.get("global_log", "wiki/log.md"))
+    for key in ("canonical_files", "canonical_roots", "excluded_files", "excluded_roots"):
+        updated_governance[key] = [retarget(value) for value in governance.get(key, [])]
+    updated["document_governance"] = updated_governance
+    return updated
 
 
 def _render_context(config: InterviewConfig, merged: dict) -> dict:

@@ -46,7 +46,10 @@ Append-only. One entry per line:
 ## [YYYY-MM-DD] op | description
 ```
 
-Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, session-end, stub}`.
+Where `op ∈ {bootstrap, ingest, query, evolve, schema-change, stub, document-update, document-register, document-rename, document-retire}`.
+Record actual durable changes, not technical session heartbeats. Follow the
+Canonical Documents section in AGENTS.md and the configured document_governance
+policy. Source-bound plan/apply is coordinated by the agent; it is not a daemon.
 
 ## Constraints
 
@@ -77,7 +80,7 @@ optional AgentOps control layer. Normal initialization does not create
 - **session-start** loads `{{ wiki_dir }}/graph/context_brief.md` into agent context.
 - **pre-tool-use** validates frontmatter and reverse-link on writes to `{{ wiki_dir }}/`.
 - **post-tool-use** debounces (5s) full graph rebuild: `edges.jsonl`, `context_brief.md`, `open_questions.md`.
-- **session-end** runs `lint --suggest`, appends a session-end log entry, and prints a summary.
+- **session-end** reports lint and document-governance gaps without appending technical heartbeat entries.
 
 ## Schema-evolve mode
 

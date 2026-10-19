@@ -17,8 +17,9 @@ For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers
 ## Execution
 
 - [`audit-verified-inventory.md`](audit-verified-inventory.md) — Phase 0 verified repository inventory and review/rollup decision
-- [`roadmap-execution.md`](roadmap-execution.md) — phase-by-phase execution roadmap
-- [`implementation-plan-2026-04-30.md`](implementation-plan-2026-04-30.md) — implementation plan for the current repository
+- [`roadmap-execution.md`](roadmap-execution.md) — the only active Alpha-Wiki product roadmap and backlog
+- [0.7 release execution](roadmap-execution.md#20-release-07-execution) — scoped implementation, verification and publication/install receipts
+- [`implementation-plan-2026-04-30.md`](implementation-plan-2026-04-30.md) — historical plan; priorities incorporated into the canonical roadmap
 - [`quickstart.md`](quickstart.md) — 10-minute install, bootstrap, ingest, query, and status path
 - [`codex-adapter.md`](codex-adapter.md) — OpenAI Codex CLI install and Alpha-Wiki skill mapping
 - [`examples/codex-parallel-audit-prompt.md`](examples/codex-parallel-audit-prompt.md) — bounded native Codex audit fan-out and synthesis prompt card

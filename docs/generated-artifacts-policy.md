@@ -55,6 +55,12 @@ Obsidian runtime files such as `wiki/.obsidian/graph.json`, `workspace.json`, `a
 
 ## Public Repo Cleanup Notes
 
+- `.alpha-wiki/maintenance/**`: ignored local plans, reviewed proposals,
+  recovery transactions and checkpoints. Track only its small `.gitignore`,
+  never captured prose or pending state. Preserve pending work during recovery.
+- `wiki/graph/ingest_state.json`: local import checkpoint/recovery evidence;
+  do not publish it as a release/demo snapshot or ingest it as source material.
+
 - `wiki/render/html/**`: tracked here as a beta demo snapshot; in most target projects, prefer deploy-only.
 - `wiki/graph/**`: tracked here as deterministic graph/context evidence; in target projects, choose track-or-regenerate explicitly.
 - `docs/files.zip`: historical uploaded document bundle and release noise. It is not required for install, runtime, docs deployment, or beta validation; remove it in a later cleanup once the original upload trail is no longer needed.

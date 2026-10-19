@@ -9,7 +9,7 @@ from tools._models import LintFinding, LintSeverity
 from tools.lint import _load_config, run_all_checks
 from tools.security import security_release_blockers, security_review_section
 from tools.status import status_report
-from tools.wiki_engine import cluster_gaps, page_role, rebuild_edges, scan_wiki
+from tools.wiki_engine import cluster_gaps, collect_edges, page_role, scan_wiki
 
 
 def _scope_status(wiki_dir: Path) -> tuple[bool, str]:
@@ -31,7 +31,7 @@ def _scope_status(wiki_dir: Path) -> tuple[bool, str]:
     return False, "source manifest missing an Active scope line"
 
 
-def review_report(wiki_dir: Path, config_path: Path | None = None) -> str:
+def review_report(wiki_dir: Path, config_path: Path | None = None, *, refresh: bool = True) -> str:
     """Build a deterministic wiki review report.
 
     This is intentionally structural, not an LLM semantic review. It gives CI and
@@ -69,7 +69,7 @@ def review_report(wiki_dir: Path, config_path: Path | None = None) -> str:
         "",
         "## Health Snapshot",
         "",
-        status_report(wiki_dir).strip(),
+        status_report(wiki_dir, refresh=refresh).strip(),
         "",
         "## Trust Checks",
         "",
@@ -125,7 +125,7 @@ def _release_readiness_blockers(errors: list, scope_recorded: bool, sec_blockers
 
 
 def _trust_checks(wiki_dir: Path) -> dict[str, int]:
-    edges = rebuild_edges(wiki_dir)
+    edges = collect_edges(wiki_dir)
     pages = scan_wiki(wiki_dir)
     service_slugs = {page.slug for page in pages if page_role(wiki_dir, page) == "service"}
     attached_services = {
@@ -168,8 +168,11 @@ def _render_findings(title: str, findings: list[LintFinding]) -> list[str]:
 @click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
 @click.option("--config", type=click.Path(path_type=Path, exists=True), help="Path to .alpha-wiki/config.yaml")
 @click.option("--out", type=click.Path(path_type=Path), help="Optional report output path.")
-def cli(wiki_dir: Path, config: Path | None, out: Path | None) -> None:
-    report = review_report(wiki_dir, config)
+@click.option("--read-only", is_flag=True, help="Compute from Markdown without refreshing or saving files.")
+def cli(wiki_dir: Path, config: Path | None, out: Path | None, read_only: bool) -> None:
+    if read_only and out:
+        raise click.UsageError("--read-only cannot be combined with --out")
+    report = review_report(wiki_dir, config, refresh=not read_only)
     if out:
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(report)

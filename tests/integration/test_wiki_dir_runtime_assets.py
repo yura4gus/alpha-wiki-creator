@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+import yaml
+
 from scripts.bootstrap import bootstrap
 from scripts.interview import InterviewConfig
 
@@ -56,6 +58,13 @@ def test_custom_wiki_dir_is_rendered_into_hooks_and_workflows(tmp_path: Path):
     assert "git add .wiki/rollups/ || true" in rollup_workflow
     assert "/wiki-rollup" not in rollup_workflow
     assert "git add wiki/rollups/" not in rollup_workflow
+
+    generated_config = yaml.safe_load((tmp_path / ".alpha-wiki" / "config.yaml").read_text())
+    governance = generated_config["document_governance"]
+    assert governance["global_log"] == ".wiki/log.md"
+    assert ".wiki" in governance["canonical_roots"]
+    assert ".wiki/graph" in governance["excluded_roots"]
+    assert "wiki" not in governance["canonical_roots"]
 
 
 def test_post_tool_hook_rebuilds_full_graph(tmp_path: Path):

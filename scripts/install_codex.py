@@ -27,6 +27,7 @@ PLUGIN_PACKAGE_DOCS = (
     "examples/codex-parallel-audit-prompt.md",
     "final-release-hardening-plan.md",
     "project-audit.md",
+    "quickstart.md",
 )
 
 

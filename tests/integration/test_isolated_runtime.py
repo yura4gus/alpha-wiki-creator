@@ -45,7 +45,7 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
             (project / name).write_text(text)
         execute(["uv", "venv", "--python", sys.executable, project / ".venv"], ROOT)
     entry_python = project / ".venv/bin/python" if existing else Path(sys.executable)
-    environment = {**os.environ, "UV_OFFLINE": "1"}
+    environment = dict(os.environ)
     environment.pop("PYTHONPATH", None)
     if existing:
         environment["VIRTUAL_ENV"] = str(project / ".venv")
@@ -94,6 +94,36 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     assert "- Fail: 0" in report
     assert "PASS `isolated runtime`" in report
     run("ingest_pipeline", "--wiki-dir", wiki_dir, "--slot", "specs", "--belongs-to", "service", source)
+    execute(["git", "add", "."], project)
+    execute(["git", "commit", "-m", "initial memory"], project)
+    page = wiki / "specs/project-brief.md"
+    source.write_text(source.read_text() + "Upstream change: maintain existing documents in place.\n")
+    plan = json.loads(run("document_worker", "plan", "--document", f"{wiki_dir}/specs/project-brief.md"))
+    assert len(plan["jobs"]) == 1
+    assert "Pending source-bound documents: 1" in run("status", "--wiki-dir", wiki_dir)
+    maintenance = project / ".alpha-wiki/maintenance"
+    maintenance.mkdir()
+    plan_path, edits_path = maintenance / "plan.json", maintenance / "edits.json"
+    plan_path.write_text(json.dumps(plan))
+    edits_path.write_text(json.dumps({"summary": "Reflect upstream maintenance rule", "updates": [
+        {"document": f"{wiki_dir}/specs/project-brief.md",
+         "text": page.read_text() + "\n## Maintained Context\n\nMaintain existing documents in place.\nRepeated context.\nRepeated context.\n"}
+    ]}))
+    run("document_worker", "apply", "--plan", plan_path, "--edits", edits_path)
+    log_before = (wiki / "log.md").read_bytes()
+    assert json.loads(run("document_worker", "apply", "--plan", plan_path, "--edits", edits_path))["status"] == "unchanged"
+    assert (wiki / "log.md").read_bytes() == log_before
+    assert "Pending source-bound documents: 0" in run("status", "--wiki-dir", wiki_dir)
+    plan = json.loads(run("document_worker", "plan", "--compact", "--document", f"{wiki_dir}/specs/project-brief.md"))
+    plan_path.write_text(json.dumps(plan))
+    edits_path.write_text(json.dumps({"summary": "Compact repeated context without losing requirements", "updates": [
+        {"document": f"{wiki_dir}/specs/project-brief.md", "text": page.read_text().replace("Repeated context.\n", "", 1)}
+    ]}))
+    run("document_worker", "apply", "--plan", plan_path, "--edits", edits_path)
+    assert page.read_text().count("Repeated context.") == 1
+    run("document_worker", "check")
+    run("ingest_pipeline", "--wiki-dir", wiki_dir, source)
+    assert not (wiki / "specs/project-brief-2.md").exists()
     assert "project-brief" in run("wiki_search", "--wiki-dir", wiki_dir, "--query", "isolated agent memory")
     assert "Gap Check" in run("status", "--wiki-dir", wiki_dir)
     run("lint", "--wiki-dir", wiki_dir, "--config", ".alpha-wiki/config.yaml", "--fix")
@@ -129,8 +159,7 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     assert "context" in hook("session-start").lower()
     log = (wiki / "log.md").read_bytes()
     hook("session-end")
-    assert (wiki / "log.md").read_bytes().startswith(log)
-    assert "session-end |" in (wiki / "log.md").read_text()
+    assert (wiki / "log.md").read_bytes() == log
 
     runtime_python = project / ".alpha-wiki/runtime/.venv/bin/python"
     assert runtime_python.is_file()
@@ -141,21 +170,7 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     manifest.write_text(manifest.read_text() + "\n# Changed runtime manifest\n")
     assert "Gap Check" in run("status", "--wiki-dir", wiki_dir)
     assert marker.read_text() != previous
-    preserved = {path: path.read_bytes() for path in (
-        project / ".alpha-wiki/config.yaml", project / "AGENTS.md", project / "CLAUDE.md",
-        project / ".claude/settings.local.json", project / ".codex/hooks.json",
-        project / ".github/workflows/wiki-lint.yml", wiki / "index.md", wiki / "log.md",
-    )}
-    upgrade = [sys.executable, "-m", "scripts.bootstrap_cli", "--target", project, "--runtime-only"]
-    if platform == "codex":
-        upgrade = ["uv", "run", "--project", bootstrap_root, "--directory", bootstrap_root,
-                   "--no-dev", "python", "-m", "scripts.bootstrap_cli", "--target", project, "--runtime-only"]
-        upgrade_environment = {**environment, "UV_PROJECT_ENVIRONMENT": str(bootstrap_root / ".venv")}
-    else:
-        upgrade_environment = environment
-    execute(upgrade, bootstrap_root, upgrade_environment)
-    for path, content in preserved.items():
-        assert path.read_bytes() == content, path
+    execute([*bootstrap, "--upgrade"], bootstrap_root)
     assert "Gap Check" in run("status", "--wiki-dir", wiki_dir)
     without_uv = {**environment, "PATH": "/usr/bin:/bin"}
     assert shutil.which("uv", path=without_uv["PATH"]) is None

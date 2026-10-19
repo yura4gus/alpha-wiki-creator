@@ -32,6 +32,13 @@ Codex:
 - `CLAUDE.md` — runtime contract
 - `tools/` — Python engine (doctor, lint, edges, classify)
 
+## Canonical documents
+
+Maintain existing specs and contracts in place. Configure document_governance in
+.alpha-wiki/config.yaml; pair real edits with {{ wiki_dir }}/log.md. Use the
+existing agent workflow for source-pinned document_worker plan/apply and explicit
+compaction. No scheduler or background model author is installed.
+
 ## Obsidian
 
 The `{{ wiki_dir }}/` directory is an Obsidian vault. Open it in Obsidian to browse
@@ -45,8 +52,8 @@ node kind.
 ## Hooks
 
 - **Session start** loads compressed context for the agent.
-- **Session end** runs lint and appends a log entry.
-- **Pre-commit** runs `lint --fix` and blocks on errors.
+- **Session end** reports lint and document-governance gaps without technical heartbeat log entries.
+- **Pre-commit** runs `lint --fix` and checks document/log pairing.
 {% if ci %}- **CI** runs deterministic backend tools on every push, weekly review, and monthly rollup. Interactive Claude/Codex commands remain `/alpha-wiki:review`, `$alpha-wiki-review`, `/alpha-wiki:rollup`, and `$alpha-wiki-rollup`.
 {% endif %}
 
