@@ -1,12 +1,25 @@
 import json
 from pathlib import Path
 
+import pytest
+
 from click.testing import CliRunner
 
 from scripts.bootstrap import bootstrap
 from scripts.interview import InterviewConfig
 from scripts.install_codex import install_codex
 from tools.doctor import cli, doctor_report, run_doctor
+
+
+@pytest.mark.parametrize("value", ["null", "{}"])
+def test_doctor_reports_invalid_entity_list_without_traceback(tmp_path, value):
+    from tools.doctor import _check_project_config
+    config = tmp_path / ".alpha-wiki/config.yaml"
+    config.parent.mkdir()
+    config.write_text(f"entity_types: {value}\n")
+    checks = _check_project_config(tmp_path, "both")
+    assert checks[0].status == "FAIL"
+    assert "entity_types list" in checks[0].message
 
 
 def _bootstrap_project(tmp_path: Path) -> Path:
@@ -85,7 +98,8 @@ def test_doctor_verifies_claude_and_codex_runtime_paths(tmp_path: Path, monkeypa
     )
     assert any(check.name == "codex plugin package" and check.status == "PASS" for check in result.checks)
     assert any(check.name == "codex plugin command migration" and check.status == "PASS" for check in result.checks)
-    assert any(check.name == "codex project instructions" and check.status == "PASS" for check in result.checks)
+    assert any(check.name == "project instructions" and check.status == "PASS" for check in result.checks)
+    assert any(check.name == "claude contract adapter" and check.status == "PASS" for check in result.checks)
     assert any(check.name == "codex project hooks" and check.status == "PASS" for check in result.checks)
 
     hooks_path = project / ".codex" / "hooks.json"
@@ -104,6 +118,37 @@ def test_doctor_report_surfaces_missing_wiki(tmp_path: Path):
 
     assert "FAIL `wiki directory`" in report
     assert "Run /alpha-wiki:init first" in report
+
+
+def test_existing_custom_adapter_is_preserved_and_needs_explicit_merge(tmp_path):
+    project = _bootstrap_project(tmp_path)
+    adapter = project / ".claude/CLAUDE.md"
+    adapter.write_text("# Existing user adapter\n")
+    original = adapter.read_bytes()
+    _bootstrap_project(project)
+    assert adapter.read_bytes() == original
+    check = next(item for item in run_doctor(project, platform="claude").checks
+                 if item.name == "claude contract adapter")
+    assert check.status == "WARN"
+    assert "@../AGENTS.md" in check.action
+
+
+def test_config_wiki_dir_takes_precedence_and_old_claude_metadata_still_works(tmp_path):
+    import yaml
+    from tools.doctor import _resolve_wiki_dir
+    project = _bootstrap_project(tmp_path)
+    (project / "AGENTS.md").write_text("# User instructions without path metadata\n")
+    (project / "CLAUDE.md").write_text("**Wiki dir:** `.legacy/`\n")
+    config = project / ".alpha-wiki/config.yaml"
+    data = yaml.safe_load(config.read_text())
+    assert _resolve_wiki_dir(project, None) == project / "wiki"
+    data.pop("wiki_dir")
+    config.write_text(yaml.safe_dump(data))
+    assert _resolve_wiki_dir(project, None) == project / ".legacy"
+    data["wiki_dir"] = "../outside"
+    config.write_text(yaml.safe_dump(data))
+    result = run_doctor(project, platform="claude", refresh=True)
+    assert any(item.name == "wiki location" and item.status == "FAIL" for item in result.checks)
 
 
 def test_doctor_does_not_pass_empty_claude_hooks_directory(tmp_path: Path):

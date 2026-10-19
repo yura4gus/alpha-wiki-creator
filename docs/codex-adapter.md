@@ -92,7 +92,10 @@ not install a second agent runtime. See `references/agentops-control-layer.md`.
 - `AGENTS.md` with the Codex operating contract and startup reading order;
 - `.codex/hooks.json`;
 - `.codex/hooks/alpha_wiki_hook.py`;
-- the same `CLAUDE.md`, wiki, tools, graph, Obsidian config, git hooks, and CI assets used by Claude Code.
+- the same wiki, config, tools, graph, Obsidian config, git hooks and CI assets
+  used by Claude Code. Version 0.8.0 (GOV-004) shares one AGENTS
+  contract through a Claude import adapter instead of generating a duplicate
+  root CLAUDE contract; see [migration](quickstart.md#contract-and-schema-migration-unreleased-gov-004).
 
 Before a target project has local tools, the init skill can run the installed plugin backend directly:
 

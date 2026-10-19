@@ -3,7 +3,7 @@ title: Alpha-Wiki Ingest Operation
 slug: alpha-wiki-ingest-operation
 kind: operation-spec
 status: stable
-date_updated: 2026-10-19
+date_updated: 2026-10-20
 belongs_to: "[[alpha-wiki-runtime]]"
 implements: "[[alpha-wiki-product-spec]]"
 version: v1
@@ -35,6 +35,7 @@ source_files:
 ## Requirements
 
 - Preserve provenance and keep raw evidence immutable. Wiki summarizes and links to canonical sources; it does not replace API schemas or contracts.
+- Write short technical statements with compact scope, behavior, acceptance, gaps and source links. Keep required schema sections and exact requirements, exceptions, diagnostics and uncertainty. Link shared context instead of duplicating it; no automatic prose-quality or token-saving guarantee applies.
 - Search the existing canonical set before creating a page. A new document needs a distinct lifecycle and explicit ingest or registration.
 - Repeated ingest of a bound source preserves its existing page instead of creating a numbered sibling or overwriting curated text.
 - Use existing schema, stable slugs, status, and source metadata. Route repeated schema gaps to evolve.

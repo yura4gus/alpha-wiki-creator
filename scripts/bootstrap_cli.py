@@ -17,7 +17,7 @@ def bootstrap_project(
     *,
     project_name: str | None = None,
     description: str = "",
-    wiki_dir: str = "wiki",
+    wiki_dir: str | None = None,
     preset: str = "software-project",
     overlay: str = "none",
     hooks: str = "all",
@@ -28,6 +28,9 @@ def bootstrap_project(
     dry_run: bool = False,
 ) -> BootstrapReport:
     target = target.expanduser().resolve()
+    if wiki_dir is None:
+        from tools.doctor import _resolve_wiki_dir
+        wiki_dir = str(_resolve_wiki_dir(target, None).relative_to(target))
     config = InterviewConfig(
         project_name=project_name or target.name,
         project_description=description or f"Alpha-Wiki memory for {project_name or target.name}",
@@ -73,7 +76,7 @@ def cli() -> None:
         args.target,
         project_name=args.project_name,
         description=args.description,
-        wiki_dir=args.wiki_dir or "wiki",
+        wiki_dir=args.wiki_dir,
         preset=args.preset,
         overlay=args.overlay,
         hooks=args.hooks,

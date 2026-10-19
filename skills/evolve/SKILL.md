@@ -35,9 +35,14 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Read current schema:
-   - `CLAUDE.md`
    - `.alpha-wiki/config.yaml`
+   - `AGENTS.md` for workflow, never as a second page schema.
    - `references/presets/` and `references/overlays/` if relevant.
 
 2. Propose the type:
@@ -66,14 +71,12 @@ apply `references/concept.md` (Release Decisions).
 
 5. Gate the change:
    - Show the proposed schema diff.
-   - Ask for confirmation unless schema evolution mode is `auto`.
+   - Read `schema_evolve_mode` from config (default `gated` when absent). Ask for confirmation unless it is `auto`; do not infer permission from old instruction tables.
 
 6. Apply:
-   - Update `CLAUDE.md`.
-   - Create directory.
-   - Add frontmatter template.
-   - Update config/schema files.
-   - Append log entry: `schema-change`.
+   - Use `scripts.add_entity_type.add_entity_type` from the installed runtime to validate the new type, update config, create its wiki directory and append `schema-change`.
+   - Preserve existing instructions and unrelated config fields. Invalid/escaping paths and duplicate types must fail before writes. Ordinary I/O failures roll back the call; abrupt process termination is not a multi-file atomic transaction.
+   - Add a frontmatter template or change cross-reference rules only if the accepted migration explicitly needs them; these are not automatic helper outputs.
    - Rebuild graph.
    - Run lint.
 
@@ -100,7 +103,7 @@ domains, read-only subagents may collect:
 - migration impact by directory or domain;
 - graph/color and cross-reference consequences.
 
-Subagents do not edit `CLAUDE.md`, config, templates, directories, or pages.
+Subagents do not edit `AGENTS.md`, config, adapters, templates, directories, or pages.
 The controller merges evidence into one proposed schema diff, requests the
 required owner decision, and applies one migration. Run graph rebuild and lint
 once after the final change. Follow

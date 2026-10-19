@@ -41,6 +41,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Validate inputs:
    - Paths exist or URLs are fetchable by the current environment.
    - Source is not inside `<wiki_dir>/graph/`.
@@ -83,6 +88,11 @@ apply `references/concept.md` (Release Decisions).
    - Status: `draft`, `active`, `accepted`, `stable`, `deprecated`, or `stub` as appropriate.
 
 ### Existing Documents And Compaction
+
+Use Engineering Writing for the maintained result: a short purpose, concrete
+behavior/contracts, applicable acceptance, open gaps and source links. Retain
+all required schema sections. Replace repeated context with references; do not
+turn a concise projection into a second specification or omit qualifications.
 
 Use the installed `tools.document_worker plan/apply` capability when available;
 older packages may only provide `check/record`. Inspect `--help` before using an

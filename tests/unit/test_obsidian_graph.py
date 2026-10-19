@@ -30,6 +30,7 @@ def test_obsidian_graph_color_groups_match_semantic_contract():
     assert groups[3]["color"]["rgb"] == int("111111", 16)
     assert "path:decisions/" in groups[3]["query"]
     assert "path:papers/" in groups[3]["query"]
+    assert "path:security/" in groups[3]["query"]
 
     assert groups[4]["color"]["rgb"] == int("F97316", 16)
     assert "path:contracts/" in groups[4]["query"]

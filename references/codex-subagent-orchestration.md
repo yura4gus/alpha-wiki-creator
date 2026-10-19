@@ -34,7 +34,10 @@ Before fan-out, the controller must:
 Carry the execution discipline from `references/concept.md` into each prompt:
 result first, relevant evidence only, exact diagnostics preserved, checks tied
 to acceptance, and no invented release gates. Use the Release Decisions section
-only for release-related scopes.
+only for release-related scopes. Carry Engineering Writing into the delegated
+prompt itself: brief technical statements, scoped sections/tables, exact facts
+and uncertainty preserved, and no raw transcripts or duplicate context. Apply
+the same standard to authorized document edits; links do not replace evidence.
 
 Subagents must not independently refresh a shared remote snapshot. If their
 observed SHA differs from the controller snapshot, they return

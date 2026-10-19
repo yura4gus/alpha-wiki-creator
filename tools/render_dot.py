@@ -7,7 +7,7 @@ from pathlib import Path
 import click
 
 from tools._models import Edge, Page
-from tools.render_mermaid import CLUSTER_RELATIONS
+from tools.render_mermaid import _ownership_clusters
 from tools.wiki_engine import page_role, read_edges, rebuild_edges, scan_wiki
 
 ROLE_COLORS = {
@@ -35,7 +35,7 @@ def render_dot(wiki_dir: Path) -> str:
     pages = scan_wiki(wiki_dir)
     page_by_slug = {page.slug: page for page in pages}
     edges = _current_edges(wiki_dir)
-    clusters = _service_clusters(wiki_dir, pages, edges)
+    clusters = _ownership_clusters(wiki_dir, pages, edges)
     assigned = {slug for members in clusters.values() for slug in members}
 
     lines = [
@@ -78,16 +78,6 @@ def write_dot(wiki_dir: Path, out: Path | None = None) -> Path:
 def _current_edges(wiki_dir: Path) -> list[Edge]:
     rebuild_edges(wiki_dir)
     return read_edges(wiki_dir / "graph" / "edges.jsonl")
-
-
-def _service_clusters(wiki_dir: Path, pages: list[Page], edges: list[Edge]) -> dict[str, set[str]]:
-    service_slugs = {page.slug for page in pages if page_role(wiki_dir, page) == "service"}
-    clusters = {slug: {slug} for slug in service_slugs}
-    for edge in edges:
-        if edge.relation not in CLUSTER_RELATIONS or edge.target not in service_slugs:
-            continue
-        clusters.setdefault(edge.target, {edge.target}).add(edge.source)
-    return {service: members for service, members in clusters.items() if len(members) > 1}
 
 
 def _node_line(wiki_dir: Path, page: Page, indent: str) -> str:

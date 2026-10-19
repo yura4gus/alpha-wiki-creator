@@ -9,7 +9,7 @@ from tools._models import LintFinding, LintSeverity
 from tools.lint import _load_config, run_all_checks
 from tools.security import security_release_blockers, security_review_section
 from tools.status import status_report
-from tools.wiki_engine import cluster_gaps, collect_edges, page_role, scan_wiki
+from tools.wiki_engine import cluster_gaps, collect_edges, is_navigation_page, page_role, scan_wiki
 
 
 def _scope_status(wiki_dir: Path) -> tuple[bool, str]:
@@ -127,11 +127,13 @@ def _release_readiness_blockers(errors: list, scope_recorded: bool, sec_blockers
 def _trust_checks(wiki_dir: Path) -> dict[str, int]:
     edges = collect_edges(wiki_dir)
     pages = scan_wiki(wiki_dir)
-    service_slugs = {page.slug for page in pages if page_role(wiki_dir, page) == "service"}
+    navigation_slugs = {page.slug for page in pages if is_navigation_page(page)}
+    service_slugs = {page.slug for page in pages if page.slug not in navigation_slugs and page_role(wiki_dir, page) == "service"}
     attached_services = {
         edge.target
         for edge in edges
-        if edge.target in service_slugs and edge.relation in {"belongs_to", "owned_by", "service", "defined_in"}
+        if edge.source not in navigation_slugs and edge.target in service_slugs
+        and edge.relation in {"belongs_to", "owned_by", "service", "defined_in"}
     }
     missing_provenance = 0
     missing_date = 0

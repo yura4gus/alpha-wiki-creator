@@ -63,7 +63,7 @@ def test_mermaid_export_groups_mixed_role_nodes_by_typed_service_links(tmp_path:
     assert "class login_flow feature;" in out
     assert "class auth_adr document;" in out
     assert "class auth_api contract;" in out
-    assert 'jwt_module --|"belongs_to"| auth_service' in out
+    assert 'jwt_module -->|"belongs_to"| auth_service' in out
 
 
 def test_dot_export_groups_mixed_role_nodes_by_typed_service_links(tmp_path: Path):
@@ -136,3 +136,97 @@ def test_html_export_preserves_unrelated_custom_output_files(tmp_path: Path):
     render_html(wiki, out_dir=out)
 
     assert keep.read_text() == "keep me\n"
+
+
+def test_navigation_is_retained_and_graph_rebuilds_are_deterministic(tmp_path):
+    from tools.wiki_engine import rebuild_context_brief, rebuild_open_questions, scan_wiki
+    wiki = _mixed_cluster_wiki(tmp_path)
+    _write_page(wiki / "contracts/_index.md",
+                "title: API Catalog\nslug: api-catalog\nbelongs_to: '[[auth-service]]'",
+                "See [[auth-api]].\n")
+    _write_page(wiki / "specs/_index.md",
+                "title: Specs Catalog\nslug: specs-catalog\nbelongs_to: '[[contracts/_index]]'",
+                "See [[contracts/_index|API Catalog]].\n")
+    assert "api-catalog" in {page.slug for page in scan_wiki(wiki)}
+
+    def snapshot():
+        rebuild_edges(wiki)
+        rebuild_context_brief(wiki)
+        rebuild_open_questions(wiki)
+        return (
+            (wiki / "graph/edges.jsonl").read_bytes(),
+            (wiki / "graph/context_brief.md").read_bytes(),
+            (wiki / "graph/open_questions.md").read_bytes(),
+            render_mermaid(wiki), render_dot(wiki),
+        )
+
+    before = snapshot()
+    assert snapshot() == before
+    assert 'api_catalog["API Catalog"]' in before[3]
+    assert "class auth_service service;" in before[3]
+    assert "class jwt_module module;" in before[3]
+    assert "class login_flow feature;" in before[3]
+    assert "class auth_adr document;" in before[3]
+    assert "class auth_api contract;" in before[3]
+    assert "subgraph cluster_auth_service" in before[3]
+    assert 'specs_catalog -->|"belongs_to"| api_catalog' in before[3]
+    assert '"specs-catalog" -> "api-catalog"' in before[4]
+    out = render_html(wiki)
+    assert 'href="contracts/_index.html"' in (out / "index.html").read_text()
+    assert 'href="../contracts/rest/auth-api.html"' in (out / "contracts/_index.html").read_text()
+    assert (out / "contracts/../contracts/rest/auth-api.html").resolve().is_file()
+    assert 'href="../contracts/_index.html"' in (out / "specs/_index.html").read_text()
+
+
+def test_module_root_groups_real_documentation_without_inventing_a_service(tmp_path):
+    wiki = tmp_path / "wiki"
+    _write_page(wiki / "modules/runtime.md", "title: Runtime\nslug: runtime")
+    _write_page(wiki / "security/auth.md",
+                "title: Auth Rules\nslug: auth-rules\nbelongs_to: '[[runtime]]'")
+    mermaid = render_mermaid(wiki)
+    dot = render_dot(wiki)
+    assert 'subgraph cluster_runtime["Runtime cluster"]' in mermaid
+    assert "class runtime module;" in mermaid
+    assert "class auth_rules document;" in mermaid
+    assert '"auth-rules" [label="Auth Rules", fillcolor="#111111"' in dot
+    assert "class runtime service;" not in mermaid
+
+
+def test_transitive_ownership_uses_one_group_in_both_exports(tmp_path):
+    from tools.render_mermaid import _ownership_clusters
+    from tools.wiki_engine import collect_edges, scan_wiki
+    wiki = tmp_path / "wiki"
+    _write_page(wiki / "services/api.md", "title: API\nslug: api")
+    _write_page(wiki / "modules/core.md",
+                "title: Core\nslug: core\nbelongs_to: '[[api]]'")
+    _write_page(wiki / "specs/behavior.md",
+                "title: Behavior\nslug: behavior\nbelongs_to: '[[core]]'")
+    assert _ownership_clusters(wiki, scan_wiki(wiki), collect_edges(wiki)) == {
+        "api": {"api", "core", "behavior"},
+    }
+    for output in (render_mermaid(wiki), render_dot(wiki)):
+        assert "subgraph cluster_api" in output
+        assert "subgraph cluster_core" not in output
+        assert output.count('["Behavior"]') + output.count('[label="Behavior"') == 1
+
+
+def test_ambiguous_owner_is_not_duplicated_or_assigned_arbitrarily(tmp_path):
+    from tools.render_mermaid import _ownership_clusters
+    from tools.wiki_engine import collect_edges, scan_wiki
+    wiki = tmp_path / "wiki"
+    for slug in ("a", "b"):
+        _write_page(wiki / f"services/{slug}.md", f"title: {slug}\nslug: {slug}")
+    _write_page(wiki / "specs/bridge.md",
+                "title: Bridge\nslug: bridge\nowned_by: ['[[a]]', '[[b]]']")
+    assert _ownership_clusters(wiki, scan_wiki(wiki), collect_edges(wiki)) == {}
+    assert render_dot(wiki).count('"bridge" [label="Bridge"') == 1
+
+
+def test_cyclic_ownership_terminates_without_fabricating_a_root(tmp_path):
+    from tools.render_mermaid import _ownership_clusters
+    from tools.wiki_engine import collect_edges, scan_wiki
+    wiki = tmp_path / "wiki"
+    _write_page(wiki / "modules/a.md", "title: A\nslug: a\nbelongs_to: '[[b]]'")
+    _write_page(wiki / "modules/b.md", "title: B\nslug: b\nbelongs_to: '[[a]]'")
+    assert _ownership_clusters(wiki, scan_wiki(wiki), collect_edges(wiki)) == {}
+    assert 'a -->|"belongs_to"| b' in render_mermaid(wiki)

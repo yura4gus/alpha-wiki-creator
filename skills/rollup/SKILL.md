@@ -25,6 +25,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Detect wiki dir.
 2. Determine period.
 3. Run backend:

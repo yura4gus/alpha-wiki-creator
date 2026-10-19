@@ -64,12 +64,22 @@ If a black document floats alone, the problem is usually missing links. If a mod
 
 Color is not cluster. Do not build or describe one red cluster, one green cluster, one black cluster. A useful cluster normally mixes colors: red service boundary, green modules, blue features, black evidence, and orange contracts connected by typed links.
 
+A module-only project may have one green root and no red service page. Export
+its existing ownership chain; do not invent a service or extra pages for color
+balance. Security-memory documents are black. Ambiguous owners stay outside a
+chosen group; cycles do not authorize arbitrary ownership repair.
+
 ## Workflow
 
 Lead with the result and decisive evidence in the user's language. Preserve
 exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
+
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
 
 1. Detect wiki dir and config.
 2. Rebuild graph artifacts first:
@@ -85,6 +95,10 @@ apply `references/concept.md` (Release Decisions).
    - `dot`: run `python3 .alpha-wiki/run.py -m tools.render_dot --wiki-dir <wiki_dir>`.
    - `html`: run `python3 .alpha-wiki/run.py -m tools.render_html --wiki-dir <wiki_dir>`.
 5. Run `/alpha-wiki:lint --suggest` if graph data changed.
+6. When changing an export backend, verify a real generated diagram with the
+   relevant parser/renderer when available. File existence or substring tests
+   alone do not prove renderability. Keep optional visual-test dependencies
+   outside product manifests; report unavailable checks honestly.
 
 ## Codex Native Delegation
 

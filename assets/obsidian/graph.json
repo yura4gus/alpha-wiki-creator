@@ -20,7 +20,7 @@
       "color": { "a": 1, "rgb": 2450411 }
     },
     {
-      "query": "path:decisions/ OR path:specs/ OR path:concepts/ OR path:apis/ OR path:entities/ OR path:papers/ OR path:summaries/ OR path:topics/ OR path:claims/ OR path:experiments/ OR path:ideas/ OR path:foundations/ OR path:metrics/ OR path:personas/ OR path:competitors/ OR path:projects/ OR path:areas/ OR path:resources/ OR path:permanent/ OR path:fleeting/ OR path:journals/ OR path:goals/ OR path:archive/ OR path:sources/",
+      "query": "path:decisions/ OR path:specs/ OR path:security/ OR path:concepts/ OR path:apis/ OR path:entities/ OR path:papers/ OR path:summaries/ OR path:topics/ OR path:claims/ OR path:experiments/ OR path:ideas/ OR path:foundations/ OR path:metrics/ OR path:personas/ OR path:competitors/ OR path:projects/ OR path:areas/ OR path:resources/ OR path:permanent/ OR path:fleeting/ OR path:journals/ OR path:goals/ OR path:archive/ OR path:sources/",
       "color": { "a": 1, "rgb": 1118481 }
     },
     {

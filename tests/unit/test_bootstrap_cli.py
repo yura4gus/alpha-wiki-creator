@@ -15,7 +15,8 @@ def test_bootstrap_cli_backend_creates_codex_project_runtime(tmp_path: Path):
 
     assert not report.has_conflicts
     assert (project / "AGENTS.md").exists()
-    assert (project / "CLAUDE.md").exists()
+    assert not (project / "CLAUDE.md").exists()
+    assert "@../AGENTS.md" in (project / ".claude/CLAUDE.md").read_text()
     assert (project / ".codex" / "hooks.json").exists()
     assert (project / ".codex" / "hooks" / "alpha_wiki_hook.py").exists()
     assert (project / "wiki" / "graph" / "context_brief.md").exists()

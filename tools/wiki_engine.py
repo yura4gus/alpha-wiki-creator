@@ -79,6 +79,22 @@ def scan_wiki(wiki_dir: Path) -> list[Page]:
     ]
 
 
+def is_navigation_page(page: Page) -> bool:
+    """Folder catalogs stay searchable/linkable without becoming entities."""
+    return Path(page.path).name == "_index.md"
+
+
+def navigation_paths(wiki_dir: Path, pages: list[Page]) -> dict[str, str]:
+    """Resolve vault-relative catalog paths without collapsing duplicate filenames."""
+    paths: dict[str, str] = {}
+    for page in pages:
+        if is_navigation_page(page):
+            relative = Path(page.path).relative_to(wiki_dir)
+            paths[relative.as_posix()] = page.slug
+            paths[relative.with_suffix("").as_posix()] = page.slug
+    return paths
+
+
 def _is_wiki_page(path: Path, wiki_dir: Path) -> bool:
     rel = path.relative_to(wiki_dir)
     if path.name in ("index.md", "log.md"):
@@ -104,7 +120,7 @@ MODULE_DIRS = {"components", "core", "ports", "domains", "adapters", "infrastruc
 FEATURE_DIRS = {"features", "flows", "use-cases", "application"}
 DOCUMENT_DIRS = {
     "decisions", "specs", "concepts", "apis", "entities", "papers", "summaries",
-    "topics", "claims", "experiments", "ideas", "foundations", "metrics",
+    "topics", "claims", "experiments", "ideas", "foundations", "metrics", "security",
 }
 CLUSTER_RELATION_KEYS = {
     "belongs_to", "owned_by", "affects", "implements", "service", "target_module",
@@ -117,12 +133,14 @@ MODULE_OWNER_KEYS = {"belongs_to", "owned_by", "service", "defined_in"}
 def collect_edges(wiki_dir: Path) -> list[Edge]:
     """Derive current typed edges without writing generated artifacts."""
     edges: list[Edge] = []
-    for page in scan_wiki(wiki_dir):
+    pages = scan_wiki(wiki_dir)
+    paths = navigation_paths(wiki_dir, pages)
+    for page in pages:
         for key, value in page.frontmatter.items():
             if key not in EDGE_KEYS:
                 continue
             for target in _coerce_targets(value):
-                edges.append(Edge(source=page.slug, target=target, relation=key))
+                edges.append(Edge(source=page.slug, target=paths.get(target, target), relation=key))
     return edges
 
 
@@ -167,6 +185,8 @@ def cluster_relation_targets(page: Page, keys: set[str] | None = None) -> list[s
 
 def cluster_gaps(wiki_dir: Path, page: Page) -> list[str]:
     """Return semantic cluster gaps for a page."""
+    if is_navigation_page(page):
+        return []
     role = page_role(wiki_dir, page)
     gaps: list[str] = []
     if role == "document" and not cluster_relation_targets(page):

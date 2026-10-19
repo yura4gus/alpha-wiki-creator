@@ -12,7 +12,7 @@ def test_runtime_upgrade_preserves_user_schema_contracts_and_hook_routing(tmp_pa
     config = tmp_path / ".alpha-wiki/config.yaml"
     config.write_text(config.read_text() + "\nuser_schema_marker: preserve-me\n")
     contract = tmp_path / "CLAUDE.md"
-    contract.write_text(contract.read_text() + "\nUser-owned project instructions.\n")
+    contract.write_text("# User-owned legacy project instructions.\n")
     routing = tmp_path / ".codex/hooks.json"
     routing.write_text(routing.read_text() + "\n")
     wiki = tmp_path / ".wiki"

@@ -4,6 +4,62 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-20
+
+### Engineering Writing (WF-004 Follow-Up)
+
+- Apply one compact engineering-writing standard to all 16 skills, generated
+  project instructions and bounded helper prompts on Claude and Codex.
+- Prefer short statements, scoped tables and interface/flow notation. Preserve
+  requirements, exceptions, diagnostics, uncertainty and source references.
+  Compaction is reviewed maintenance, not automatic shortening or a new gate.
+- No new AgentOps implementation or status migration is included. Existing
+  optional workflows remain compatible; their shared writing guidance agrees.
+
+### Graph Pilot Corrections (GPH-001.2)
+
+- Fix Mermaid labeled directed-edge syntax verified by the real Mermaid parser,
+  not just export-file existence.
+- Share ownership grouping between Mermaid and DOT: follow explicit ownership
+  chains to a service or standalone module root, retain cross-group links,
+  avoid duplicate assignment and terminate safely on cycles.
+- Classify existing security-memory pages as black evidence in exports and
+  new default Obsidian settings. Existing user graph configuration is preserved.
+- Verify the actual 31-page Alpha-Wiki corpus with browser-rendered diagrams,
+  static HTML links and desktop/mobile screenshots. No Node/browser dependency
+  is added to the product runtime.
+
+### Folder Navigation (GPH-001.1)
+
+- Treat _index.md as a linkable folder catalog with explicit title/unique slug,
+  not as an instance of its enclosing entity type. Keep broken-link, duplicate,
+  orphan, dependency and typed reverse-link validation.
+- Share navigation handling across lint/status/review. Catalogs do not require
+  cluster ownership and do not count as substantive entity coverage or mixed
+  service-cluster evidence. Rendering preserves catalog nodes and typed links.
+- Resolve vault-relative catalog paths (including Obsidian display labels and
+  an optional .md suffix) to stable slugs in lint, typed edges and HTML without
+  conflating multiple _index files. General wikilink parsing is unchanged.
+- Add cross-platform runtime and deterministic export regressions. No AgentOps
+  enum migration or automatic user-page rewrite is included.
+
+### Single Contract And Config Schema (GOV-004)
+
+- Fresh init generates one Alpha-Wiki contract in AGENTS.md and a minimal
+  .claude/CLAUDE.md import adapter, not a duplicate root CLAUDE.md.
+- Full init/upgrade preserves existing instructions, config, wiki content,
+  graph snapshots, hooks, routing, CI and Obsidian files. Protected conflicts
+  require explicit merge. Runtime-only upgrade remains intentionally separate.
+- Config owns entity types and wiki location, with legacy path metadata fallback.
+  Schema evolution validates paths/duplicates before writing, appends to config
+  and the journal, and rolls back its writes on ordinary write failures.
+  It never rewrites agent instructions; it is not crash-atomic across files.
+- Fresh/brownfield Claude/Codex regression cases cover dry-run, repeat safety,
+  custom wiki paths and unchanged product dependencies. Native CLI contract
+  discovery is verified separately; older Claude requires launch from repo root.
+- This GOV slice contains no AgentOps/status-enum migration. The separate GPH
+  slices above add navigation handling without resetting user schemas.
+
 ## [0.7.1] - 2026-10-19
 
 ### Configured Hook Recovery (UPG-001)

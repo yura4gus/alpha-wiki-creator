@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import pytest
+
 from scripts.bootstrap import bootstrap
 from scripts.interview import InterviewConfig
 
@@ -35,7 +37,7 @@ def test_bootstrap_preserves_existing_project_files(tmp_path: Path):
 
     for name, content in originals.items():
         assert (tmp_path / name).read_text() == content
-    assert len(report.skipped) == len(originals) - 1  # no wiki write to the product pyproject
+    assert len(report.skipped) == len(originals) - 2  # user CLAUDE.md and product pyproject are not generated
     assert (tmp_path / ".alpha-wiki" / "bootstrap-report.md").exists()
     assert (tmp_path / "wiki" / "index.md").exists()
 
@@ -77,3 +79,29 @@ def test_bootstrap_can_run_when_plugin_tools_are_already_target_tools(tmp_path: 
 
     assert (tmp_path / "wiki" / "index.md").exists()
     assert (tools / "lint.py").read_text() == "# local tool\n"
+
+
+@pytest.mark.parametrize("overlay", ["[../escape]", "not-a-list"])
+def test_invalid_existing_overlay_is_rejected_before_writes(tmp_path: Path, overlay):
+    config = tmp_path / ".alpha-wiki/config.yaml"
+    config.parent.mkdir()
+    content = f"entity_types: []\noverlay_dirs: {overlay}\n"
+    config.write_text(content)
+    with pytest.raises(ValueError):
+        bootstrap(target=tmp_path, config=_cfg())
+    assert config.read_text() == content
+    assert not (tmp_path / "AGENTS.md").exists()
+    assert not (tmp_path / "wiki").exists()
+    assert not (tmp_path.parent / "escape").exists()
+
+
+def test_schema_mode_lives_in_config_and_survives_upgrade(tmp_path):
+    import yaml
+    config = _cfg()
+    config.schema_evolve_mode = "auto"
+    bootstrap(target=tmp_path, config=config)
+    path = tmp_path / ".alpha-wiki/config.yaml"
+    original = path.read_bytes()
+    assert yaml.safe_load(original)["schema_evolve_mode"] == "auto"
+    bootstrap(target=tmp_path, config=_cfg(), upgrade=True)
+    assert path.read_bytes() == original

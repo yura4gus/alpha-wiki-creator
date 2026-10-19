@@ -3,7 +3,7 @@ title: Alpha-Wiki Init Operation
 slug: alpha-wiki-init-operation
 kind: operation-spec
 status: stable
-date_updated: 2026-05-05
+date_updated: 2026-10-20
 belongs_to: "[[alpha-wiki-runtime]]"
 implements: "[[alpha-wiki-product-spec]]"
 version: v1
@@ -18,8 +18,10 @@ evidence: commands/init.md, skills/init/SKILL.md
 
 ## Entities
 
-- Operation: `/alpha-wiki:init` / `$alpha-wiki-init`.
-- Runtime output: `raw/`, `wiki/`, `CLAUDE.md`, graph artifacts, optional hooks, CI, and `wiki/.obsidian/` config.
+- Operation: `/alpha-wiki:init` / `$alpha-wiki:init`.
+- Output from 0.8.0 (GOV-004): `raw/`, configured wiki, `AGENTS.md`,
+  `.alpha-wiki/config.yaml`, a `.claude/CLAUDE.md` import adapter, graph
+  artifacts, optional hooks, CI and wiki-local Obsidian config.
 - Deterministic tool: `tools/init_audit.py`.
 
 ## Requirements
@@ -28,6 +30,11 @@ evidence: commands/init.md, skills/init/SKILL.md
 - Inspect the existing repo before writing files.
 - Produce a source corpus plan: candidate documents, raw placement, wiki structure, and ingest batches.
 - Preserve protected project files unless the user explicitly approves merge behavior.
+- Preserve existing instructions, config, hooks and routing on full upgrade;
+  resolve protected conflicts through explicit merge, not replacement.
+- Keep schema evolution in config/directory/journal, never generated instruction tables.
+- Verify Claude import from repo root and Codex native AGENTS discovery;
+  shell-hook success alone is not evidence of native instruction loading.
 - Verify immediately with init audit, lint, graph rebuild, doctor, and status.
 - Hand content conversion to [[alpha-wiki-ingest-operation]] after bootstrap.
 

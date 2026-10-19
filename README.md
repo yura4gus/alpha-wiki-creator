@@ -21,7 +21,7 @@ Alpha-Wiki is published for real Claude Code and Codex use on active projects.
 Current release program:
 
 - Branch: `main`
-- Release version: [`v0.7.1`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.7.1) (Configured Hook Recovery)
+- Release version: [`v0.8.0`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.8.0) (Shared Contract, Graph And Engineering Writing)
 - Status: source-bound document maintenance and dependency-safe tools; not v1.0
 - Workflows: **12 core + 4 optional AgentOps** (orchestrate, backlog, handoff, release-check)
 - Live docs: https://yura4gus.github.io/alpha-wiki-creator/
@@ -31,14 +31,14 @@ Verification (publication/install receipts are maintained in the roadmap):
 - Source and install evidence: [release execution](docs/roadmap-execution.md#20-release-07-execution)
 - Fresh install smoke: `PASS`
 - Release audit: `READY`
-- Test suite: `309 passed`
-- Hosted CI / Pages: separate status; GitHub currently reports an account billing lock
+- Test suite: `354 passed`
+- Hosted CI / Pages: separate checks; local package gates do not prove hosted deployment
 - Claude runtime: current hook schema (`SessionStart`, `PreToolUse`, `PostToolUse`, `SessionEnd`) with JSON stdin handling
 - Codex runtime: one namespaced `$alpha-wiki:*` plugin surface, `AGENTS.md`, and trusted project hooks
 - Deterministic tools: invoked as modules (`python -m tools.*`) so copied target-project tools import correctly
 - Obsidian: open the generated `wiki/` folder as the vault; Obsidian runtime state is ignored by git
 
-Version `0.7.1` retains the opt-in AgentOps v0.2 control layer for controlled
+Version `0.8.0` retains the opt-in AgentOps v0.2 control layer for controlled
 multi-track execution. It stores backlog items, session summaries, handoffs, and
 project release evidence under `wiki/agentops/`; normal init does not enable it.
 
@@ -54,15 +54,30 @@ First setup or a runtime manifest change requires `uv`; dependencies live in
 `.alpha-wiki/runtime/.venv`, never the product environment. A prepared runtime
 can work without `uv`. Product manifests and lockfiles stay unchanged.
 
-0.7 adds reviewed `document_worker plan/apply`, source-preserving compaction,
-recovery/no-op checks and strict read-only status/review. It keeps existing
-`CLAUDE.md` generation, page schema and AgentOps contracts. No server, daemon
-or schema migration is required. See [maintenance](docs/quickstart.md#maintain-existing-documents-07).
+The 0.7 worker provides reviewed `document_worker plan/apply`,
+source-preserving compaction, recovery/no-op checks and strict read-only reports.
+0.8 uses one `AGENTS.md` contract and a Claude import adapter. Existing user
+instructions and schemas are preserved. No server or daemon is required.
+See [maintenance](docs/quickstart.md#maintain-existing-documents-07).
 
 0.7.1 restores missing bundled hooks only when existing Claude/Codex project
 routing references them. Existing hook files and settings are preserved;
 dry-run and unchanged repeat upgrades write nothing. Updating the plugin does
 not automatically upgrade runtime files in existing project repositories.
+
+Version **0.8.0** combines GOV-004, folder navigation and graph fixes.
+It adds one `AGENTS.md` contract, a Claude import adapter, config-backed schema
+evolution, valid Mermaid links, ownership grouping and concise engineering
+writing guidance. Existing user files are preserved. No new AgentOps code is
+included. Updating a plugin does not automatically migrate existing projects;
+review and run the explicit upgrade for each target. See the
+[migration steps](docs/quickstart.md#contract-and-schema-migration-unreleased-gov-004);
+existing user contracts require deliberate merging, not overwriting.
+
+Pre-release verification: 354 tests pass in both the working source and clean
+source archive; smoke PASS, package audit READY. Isolated native Claude/Codex
+installs expose the same writing guidance. See the
+[0.8.0 local receipt](docs/roadmap-execution.md#25-local-080-candidate).
 
 ## Quick Start
 

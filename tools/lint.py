@@ -7,17 +7,22 @@ from tools.wiki_engine import (
     REVERSE_OF,
     _coerce_targets,
     cluster_gaps,
+    extract_wikilinks,
+    is_navigation_page,
+    navigation_paths,
     scan_wiki,
 )
 
 
 def check_broken_wikilinks(wiki_dir: Path) -> list[LintFinding]:
     pages = scan_wiki(wiki_dir)
+    paths = navigation_paths(wiki_dir, pages)
     slugs = {p.slug for p in pages}
     findings: list[LintFinding] = []
     for p in pages:
         for link in p.forward_links:
-            target_slug = link.split("/")[-1].split("|")[0]
+            target = link.split("|")[0]
+            target_slug = paths.get(target, target.split("/")[-1])
             if target_slug not in slugs:
                 findings.append(LintFinding(
                     check="broken-wikilink",
@@ -40,6 +45,7 @@ def _slug_of(s) -> str:
 
 def check_missing_reverse_links(wiki_dir: Path) -> list[LintFinding]:
     pages = scan_wiki(wiki_dir)
+    paths = navigation_paths(wiki_dir, pages)
     by_slug = {p.slug: p for p in pages}
     findings: list[LintFinding] = []
     for src in pages:
@@ -51,13 +57,14 @@ def check_missing_reverse_links(wiki_dir: Path) -> list[LintFinding]:
             if reverse is None or reverse.startswith("_"):
                 continue  # section-based reverses checked separately
             for target_slug in _coerce_targets(value):
+                target_slug = paths.get(target_slug, target_slug)
                 tgt = by_slug.get(target_slug)
                 if tgt is None:
                     continue
                 tgt_field = tgt.frontmatter.get(reverse, [])
                 if isinstance(tgt_field, str):
                     tgt_field = [tgt_field]
-                tgt_slugs = [_slug_of(s) for s in tgt_field]
+                tgt_slugs = [paths.get(_slug_of(s), _slug_of(s)) for s in tgt_field]
                 if src.slug not in tgt_slugs:
                     findings.append(LintFinding(
                         check="missing-reverse-link",
@@ -73,10 +80,12 @@ def check_missing_reverse_links(wiki_dir: Path) -> list[LintFinding]:
 
 def check_orphans(wiki_dir: Path) -> list[LintFinding]:
     pages = scan_wiki(wiki_dir)
+    paths = navigation_paths(wiki_dir, pages)
     incoming: dict[str, int] = {p.slug: 0 for p in pages}
     for p in pages:
         for link in p.forward_links:
-            target = link.split("|")[0].split("/")[-1]
+            reference = link.split("|")[0]
+            target = paths.get(reference, reference.split("/")[-1])
             if target in incoming:
                 incoming[target] += 1
     # Namespaced extensions such as wiki/agentops keep their own generated index.
@@ -86,9 +95,10 @@ def check_orphans(wiki_dir: Path) -> list[LintFinding]:
         for path in sorted(wiki_dir.rglob("index.md"))
         if not any(part.startswith(".") or part in {"graph", "render", "outputs"} for part in path.relative_to(wiki_dir).parts[:-1])
     )
+    indexed_slugs = {paths.get(link, link.split("/")[-1]) for link in extract_wikilinks(index_text)}
     findings: list[LintFinding] = []
     for p in pages:
-        if incoming[p.slug] == 0 and f"[[{p.slug}]]" not in index_text:
+        if incoming[p.slug] == 0 and p.slug not in indexed_slugs:
             findings.append(LintFinding(
                 check="orphan",
                 severity=LintSeverity.WARNING,
@@ -108,16 +118,23 @@ def check_required_frontmatter(wiki_dir: Path, schema: dict[str, list[str]], dir
         relative = page_path.relative_to(wiki_dir)
         if relative.parts and relative.parts[0] == "agentops":
             continue  # checked against the namespaced AgentOps schema below
-        type_name = None
-        for part in page_path.parts:
-            if part in dir_to_type:
-                type_name = dir_to_type[part]
-                break
-        if type_name is None:
-            continue
-        required = schema.get(type_name, [])
+        if is_navigation_page(p):
+            type_name, required = "navigation", ["title", "slug"]
+        else:
+            type_name = None
+            for part in page_path.parts:
+                if part in dir_to_type:
+                    type_name = dir_to_type[part]
+                    break
+            if type_name is None:
+                continue
+            required = schema.get(type_name, [])
         for field in required:
-            if field not in p.frontmatter:
+            missing = field not in p.frontmatter
+            if is_navigation_page(p):
+                value = p.frontmatter.get(field)
+                missing = not isinstance(value, str) or not value.strip()
+            if missing:
                 findings.append(LintFinding(
                     check="missing-frontmatter-field",
                     severity=LintSeverity.ERROR,
@@ -153,12 +170,14 @@ from tools.wiki_engine import add_edge
 
 def check_dependency_rules(wiki_dir: Path, rules: list[dict]) -> list[LintFinding]:
     pages = scan_wiki(wiki_dir)
+    paths = navigation_paths(wiki_dir, pages)
     by_slug = {p.slug: p for p in pages}
     findings: list[LintFinding] = []
     for src in pages:
         src_dir = str(Path(src.path).relative_to(wiki_dir).parent) + "/"
         for link in src.forward_links:
-            target_slug = link.split("|")[0].split("/")[-1]
+            reference = link.split("|")[0]
+            target_slug = paths.get(reference, reference.split("/")[-1])
             tgt = by_slug.get(target_slug)
             if tgt is None:
                 continue

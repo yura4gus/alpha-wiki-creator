@@ -53,6 +53,30 @@ def test_install_codex_skills_writes_prefixed_skill_set(tmp_path: Path):
     assert "name: alpha-wiki-status" in (tmp_path / "alpha-wiki-status" / "SKILL.md").read_text()
 
 
+def test_plugin_preserves_shared_writing_contract_for_every_skill(tmp_path: Path):
+    plugin = tmp_path / "plugins/alpha-wiki"
+    install_codex(plugin_dir=plugin, marketplace_path=tmp_path / "marketplace.json", activate=False)
+    source = Path(__file__).resolve().parents[2]
+    reference = "references/concept.md"
+    assert (plugin / reference).read_bytes() == (source / reference).read_bytes()
+    for path in (source / "skills").glob("*/SKILL.md"):
+        installed = plugin / "skills" / path.parent.name / "SKILL.md"
+        assert "(Engineering Writing)" in installed.read_text(), path.parent.name
+    assert "Carry Engineering" in (plugin / "skills/spawn-agent/SKILL.md").read_text()
+    assert "into the prompt itself" in (plugin / "skills/spawn-agent/SKILL.md").read_text()
+
+
+def test_standalone_keeps_writing_guidance_without_personal_caveman(tmp_path: Path):
+    installed = install_codex_skills(tmp_path)
+    for path in installed:
+        text = path.read_text()
+        assert "(Engineering Writing)" in text
+        # Essential guidance stays inline even without plugin-local references.
+        assert "short technical statements, compact sections" in text
+        assert "no loss of requirements" in text
+        assert "uncertainty or sources" in text
+
+
 def test_transform_plugin_skill_keeps_name_and_maps_namespaced_commands(tmp_path: Path):
     text = """---
 name: init

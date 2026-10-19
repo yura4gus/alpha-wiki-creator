@@ -32,6 +32,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Ensure AgentOps was explicitly initialized.
 2. For `add`, require a real owner, role, track, acceptance criteria, affected
    files/contracts, and dependencies.

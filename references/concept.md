@@ -6,9 +6,12 @@ Three layers, three operations, two service files.
 
 - **Raw** — immutable sources (read-only after capture)
 - **Wiki** — LLM-generated markdown with cross-links
-- **Schema** — `.alpha-wiki/config.yaml`; existing generated `CLAUDE.md` and
-  `AGENTS.md` expose the shared operating contract. 0.7 does not migrate or
-  remove user project instructions.
+- **Schema** — `.alpha-wiki/config.yaml` owns entity types and link rules.
+  From 0.8.0 (GOV-004), `AGENTS.md` is the single maintained
+  Alpha-Wiki operating contract. Claude imports it through
+  `.claude/CLAUDE.md`; Codex discovers it natively. Existing user instructions
+  are preserved and merged only deliberately. Earlier 0.7.1 generates
+  the older duplicate contract; updating a plugin alone does not migrate a project.
 
 Operations: `ingest`, `query`, `lint`. Service files: `index.md`, `log.md`.
 
@@ -59,6 +62,43 @@ project instructions determine the scope.
 - Continue authorized work without repeated confirmation. Ask only for a
   missing decision that changes scope or authority. Use subagents only when
   independent material work benefits from them; one helper is valid.
+
+## Engineering Writing
+
+Apply this standard to replies, maintained wiki/docs and helper prompts on
+Claude and Codex. It does not depend on a personal caveman skill. Honor the
+user's language, requested format and existing document schema.
+
+- Retrieve the brief, then relevant source sections. Do not paste a whole
+  corpus or transcript into every prompt. Expand context when evidence needs it.
+- State the result or rule first. Use short technical sentences with explicit
+  subjects, actions and conditions. Remove filler, repeated conclusions and
+  speculative recommendations, not necessary explanations or examples.
+- Keep one topic and lifecycle owner per document. Update the existing owner;
+  link shared context instead of copying it into another report or specification.
+- Use the smallest useful structure: purpose/scope; behavior or interface;
+  acceptance/evidence; risks/open questions; sources. Keep required frontmatter
+  and schema sections. Omit irrelevant optional sections, not missing evidence.
+- Prefer a small field/contract table for comparisons, numbered steps for an
+  actual sequence, and code/flow notation for interfaces and dependencies.
+  Avoid decorative tables, empty templates and diagrams that repeat prose.
+- Preserve exact identifiers, commands, paths, quantities/units, versions,
+  negation, exceptions, requirements, decisions, risks, provenance and uncertainty.
+  Never shorten a contract into an ambiguous claim or turn UNVERIFIED into PASS.
+- Before saving, remove duplicate explanations and verify each retained rule
+  and source. Preserve frozen reviewed bytes; revise only authorized documents.
+  Use reviewed document_worker compaction for existing bound documents. Do not
+  rewrite unchanged files or run repeated shortening passes to meet a word quota.
+- Give helpers only their scope, relevant evidence and output shape. Require
+  result, decisive references, checks, gaps and terminal status; return changes
+  and disagreements, not raw transcripts. The controller deduplicates once.
+
+Example: replace "It is important to note that the runtime is designed so that
+it does not make changes to the product dependencies" with "The launcher writes
+dependencies only to .alpha-wiki/runtime/.venv; product manifests stay unchanged."
+Keep the applicable runtime source/test links beside that statement. Concision
+does not prove correctness; lint checks structure, not prose quality or meaning.
+No token-saving percentage, model-wide enforcement or new release gate is implied.
 
 ## Project Tool Runtime
 

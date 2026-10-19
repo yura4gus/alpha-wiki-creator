@@ -14,7 +14,7 @@ References: `00-architecture.md` for boundaries, `_references.md` for source pat
 Alpha-Wiki is the **memory and knowledge layer**. It owns the `wiki/` namespace at the project root.
 
 What it provides:
-- Three-layer mutability: `raw/` (read-only) → `wiki/` (LLM-mutable) → `CLAUDE.md` (gated schema)
+- Three-layer mutability: `raw/` (read-only), `wiki/` (LLM-mutable), `.alpha-wiki/config.yaml` (gated schema). From 0.8.0 (GOV-004), `AGENTS.md` holds the shared operating contract; Claude imports it through a small adapter.
 - Typed entities with required frontmatter
 - Bidirectional cross-references with lint enforcement
 - Auto-generated graph artifacts: `wiki/graph/edges.jsonl`, `wiki/graph/context_brief.md`, `wiki/graph/open_questions.md`
@@ -111,8 +111,8 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Trigger description | Use when the user is starting wiki memory in a new repo or wants to add Alpha-Wiki to an existing project. |
 | When NOT to trigger | Wiki already exists at full structure; user explicitly asks for re-init (route to migration mode). |
 | Inputs | Repo root, optional `raw/` materials, user choices from interview (preset, overlay, automation level, Obsidian config, bilingual). |
-| Outputs | `wiki/` tree, `CLAUDE.md`, `raw/` if missing, `.claude/hooks/`, `wiki/.obsidian/` if requested, `.github/workflows/` if requested, first commit. |
-| Files read | Existing `CLAUDE.md`, `wiki/`, `raw/` if present. |
+| Outputs | GOV-004: configured wiki, `AGENTS.md`, config and `.claude/CLAUDE.md` import adapter; missing raw folders and optional hooks/Obsidian/CI. Commit only when authorized. |
+| Files read | Existing `AGENTS.md`, config, user Claude instructions, wiki and raw sources. Legacy instructions remain user-owned; only path metadata is a schema-independent fallback. |
 | Files written | All wiki tree, hooks, CI workflows, settings. Never touches `wiki/agentops/` or `docs/agentops/` (AgentOps namespace per ADR-004). |
 | State updated | New `wiki/log.md` initialized; new `wiki/00_index.md`; new `wiki/graph/*` rebuilt. |
 | Review gates | After interview (gate 1), after structure proposal (gate 2). |
@@ -132,7 +132,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | When NOT to trigger | Source is generated wiki output (would create circular ingest); source is already-ingested artifact. |
 | Inputs | Path(s) to source(s) under `raw/`, classification hints if user provides. |
 | Outputs | New or updated wiki pages; `wiki/log.md` entry; rebuilt `wiki/graph/*`; handoff summary. |
-| Files read | `raw/<path>`, existing wiki pages for cross-reference, `CLAUDE.md` for schema. |
+| Files read | `raw/<path>`, existing wiki pages for cross-reference, `AGENTS.md` for operating rules and config for schema. |
 | Files written | `wiki/<entity-type>/<slug>.md` (new or updated); `wiki/log.md` (append); `wiki/graph/*` (rebuild). Never writes to `raw/` (immutable). |
 | State updated | log.md, graph artifacts, optionally `wiki/index/*` indexes. |
 | Review gates | If schema-evolve triggered: gate before adding new entity type (per ADR for schema changes); else no gate. |
@@ -169,7 +169,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Trigger description | Use when validating wiki consistency before commit, after ingest, in CI, or on user request. |
 | Inputs | Optional path filter, mode flag (`--fix`, `--suggest`, `--dry-run`, `--ci`, `--pre-commit`). |
 | Outputs | Severity-tagged list of issues: 🔴 errors, 🟡 warnings, 🟢 info. CI mode exits non-zero on 🔴. |
-| Files read | All `wiki/**/*.md`, `CLAUDE.md` for schema. |
+| Files read | All `wiki/**/*.md` and `.alpha-wiki/config.yaml` for schema. |
 | Files written | None unless `--fix` mode; then safe corrections only (missing reverse links, frontmatter normalization, etc.). |
 | Checks | Broken links, missing backlinks, orphan pages, missing frontmatter, invalid frontmatter, duplicate slugs, duplicate entities by alias, stale pages, contradiction markers, missing provenance, invalid entity types, schema drift, missing migration notes, unresolved open questions, dependency-rule violations from architectural overlay. |
 | Modes | `--fix` (auto-safe corrections), `--suggest` (LLM-assisted manual fixes), `--dry-run` (report only), `--ci` (exit non-zero on 🔴), `--pre-commit` (block 🔴, allow 🟡). |
@@ -200,15 +200,15 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | Purpose | Add a new entity type to the wiki schema. |
 | Trigger description | Use when ingest finds an artifact that fits no existing entity type, or when the user explicitly requests a new type. |
 | Inputs | Proposed type name, target frontmatter, target section template, link rules, optional generated child skill. |
-| Outputs | Updated `CLAUDE.md`, new frontmatter template, schema-change log entry, optional generated child skill (e.g. `/alpha-wiki:ingest-<type>`), migration plan for existing pages affected by schema change. |
-| Files read | `CLAUDE.md`, all wiki pages of any potentially-affected types. |
-| Files written | `CLAUDE.md` (updated section), `wiki/<new-type>/.frontmatter-template.yaml`, `wiki/log.md` (schema-change entry). |
+| Outputs | Updated config, validated type directory and schema-change log entry. Templates, cross-reference changes, child skills and page moves are separate explicit migration steps only when needed. |
+| Files read | `AGENTS.md`, config and affected wiki pages. |
+| Files written | `.alpha-wiki/config.yaml`, new type directory and `wiki/log.md`; instruction files stay unchanged during type addition. |
 | State updated | Schema (gated). Migration plan written to `wiki/migrations/<date>-<type>.md` if migrations needed. |
 | Review gates | Always gated by default (schema-evolve mode `gated`). User confirms before schema change is applied. Mode `auto` allows automatic with rollback path via git. |
 | Failure modes | Type name conflict with existing slug; schema change breaks cross-ref rules; migration plan unsafe. |
 | Rollback | Schema changes are git-tracked; revert via standard git operations. Migration plan execution is separate and gated independently. |
-| Tools | `wiki_engine.py` schema operations. |
-| Tests | Add type that conflicts with existing slug, add type that breaks cross-ref rules, add type and verify CLAUDE.md update is correct. |
+| Tools | `scripts.add_entity_type.add_entity_type` from the installed plugin environment; lint and graph after explicit migration steps. |
+| Tests | Duplicate type/directory, unsafe paths, ordinary write-failure rollback, unchanged instructions/config values and fresh/brownfield CLI migration. |
 | Integrations | Triggered by `ingest` when no slot fits; user-invokable directly. |
 
 ### 4.7 `/alpha-wiki:spawn-agent`
@@ -220,7 +220,7 @@ Every skill complies with the 15-dimension operating-manual standard from `00-ar
 | When NOT to trigger | User wants AgentOps team agents — those are owned by AgentOps `agent-skills-bootstrap`. This skill never bootstraps team roles. |
 | Inputs | Subagent role name, readable paths, writable paths, handoff format, optional team-role payload (when called by AgentOps). |
 | Outputs | `<.claude/agents/<name>.md` or skill at `.claude/skills/agent-<name>/SKILL.md`. |
-| Files read | `CLAUDE.md` for mutability matrix, `wiki/02_agent_hierarchy.md` if exists. |
+| Files read | `AGENTS.md` for mutability rules, config for schema, `wiki/02_agent_hierarchy.md` if it exists. |
 | Files written | New agent file. Updates `wiki/02_agent_hierarchy.md` to register the new agent. |
 | Hard constraint | Source contains zero references to AgentOps universal agent names (CTO Integration, Domain Agent, etc.). Team-role logic stays in AgentOps. |
 | Failure modes | Mutability matrix conflict; agent name collision. |

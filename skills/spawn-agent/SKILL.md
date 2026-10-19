@@ -51,6 +51,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Resolve:
    - Mode: `create-profile`, `run-now`, or `run-parallel`.
    - Agent name or independent scopes.
@@ -168,7 +173,10 @@ nine elements so the spawned agent stays trustworthy and does not drift:
 6. **Gates** - graph rebuild and lint after edits; no duplicate deterministic
    backends across parallel agents.
 7. **Evidence and output envelope** - findings with paths, symbols, wiki pages,
-   exact SHAs, evidence status, unknowns, and owner decisions.
+   exact SHAs, evidence status, unknowns, and owner decisions. Carry Engineering
+   Writing from references/concept.md into the prompt itself: short technical
+   statements, compact required sections, exact facts and sources retained,
+   no repeated context or raw transcripts. Apply it to authorized docs too.
 8. **Terminal status** - `GREEN`, `FIXES_REQUIRED`, `BLOCKED`, `UNPROVEN`, or
    `STALE_SNAPSHOT`.
 9. **Handoff** - state the next safe action. Append a log entry only when a

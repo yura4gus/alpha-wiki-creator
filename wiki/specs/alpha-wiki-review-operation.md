@@ -3,7 +3,7 @@ title: Alpha-Wiki Review Operation
 slug: alpha-wiki-review-operation
 kind: operation-spec
 status: stable
-date_updated: 2026-10-19
+date_updated: 2026-10-20
 belongs_to: "[[alpha-wiki-runtime]]"
 implements: "[[alpha-wiki-product-spec]]"
 version: v1
@@ -25,7 +25,7 @@ source_files:
 - Sources: commands/review.md, skills/review/SKILL.md, tools/review.py.
 - Shared health, structural, and security-memory checks: tools/status.py, tools/wiki_engine.py, tools/lint.py, tools/security.py.
 - Authority and read-only limits: references/concept.md.
-- Reviewed against local development sources on 2026-10-19; strict read-only mode is not in public 0.6.2.
+- Read-only behavior and GPH-001.1 navigation checks are packaged together in 0.8.0.
 
 ## Entities
 
@@ -40,6 +40,7 @@ source_files:
 - Default execution refreshes generated graph artifacts before embedding health. `--read-only` computes current links/questions without target writes, even with missing or stale graph exports.
 - Reject `--read-only --out`. Use a prepared runtime and suppress bytecode for strict zero-write audits; do not fix, refresh, or save during that request.
 - Structural findings and wiki-quality readiness are not semantic contradiction resolution, API conformance, owner approval, or a universal package-release prohibition.
+- Folder `_index.md` catalogs are navigation, not API contracts or services. Keep identity/link/duplicate checks, but do not create false ownership gaps or accept catalog-only links as substantive cluster coverage. Status and review use the same catalog exclusion for service-isolation evidence.
 - Missing knowledge routes to [[alpha-wiki-ingest-operation]]; schema gaps route to evolve. A review alone does not authorize repairs.
 
 ## Gates

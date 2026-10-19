@@ -4,7 +4,7 @@
 
 This project uses an LLM-maintained wiki (Karpathy + OmegaWiki style) as persistent
 agent memory. The wiki lives in `{{ wiki_dir }}/`. The runtime contract for agents
-is in `CLAUDE.md`.
+is in `.alpha-wiki/config.yaml`; shared operating instructions live in `AGENTS.md`.
 
 ## Core commands to know
 
@@ -29,7 +29,8 @@ Codex:
 - `raw/` — immutable sources (read-only for the agent)
 - `{{ wiki_dir }}/` — LLM-maintained markdown
 - `{{ wiki_dir }}/graph/` — auto-generated context brief, edges, open questions
-- `CLAUDE.md` — runtime contract
+- `AGENTS.md` — shared Alpha-Wiki operating contract
+- `.claude/CLAUDE.md` — native import adapter, not a second contract
 - `tools/` — Python engine (doctor, lint, edges, classify)
 
 ## Canonical documents

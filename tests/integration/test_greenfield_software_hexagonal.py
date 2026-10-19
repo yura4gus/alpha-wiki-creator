@@ -23,8 +23,9 @@ def test_greenfield_software_hexagonal(tmp_path: Path):
     # CI workflows installed
     for wf in ["wiki-lint.yml", "wiki-review.yml", "wiki-rollup.yml"]:
         assert (tmp_path / ".github" / "workflows" / wf).exists()
-    # CLAUDE.md mentions hexagonal
-    assert "hexagonal" in (tmp_path / "CLAUDE.md").read_text()
+    # The shared contract mentions hexagonal; Claude imports it without duplication.
+    assert "hexagonal" in (tmp_path / "AGENTS.md").read_text()
+    assert "@../AGENTS.md" in (tmp_path / ".claude/CLAUDE.md").read_text()
     # Obsidian config
     assert (tmp_path / "wiki" / ".obsidian" / "graph.json").exists()
     # Tools copied

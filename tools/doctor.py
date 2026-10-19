@@ -124,11 +124,16 @@ def run_doctor(
     refresh: bool = False,
 ) -> DoctorResult:
     project = project_dir.resolve()
-    wiki = _resolve_wiki_dir(project, wiki_dir)
+    try:
+        wiki = _resolve_wiki_dir(project, wiki_dir)
+    except (ValueError, yaml.YAMLError) as exc:
+        return DoctorResult(project_dir=project, wiki_dir=project / "wiki", platform=platform,
+                            checks=[DoctorCheck("wiki location", FAIL, str(exc), "Repair the existing config/path explicitly; no refresh was run.")])
     checks: list[DoctorCheck] = []
 
     checks.extend(_check_python_and_tools())
     checks.append(_check_project_runtime(project))
+    checks.extend(_check_project_contract(project))
     checks.extend(_check_project_config(project, platform))
     checks.extend(_check_wiki(project, wiki, refresh=refresh, platform=platform))
     checks.extend(_check_lint(project, wiki, platform))
@@ -171,12 +176,59 @@ def _check_project_runtime(project_dir: Path) -> DoctorCheck:
 def _resolve_wiki_dir(project_dir: Path, explicit: Path | None) -> Path:
     if explicit is not None:
         return explicit if explicit.is_absolute() else project_dir / explicit
-    claude_md = project_dir / "CLAUDE.md"
-    if claude_md.exists():
-        match = re.search(r"Wiki dir.*?`([^`]+)`", claude_md.read_text())
+    config_path = project_dir / ".alpha-wiki/config.yaml"
+    if config_path.is_file():
+        data = yaml.safe_load(config_path.read_text()) or {}
+        if isinstance(data, dict) and data.get("wiki_dir") is not None:
+            value = data["wiki_dir"]
+            if not isinstance(value, str) or not value.strip() or Path(value).is_absolute():
+                raise ValueError("config wiki_dir must be a nonempty repository-relative directory")
+            from tools.document_maintenance import _safe
+            return _safe(project_dir, value)
+    # Legacy contracts supply path metadata only; they never become the schema.
+    for name in ("AGENTS.md", "CLAUDE.md"):
+        contract = project_dir / name
+        if not contract.is_file():
+            continue
+        match = re.search(r"Wiki dir.*?`([^`]+)`", contract.read_text())
         if match:
-            return project_dir / match.group(1).rstrip("/")
+            from tools.document_maintenance import _safe
+            return _safe(project_dir, match.group(1).rstrip("/"))
     return project_dir / "wiki"
+
+
+def _check_project_contract(project_dir: Path) -> list[DoctorCheck]:
+    checks: list[DoctorCheck] = []
+    agents_md = project_dir / "AGENTS.md"
+    if agents_md.exists() and "Alpha-Wiki" in agents_md.read_text():
+        checks.append(DoctorCheck("project instructions", PASS, "AGENTS.md contains the Alpha-Wiki operating contract"))
+    else:
+        checks.append(
+            DoctorCheck(
+                "project instructions",
+                WARN,
+                "AGENTS.md is missing the Alpha-Wiki operating contract",
+                "Rerun init/upgrade and merge the generated Alpha-Wiki section into AGENTS.md.",
+            )
+        )
+
+    imports_agents = False
+    for path in (project_dir / ".claude/CLAUDE.md", project_dir / "CLAUDE.md"):
+        if path.is_file():
+            imports_agents |= any((path.parent / match).resolve() == agents_md.resolve()
+                                 for match in re.findall(r"(?m)^\s*@([^\s`]+)\s*$", path.read_text()))
+    checks.append(DoctorCheck(
+        "claude contract adapter", PASS if imports_agents else WARN,
+        "Claude native memory imports AGENTS.md; existing user instructions are preserved"
+        if imports_agents else "no portable AGENTS.md import adapter detected",
+        "" if imports_agents else
+        "Review .claude/CLAUDE.md and add @../AGENTS.md explicitly, preserving user content. Direct AGENTS loading depends on Claude version/settings.",
+    ))
+    if (project_dir / "AGENTS.override.md").is_file():
+        checks.append(DoctorCheck("codex instruction override", WARN,
+                                  "AGENTS.override.md may shadow AGENTS.md",
+                                  "Review the user-owned override explicitly; it was not changed."))
+    return checks
 
 
 def _check_python_and_tools() -> list[DoctorCheck]:
@@ -207,7 +259,11 @@ def _check_project_config(project_dir: Path, platform: str) -> list[DoctorCheck]
         data = yaml.safe_load(config.read_text()) or {}
     except yaml.YAMLError as exc:
         return [DoctorCheck("config", FAIL, f".alpha-wiki/config.yaml is invalid YAML: {exc}")]
-    entity_count = len(data.get("entity_types", []))
+    if not isinstance(data, dict):
+        return [DoctorCheck("config", FAIL, ".alpha-wiki/config.yaml must be a YAML mapping")]
+    if not isinstance(data.get("entity_types"), list):
+        return [DoctorCheck("config", FAIL, "config must contain an entity_types list")]
+    entity_count = len(data["entity_types"])
     checks = [DoctorCheck("config", PASS, f".alpha-wiki/config.yaml loaded ({entity_count} entity type(s))")]
     governance = data.get("document_governance") or {}
     if not isinstance(governance, dict):
@@ -439,19 +495,6 @@ def _check_codex(project_dir: Path) -> list[DoctorCheck]:
             )
         )
 
-    agents_md = project_dir / "AGENTS.md"
-    if agents_md.exists() and "Alpha-Wiki" in agents_md.read_text():
-        checks.append(DoctorCheck("codex project instructions", PASS, "AGENTS.md contains the Alpha-Wiki operating contract"))
-    else:
-        checks.append(
-            DoctorCheck(
-                "codex project instructions",
-                WARN,
-                "AGENTS.md is missing the Alpha-Wiki operating contract",
-                "Rerun init/upgrade and merge the generated Alpha-Wiki section into an existing AGENTS.md.",
-            )
-        )
-
     hooks_json = project_dir / ".codex" / "hooks.json"
     hook_script = project_dir / ".codex" / "hooks" / "alpha_wiki_hook.py"
     if hooks_json.exists() and hook_script.exists():
@@ -584,7 +627,7 @@ def _operation_hint(platform: str, operation: str) -> str:
 
 @click.command()
 @click.option("--project-dir", type=click.Path(path_type=Path, exists=True, file_okay=False), default=Path("."), show_default=True)
-@click.option("--wiki-dir", type=click.Path(path_type=Path), help="Override wiki directory. Defaults to CLAUDE.md Wiki dir or wiki/.")
+@click.option("--wiki-dir", type=click.Path(path_type=Path), help="Override wiki directory. Defaults to config wiki_dir, legacy AGENTS/CLAUDE path metadata, or wiki/.")
 @click.option("--platform", type=click.Choice(["auto", "claude", "codex", "both"]), default="auto", show_default=True)
 @click.option("--refresh", is_flag=True, help="Rebuild graph artifacts before checking them.")
 @click.option("--strict", is_flag=True, help="Exit nonzero on warnings as well as failures.")

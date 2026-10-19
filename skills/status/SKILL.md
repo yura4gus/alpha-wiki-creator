@@ -25,9 +25,14 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Detect wiki dir:
-   - Prefer `AGENTS.md` "Wiki dir" line.
-   - Fall back to `wiki/`.
+   - Prefer explicit input, then config `wiki_dir`.
+   - Fall back to legacy AGENTS/CLAUDE path metadata, then `wiki/`.
 
 2. Read:
    - `<wiki_dir>/log.md`
@@ -57,6 +62,8 @@ apply `references/concept.md` (Release Decisions).
 - Stale wiki: many pages without `date_updated` or old stable pages.
 - Noisy wiki: many outputs or sources with no inbound links.
 - Miscolored graph: likely directory/type mismatch; run `/alpha-wiki:render` or revisit schema.
+- Folder `_index.md` catalogs remain pages but do not prove entity coverage
+  or a healthy mixed-role cluster. Do not demand contract/owner fields for them.
 
 ## Required Status Format
 

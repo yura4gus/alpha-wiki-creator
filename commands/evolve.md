@@ -7,4 +7,12 @@ Invoke the `evolve` skill from the `alpha-wiki` plugin. Human meaning: teach the
 
 Arguments: $ARGUMENTS
 
-Collect the type spec interactively (name, dir, required/optional frontmatter, sections, cross-ref rules). Show the proposed CLAUDE.md diff and confirm before writing. Run `scripts/add_entity_type.py`. Commit with `[schema-change]` tag and append to `<wiki_dir>/log.md`. If `--generate-skill` is passed, render `assets/child-skills/ingest-domain.j2` into `target/.claude/skills/wiki-ingest-<type>/SKILL.md`.
+Collect the type spec (name, dir, required/optional frontmatter, sections and
+affected cross-reference rules). Show the config diff and obtain confirmation
+unless the configured mode is auto. Call `scripts.add_entity_type.add_entity_type`
+from the installed plugin environment: it adds the type to config, creates the
+validated directory and journals the change. Apply other reviewed rules/moves
+explicitly, then verify lint and graph. Never rewrite AGENTS.md or user Claude
+instructions as a schema table. Commit only when requested. If
+`--generate-skill` is passed, render `assets/child-skills/ingest-domain.j2`
+into `target/.claude/skills/wiki-ingest-<type>/SKILL.md`.

@@ -7,7 +7,7 @@ description: "Bootstrap Alpha-Wiki project memory into a repo. Use when the user
 
 ## Mission
 
-Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable raw sources, maintained markdown wiki pages, explicit schema in `CLAUDE.md`, generated graph artifacts, and automation that keeps the memory coherent. The goal is not to make a pretty docs folder. The goal is to install a disciplined memory system that future agents can trust.
+Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable raw sources, maintained markdown wiki pages, schema in `.alpha-wiki/config.yaml`, one Alpha-Wiki operating contract in `AGENTS.md`, generated graph artifacts, and automation that keeps the memory coherent.
 
 ## Name Contract
 
@@ -15,9 +15,10 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 
 ## Operating Principles
 
-- Follow Karpathy's LLM-Wiki shape: `raw/` is source evidence, `<wiki_dir>/` is maintained markdown memory, and `CLAUDE.md`/`AGENTS.md` expose the operating contract to Claude Code/Codex.
+- Follow Karpathy's LLM-Wiki shape: `raw/` is source evidence, `<wiki_dir>/` is maintained memory, config owns schema and `AGENTS.md` owns Alpha-Wiki instructions. Claude imports it through `.claude/CLAUDE.md`; Codex discovers it natively.
 - Prefer explicit markdown, frontmatter, wikilinks, and deterministic tools over embeddings or opaque retrieval.
 - Preserve existing project files by default. Never silently overwrite `CLAUDE.md`, `README.md`, `pyproject.toml`, `.gitignore`, or `.env.example`.
+- Preserve existing `AGENTS.md`, `.claude/CLAUDE.md`, config, settings, hooks and wiki content too. A protected-file conflict requires explicit review/merge, not deletion or replacement. Existing user Claude instructions are legitimate, not obsolete schema by implication.
 - Choose `wiki/` by default, including existing codebases, so Obsidian can open the wiki folder directly as a vault.
 - Make the first graph usable: `edges.jsonl`, `context_brief.md`, and `open_questions.md` must exist after bootstrap.
 - Obsidian colors are path semantics, not decoration: red for top-level services/modules, green for submodules/core/ports/domains, orange for contracts, dark grey for documents, light grey for people/tasks.
@@ -44,6 +45,11 @@ Lead with the result and decisive evidence in the user's language. Preserve
 exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
+
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
 
 1. Inspect the repo before asking questions:
    - Detect code markers: `src/`, `package.json`, `pyproject.toml`, `go.mod`, etc.
@@ -89,8 +95,10 @@ apply `references/concept.md` (Release Decisions).
    - In a fresh Codex project, resolve the installed runtime path from the Codex Adapter section and use:
      `UV_PROJECT_ENVIRONMENT="<runtime_root>/.venv" uv run --project <runtime_root> --directory <runtime_root> --no-dev python -m scripts.bootstrap_cli --target <absolute-project> --project-name "<name>" --description "<purpose>" --preset <preset> --overlay <overlay> --hooks <mode> --ci`.
    - Use the same command with `--dry-run` before writing when protected project files already exist.
-   - Confirm generated `CLAUDE.md` lists all active skills, including `review` and `rollup`.
-   - Confirm generated `AGENTS.md` points Codex to the context brief, mutability rules, and namespaced plugin skills.
+   - Confirm `AGENTS.md` contains the Alpha-Wiki workflow and `.claude/CLAUDE.md` has a native `@../AGENTS.md` import. The adapter contains no copied schema or second specification, and works without session hooks.
+   - Start Claude from the project root and verify the imported file with `/context`. Older Claude versions can skip a parent adapter's import when started in a nested directory; do not silently change global trust settings.
+   - Preserve an existing occupied adapter. Report the missing import for deliberate merge; do not claim Claude reads AGENTS merely because the file exists. Claude's direct AGENTS support depends on its version/settings and other instruction files.
+   - Infer existing wiki paths from config first, then legacy AGENTS/CLAUDE path metadata. Do not reinterpret a legacy instruction file as the schema or reset user config to a preset.
    - Use `.alpha-wiki/run.py` after init; never add Alpha-Wiki requirements to product manifests or install them in the product virtualenv.
    - Confirm generated hooks honor `wiki_dir` and selected hook mode.
    - For Codex, confirm `.codex/hooks.json` and `.codex/hooks/alpha_wiki_hook.py` exist when session hooks are enabled; tell the user to review them with `/hooks`.
@@ -112,7 +120,7 @@ apply `references/concept.md` (Release Decisions).
 
 ## Files Written
 
-- `CLAUDE.md` unless protected and preserved.
+- `.claude/CLAUDE.md` import adapter, only if absent.
 - `AGENTS.md` unless protected and preserved.
 - `<wiki_dir>/index.md`, `<wiki_dir>/log.md`, entity directories, `graph/*`.
 - `raw/` directories.
@@ -127,7 +135,7 @@ apply `references/concept.md` (Release Decisions).
 ## Safety Gates
 
 - Ask before `git init`.
-- Ask before changing an existing `CLAUDE.md` or `AGENTS.md`.
+- Ask before changing an existing `CLAUDE.md`, `.claude/CLAUDE.md` or `AGENTS.md`; bootstrap does not overwrite them.
 - Do not reset existing graph artifacts on upgrade.
 - Do not install hooks the user did not choose.
 - Do not invent custom entity types during init unless the user selected `custom`.
@@ -152,8 +160,8 @@ Follow `references/codex-subagent-orchestration.md`.
 ## Done Criteria
 
 - Wiki dir exists and matches the selected path.
-- `CLAUDE.md` explains mutability, page types, cross-reference rules, graph automation, and all skills.
-- `AGENTS.md` gives Codex the startup reading order and shared runtime rules.
+- `AGENTS.md` holds the shared operating contract; `.alpha-wiki/config.yaml` owns page types and link rules.
+- Claude loads that contract through its native import adapter; Codex loads it natively. Preserved user instructions are not falsely reported as migrated.
 - Obsidian config exists when requested and uses the color legend semantics.
 - Lint runs.
 - Graph files exist.

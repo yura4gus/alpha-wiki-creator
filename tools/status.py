@@ -7,6 +7,7 @@ import click
 
 from tools.wiki_engine import (
     cluster_gaps,
+    is_navigation_page,
     collect_edges,
     collect_open_questions,
     page_role,
@@ -175,7 +176,7 @@ def _gap_check(
     """Return cross-cutting health gaps, not per-file lint findings."""
     gaps: list[str] = []
     page_count = len(pages)
-    dirs = {Path(p.path).parent.name for p in pages}
+    dirs = {Path(p.path).parent.name for p in pages if not is_navigation_page(p)}
 
     if page_count == 0:
         gaps.append("Content gap: no wiki pages exist yet; ingest first durable source.")
@@ -198,11 +199,14 @@ def _gap_check(
 
 
 def _cluster_health(wiki_dir: Path, pages, edges, cluster_gap_count: int) -> dict[str, int]:
-    service_slugs = {page.slug for page in pages if page_role(wiki_dir, page) == "service"}
+    navigation_slugs = {page.slug for page in pages if is_navigation_page(page)}
+    service_slugs = {page.slug for page in pages if page.slug not in navigation_slugs and page_role(wiki_dir, page) == "service"}
     role_by_slug = {page.slug: page_role(wiki_dir, page) for page in pages}
     cluster_roles: dict[str, set[str]] = {slug: {"service"} for slug in service_slugs}
     for edge in edges:
         if edge.relation not in CLUSTER_EDGE_RELATIONS or edge.target not in service_slugs:
+            continue
+        if edge.source in navigation_slugs:
             continue
         cluster_roles.setdefault(edge.target, {"service"}).add(role_by_slug.get(edge.source, "other"))
     attached_services = {slug for slug, roles in cluster_roles.items() if len(roles) > 1}

@@ -11,7 +11,7 @@ import click
 from tools._models import Page
 from tools.render_dot import write_dot
 from tools.render_mermaid import write_mermaid
-from tools.wiki_engine import rebuild_context_brief, rebuild_edges, rebuild_open_questions, scan_wiki
+from tools.wiki_engine import navigation_paths, rebuild_context_brief, rebuild_edges, rebuild_open_questions, scan_wiki
 
 
 def render_html(wiki_dir: Path, out_dir: Path | None = None) -> Path:
@@ -31,6 +31,7 @@ def render_html(wiki_dir: Path, out_dir: Path | None = None) -> Path:
 
     pages = sorted(scan_wiki(wiki_dir), key=lambda page: page.slug)
     hrefs = {page.slug: _page_href(wiki_dir, page) for page in pages}
+    hrefs.update({path: hrefs[slug] for path, slug in navigation_paths(wiki_dir, pages).items()})
     for page in pages:
         _write_page(wiki_dir, target, page, hrefs)
     _write_index(wiki_dir, target, pages)

@@ -1,59 +1,92 @@
-"""Schema evolution: append a new entity type to CLAUDE.md, create dir, log it."""
+"""Config-backed schema evolution with validation and rollback on write failure."""
 from __future__ import annotations
-from datetime import date as _date
+
+from datetime import date
 from pathlib import Path
+import re
 
-PAGE_TYPES_HEADER = "## Page Types"
+import yaml
+
+from tools.document_maintenance import _atomic_text, _safe
 
 
-def add_entity_type(target: Path, spec: dict, trigger: str = "manual", wiki_dir: str = "wiki") -> None:
-    """Add a new entity type to CLAUDE.md, create its directory, and log the change.
+def add_entity_type(target: Path, spec: dict, trigger: str = "manual", wiki_dir: str | None = None) -> None:
+    """Add one type to config, create its directory and journal the change.
 
-    Args:
-        target: Root wiki directory (contains CLAUDE.md and wiki/)
-        spec: Entity type specification with keys:
-            - name: Type name (e.g., "migration")
-            - dir: Relative path in wiki/ (e.g., "data/migrations")
-            - frontmatter_required: List of required frontmatter keys
-            - frontmatter_optional: (optional) List of optional frontmatter keys
-            - sections_required: (optional) List of required markdown sections
-        trigger: Description of what triggered this change (for logging)
-        wiki_dir: Name of the wiki subdirectory (default "wiki", can be ".wiki" etc.)
+    Existing instruction files are never rewritten. Ordinary write failures
+    roll back this call's config/log writes and newly created empty directories.
+    This is not an atomic multi-file transaction against process termination.
     """
-    claude_path = target / "CLAUDE.md"
-    text = claude_path.read_text()
-    new_section = _render_type_section(spec)
+    from tools.doctor import _resolve_wiki_dir
 
-    if PAGE_TYPES_HEADER in text:
-        # Append after the Page Types header section (before next ## section)
-        idx = text.index(PAGE_TYPES_HEADER)
-        next_h2 = text.find("\n## ", idx + len(PAGE_TYPES_HEADER))
-        insert_at = next_h2 if next_h2 != -1 else len(text)
-        text = text[:insert_at] + "\n" + new_section + "\n" + text[insert_at:]
-    else:
-        text = text + f"\n\n{PAGE_TYPES_HEADER}\n\n" + new_section + "\n"
+    root = target.resolve()
+    if not isinstance(spec, dict) or not re.fullmatch(r"[a-z][a-z0-9_-]*", str(spec.get("name", ""))):
+        raise ValueError("entity name must be a lowercase slug")
+    value = spec.get("dir")
+    if not isinstance(value, str) or not value.strip() or Path(value).is_absolute() or "\\" in value:
+        raise ValueError("entity directory must be repository-relative")
+    if any(part in {"", ".", ".."} for part in value.rstrip("/").split("/")):
+        raise ValueError("entity directory must not contain empty, dot or parent components")
+    if value.split("/")[0] in {"graph", "render", ".obsidian", "agentops"}:
+        raise ValueError("entity directory must not own generated or optional AgentOps state")
+    if any(char in value for char in ("\n", "\r", "`")):
+        raise ValueError("entity directory must fit a single journal line")
 
-    claude_path.write_text(text)
+    fields = {"name": spec["name"], "dir": value.rstrip("/")}
+    for key in ("frontmatter_required", "frontmatter_optional", "sections_required"):
+        items = spec.get(key, [])
+        if not isinstance(items, list) or any(not isinstance(item, str) or not item.strip() for item in items):
+            raise ValueError(f"{key} must be a list of nonempty strings")
+        fields[key] = items
 
-    new_dir = target / wiki_dir / spec["dir"]
-    new_dir.mkdir(parents=True, exist_ok=True)
-
-    log_path = target / wiki_dir / "log.md"
-    today = _date.today().isoformat()
-    log_path.write_text(
-        log_path.read_text()
-        + f"\n## [{today}] schema-change | added type: {spec['name']} ({spec['dir']}/) | trigger: {trigger}\n"
-    )
-
-
-def _render_type_section(spec: dict) -> str:
-    """Render a type section for CLAUDE.md."""
-    lines = [
-        f"### {spec['name']} (`wiki/{spec['dir']}/`)\n",
-        f"- **Required frontmatter:** {', '.join(spec.get('frontmatter_required', []))}",
-    ]
-    if spec.get("frontmatter_optional"):
-        lines.append(f"- **Optional frontmatter:** {', '.join(spec['frontmatter_optional'])}")
-    if spec.get("sections_required"):
-        lines.append(f"- **Required sections:** {', '.join(spec['sections_required'])}")
-    return "\n".join(lines)
+    wiki = _safe(root, _resolve_wiki_dir(root, Path(wiki_dir) if wiki_dir is not None else None))
+    directory = _safe(wiki, fields["dir"])
+    config_path = _safe(root, ".alpha-wiki/config.yaml")
+    log_path = _safe(root, wiki / "log.md")
+    if not wiki.is_dir() or not config_path.is_file() or not log_path.is_file():
+        raise ValueError("schema evolution requires initialized config and wiki/log.md")
+    if directory.exists() and not directory.is_dir():
+        raise ValueError("entity directory is occupied by a file")
+    original = {path: path.read_text() for path in (config_path, log_path)}
+    config = yaml.safe_load(original[config_path])
+    if not isinstance(config, dict) or not isinstance(config.get("entity_types"), list):
+        raise ValueError("config must contain an entity_types list")
+    types = config["entity_types"]
+    if any(not isinstance(item, dict) for item in types):
+        raise ValueError("entity_types entries must be mappings")
+    if any(item.get("name") == fields["name"] for item in types):
+        raise ValueError(f"entity type already exists: {fields['name']}")
+    if any(str(item.get("dir", "")).rstrip("/") == fields["dir"] for item in types):
+        raise ValueError(f"entity directory already exists: {fields['dir']}")
+    types.append(fields)
+    reason = " ".join(str(trigger).split())
+    payloads = {
+        config_path: yaml.safe_dump(config, sort_keys=False, allow_unicode=True),
+        log_path: original[log_path].rstrip() + f"\n\n## [{date.today().isoformat()}] schema-change | added type: {fields['name']} ({fields['dir']}/) | trigger: {reason}\n",
+    }
+    missing = []
+    parent = directory
+    while not parent.exists():
+        missing.append(parent)
+        parent = parent.parent
+    created = []
+    written = []
+    try:
+        for parent in reversed(missing):
+            parent.mkdir()
+            created.append(parent)
+        for path, content in payloads.items():
+            if path.read_text() != original[path]:
+                raise ValueError(f"concurrent edit detected; preserved: {path}")
+            _atomic_text(path, content)
+            written.append(path)
+    except (OSError, ValueError):
+        for path in reversed(written):
+            if path.read_text() == payloads[path]:
+                _atomic_text(path, original[path])
+        for parent in reversed(created):
+            try:
+                parent.rmdir()
+            except OSError:
+                pass  # Never delete concurrent user files in a created directory.
+        raise

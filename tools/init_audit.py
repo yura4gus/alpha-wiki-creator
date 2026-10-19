@@ -369,7 +369,7 @@ def _categorize(rel: Path, kind: str, wiki_slot: str) -> str:
         return CAT_PRODUCT
     if kind in {"runbook", "transcript", "postmortem"} or _has_token(lower, {"notes", "wip", "scratch", "draft", "impl"}):
         return CAT_IMPL
-    if len(parts) == 1 and rel.name in {"README.md", "CLAUDE.md"}:
+    if len(parts) == 1 and rel.name in {"README.md", "AGENTS.md", "CLAUDE.md"}:
         return CAT_CANONICAL
     if parts[0] == "docs" and len(parts) == 2:
         return CAT_CANONICAL
@@ -441,7 +441,7 @@ def _route(rel: Path, kind: str, suggested_slot: str | None) -> tuple[str, str, 
         return "specs", "Batch 4 - archive distillation", "archive/design history"
     if parts[0] == "docs":
         return "specs", "Batch 1 - architecture and release docs", "project documentation"
-    if len(parts) == 1 and rel.name in {"README.md", "CHANGELOG.md", "CLAUDE.md", "pyproject.toml"}:
+    if len(parts) == 1 and rel.name in {"README.md", "CHANGELOG.md", "AGENTS.md", "CLAUDE.md", "pyproject.toml"}:
         return "specs", "Batch 1 - architecture and release docs", "root project contract"
     if suggested_slot:
         return suggested_slot, "Batch 1 - contracts and decisions", "classifier suggested a concrete slot"

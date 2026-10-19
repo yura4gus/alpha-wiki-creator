@@ -85,8 +85,14 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     wiki = project / wiki_dir
     module = wiki / "modules/service.md"
     module.write_text("---\ntitle: Service\nslug: service\nstatus: stable\ndate_updated: 2026-10-17\n---\n# Service\n")
+    navigation = wiki / "contracts/_index.md"
+    navigation.write_text(
+        "---\ntitle: Contract Catalog\nslug: contracts-index\ndate_updated: 2026-10-19\n"
+        "belongs_to: '[[service]]'\n---\n# Contract Catalog\n\nSee [[service]].\n"
+    )
+    navigation_before = navigation.read_bytes()
     with (wiki / "index.md").open("a") as stream:
-        stream.write("\n[[service]]\n")
+        stream.write("\n[[service]]\n[[contracts/_index|Contract Catalog]]\n")
     source = project / "raw/docs/project-brief.md"
     source.write_text("# Project Brief\n\nThe runtime acceptance project supports isolated agent memory.\n")
     execute(["git", "init"], project)
@@ -137,6 +143,7 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     assert not (wiki / "specs/project-brief-2.md").exists()
     assert "project-brief" in run("wiki_search", "--wiki-dir", wiki_dir, "--query", "isolated agent memory")
     assert "Gap Check" in run("status", "--wiki-dir", wiki_dir)
+    assert "- Cluster link gaps: 0" in run("status", "--wiki-dir", wiki_dir, "--read-only")
     run("lint", "--wiki-dir", wiki_dir, "--config", ".alpha-wiki/config.yaml", "--fix")
     assert "Wiki Review" in run("review", "--wiki-dir", wiki_dir, "--config", ".alpha-wiki/config.yaml")
     run("render_mermaid", "--wiki-dir", wiki_dir)
@@ -145,6 +152,12 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     assert (wiki / "render/html/index.html").is_file()
     assert (wiki / "graph/graph.mmd").is_file()
     assert (wiki / "graph/graph.dot").is_file()
+    assert navigation.read_bytes() == navigation_before
+    assert (wiki / "render/html/contracts/_index.html").is_file()
+    assert 'href="contracts/_index.html"' in (wiki / "render/html/index.html").read_text()
+    assert 'href="../modules/service.html"' in (wiki / "render/html/contracts/_index.html").read_text()
+    assert 'contracts_index["Contract Catalog"]' in (wiki / "graph/graph.mmd").read_text()
+    assert '"contracts-index" [label="Contract Catalog"' in (wiki / "graph/graph.dot").read_text()
 
     payload = json.dumps({"cwd": str(project / "removed-worktree"), "tool_name": "Write",
                           "tool_input": {"file_path": str(module)}})

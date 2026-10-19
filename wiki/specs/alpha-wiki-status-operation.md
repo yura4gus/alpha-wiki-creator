@@ -3,7 +3,7 @@ title: Alpha-Wiki Status Operation
 slug: alpha-wiki-status-operation
 kind: operation-spec
 status: stable
-date_updated: 2026-10-19
+date_updated: 2026-10-20
 belongs_to: "[[alpha-wiki-runtime]]"
 implements: "[[alpha-wiki-product-spec]]"
 version: v1
@@ -21,7 +21,7 @@ source_files:
 
 - Sources: commands/status.md, skills/status/SKILL.md, tools/status.py, tools/wiki_engine.py.
 - Shared authority and read-only contract: references/concept.md.
-- Reviewed against local development sources on 2026-10-19; strict read-only mode is not in public 0.6.2.
+- Read-only behavior and GPH-001.1 navigation checks are packaged together in 0.8.0.
 
 ## Entities
 
@@ -36,6 +36,7 @@ source_files:
 - `--read-only` with `--out` is rejected before reporting or writing.
 - Strict zero-write execution additionally requires a prepared runtime and bytecode suppression; cold environment setup is a separate write.
 - The Gap Check is mandatory and cross-cutting.
+- Folder `_index.md` catalogs remain in page counts but do not establish entity coverage, service boundaries or healthy mixed-role clusters. Do not demand an API owner/consumer pair for a catalog; real contracts keep those checks.
 - Report pages, edges, open questions, log entries, provenance, stale/missing dates, and concrete next actions.
 - When document governance is configured, expose pending source-bound jobs and unmapped coverage without invoking a model. Neither missing bindings nor an empty queue proves global freshness.
 - Thin, noisy, stale, and disconnected memory are maintenance findings, not automatic production-release blockers.

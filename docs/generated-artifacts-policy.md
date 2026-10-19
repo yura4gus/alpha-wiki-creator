@@ -19,7 +19,12 @@ Alpha-Wiki has generated files. They are useful, but they are not the source of 
 - frontmatter
 - wikilinks
 - `.alpha-wiki/config.yaml`
-- `CLAUDE.md`
+- `AGENTS.md` as the maintained Alpha-Wiki operating contract (GOV-004)
+- `.claude/CLAUDE.md` as the native import adapter, not a copied schema
+
+Existing user Claude instruction files remain user-owned source documents.
+Migration never deletes them automatically. Earlier 0.7.1 generates the older
+root contract; GOV-004 applies from 0.8.0.
 
 ## Generated But Useful Locally
 

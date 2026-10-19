@@ -48,6 +48,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Detect wiki dir and config.
 2. Run deterministic backend:
    - `python3 .alpha-wiki/run.py -m tools.review --wiki-dir <wiki_dir> --config .alpha-wiki/config.yaml`
@@ -55,6 +60,9 @@ apply `references/concept.md` (Release Decisions).
      `references/concept.md` (Strict Read-Only Operations). Do not use `--out`,
      refresh/fix commands, a cold target runtime, or bytecode writes.
 3. Inspect graph semantics:
+   - Distinguish `_index.md` catalogs from entities. A catalog does not need
+     contract/owner fields and does not prove substantive cluster coverage;
+     its broken links and duplicate slugs still matter.
    - Red nodes isolated.
    - Orange contracts missing consumers/owners.
    - Dark grey docs with no inbound links.

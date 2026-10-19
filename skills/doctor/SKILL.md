@@ -28,6 +28,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Detect project and wiki:
    - Prefer `--wiki-dir` when supplied.
    - Otherwise read `AGENTS.md` `Wiki dir`.
@@ -53,7 +58,7 @@ apply `references/concept.md` (Release Decisions).
      chosen or required for the operation being checked.
    - Missing/stale Codex plugin or skills: run `python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone` from the Alpha-Wiki repo, then start a new Codex task.
    - Missing Codex project contract/hooks: rerun init with session hooks enabled, merge the Alpha-Wiki section into an existing `AGENTS.md`, and review hooks with `/hooks`.
-   - Legacy `CLAUDE.md`: merge only unique project guidance into `AGENTS.md`, then remove it; never use it as a runtime contract.
+   - Existing `CLAUDE.md` and occupied `.claude/CLAUDE.md` are user-owned instructions. Preserve them. When needed, propose an explicit Alpha-Wiki section/import merge; never prescribe automatic deletion. Verify Claude's import through `/context` from the project root.
 
 ## Required Output Discipline
 

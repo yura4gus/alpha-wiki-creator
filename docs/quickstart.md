@@ -6,6 +6,10 @@ Shortest path: install, init, doctor, ingest one file, query, status, render HTM
 
 ## 1. Install
 
+Version 0.8.0 combines GOV-004/GPH fixes and compact engineering writing;
+new AgentOps changes are excluded. Updating the plugin does not migrate an
+existing project's runtime or overwrite its user instructions.
+
 Claude Code:
 
 ```bash
@@ -149,7 +153,89 @@ Graph rule:
 - Cluster is typed relationship: `belongs_to`, `service`, `implements`, `affects`, `owned_by`, `defined_in`.
 - A healthy service cluster can contain mixed colors. A color-only cluster is a modeling mistake.
 
+The 0.8.0 GPH-001.2 export fix also groups a standalone green module root
+and its typed ownership descendants. It does not require a fabricated red
+service. Security-memory pages are black evidence documents. Existing Obsidian
+customizations are not overwritten; deliberately merge the `path:security/`
+default color rule if needed. A large single-root graph remains a single
+cluster until the source documents describe real ownership subdivisions.
+
+From 0.8.0, folder catalogs may use `_index.md`
+with an explicit `title` and unique `slug` (for example `contracts-index`).
+They remain linkable/exported pages, not API contracts requiring transport,
+owner and consumers. Link them from the root index or another page. Broken
+links, duplicate slugs and dependency rules still apply; ordinary neighboring
+pages keep their entity schema. Catalogs alone do not prove useful contract
+coverage or a healthy service cluster. Use vault-relative paths such as
+`[[contracts/_index|Contract Catalog]]` for Obsidian; tools resolve those
+catalog paths to the unique slug as well. Do not use ambiguous bare
+`[[_index]]` when multiple folders have catalogs. See
+[navigation rules](../references/cross-reference-rules.md#folder-navigation-unreleased-gph-0011).
+
 ## Maintain Existing Documents (0.7)
+
+### Compact Engineering Documents (0.8.0)
+
+Fresh project instructions and all skills carry the same writing rule for
+Claude and Codex. No personal caveman skill is required. Write short technical
+statements; use scope, behavior/interface, acceptance, gaps and sources where
+useful. Keep required schema sections; use tables or flows only when clearer.
+Link shared context and update the existing document instead of adding reports.
+
+Compaction removes repetition, not requirements, exceptions, evidence or
+unresolved questions. Review the result against the source; retain exact paths,
+commands, units, diagnostics and provenance. Pass this rule into helper prompts.
+Existing user instructions are preserved; merge it deliberately during upgrade.
+There is no automatic prose rewriter, semantic-quality gate or measured token
+saving. See references/concept.md (Engineering Writing) in the plugin source.
+
+<a id="contract-and-schema-migration-unreleased-gov-004"></a>
+
+### Contract And Schema Migration (0.8.0 GOV-004)
+
+This section describes 0.8.0; 0.7.1 uses the older generated contracts.
+Fresh init generates one Alpha-Wiki operating contract in `AGENTS.md`.
+`.alpha-wiki/config.yaml` owns entity types, cross-reference rules and the
+new explicit `wiki_dir` and `schema_evolve_mode` fields. Claude's tiny `.claude/CLAUDE.md` imports
+`@../AGENTS.md`; it is a runtime adapter, not another specification. Codex
+reads `AGENTS.md` natively.
+
+For an existing project, run full bootstrap from the updated plugin environment:
+
+```bash
+uv run python -m scripts.bootstrap_cli --target /absolute/project --upgrade --dry-run
+uv run python -m scripts.bootstrap_cli --target /absolute/project --upgrade
+```
+
+Review the dry-run before applying it. Existing `AGENTS.md`, root
+`CLAUDE.md`, occupied import adapters, config, wiki pages, graph snapshots,
+hook scripts, routing, CI and Obsidian files are preserved. Missing adapters
+are created. If an existing contract lacks the Alpha-Wiki section or an occupied
+adapter lacks the import, merge that section/import explicitly and run doctor.
+Do not delete user Claude instructions. Managed Alpha-Wiki backends and the
+isolated runtime can be updated; preserve intentional backend customizations
+before upgrading. Product dependency manifests remain untouched.
+
+Existing schema is reused, not regenerated from the selected preset. A configured
+`wiki_dir` takes precedence; legacy AGENTS/CLAUDE wiki-path metadata is a
+fallback when that field is absent. Pass `--wiki-dir` only for an intentional
+path selection. Missing `schema_evolve_mode` means gated; explicitly merge
+an intended legacy auto mode into config. Runtime-only upgrade does not perform this contract migration.
+For an accepted new entity type, follow `references/schema-evolution.md`;
+the helper updates config/directory/journal together on ordinary write failure,
+not instruction files. YAML formatting/comments may change during that explicit
+schema edit; unrelated config values are retained.
+
+Start Claude from the project root and use `/context` to confirm that
+`AGENTS.md` was imported. Claude 2.1.220 was verified this way with both fresh
+and existing instructions. Starting that version from a nested directory skipped
+the parent adapter's import. Do not infer loading from file existence or change
+global trust settings automatically. Direct AGENTS support in newer Claude
+versions is conditional; the import adapter avoids relying on it. See
+[Claude memory](https://code.claude.com/docs/en/memory) and the
+[compatibility matrix](platform-compatibility-matrix.md).
+
+### Document Maintenance
 
 This extends the optional document worker in 0.7; older 0.6.2 installations need
 an upgrade. Use `document_worker --help` to inspect the available version.
@@ -174,7 +260,7 @@ only the following policy into its existing config, using its actual wiki path:
 document_governance:
   enabled: true
   global_log: wiki/log.md
-  canonical_files: [README.md, AGENTS.md, CLAUDE.md]
+  canonical_files: [README.md, AGENTS.md]
   canonical_roots: [wiki]
   excluded_files: [wiki/index.md, wiki/log.md]
   excluded_roots: [wiki/graph, wiki/render, wiki/agentops]

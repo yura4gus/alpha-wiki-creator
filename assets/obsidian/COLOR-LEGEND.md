@@ -27,6 +27,18 @@ If the graph shows repository README/SKILL/source-manifest/test fixture docs, th
 
 ## Color is not cluster
 
+For a standalone module-oriented wiki, the structural root may be a green
+`modules/` page rather than a red service. Mermaid/DOT group its explicitly
+owned descendants without inventing a service or recoloring the root. Ownership
+chains use `belongs_to`, `owned_by`, `service` and `defined_in`; ordinary
+dependency/consumer links remain bridges. Ambiguous ownership is not assigned
+arbitrarily, and cyclic ownership without a root is left visible.
+
+Security-memory pages under `security/` are black evidence documents, not
+grey work metadata. Existing user Obsidian settings are preserved on upgrade;
+review/merge the new default `path:security/` document-color query deliberately
+if that older vault lacks it.
+
 Do not interpret one color as one cluster. Obsidian layout clusters should emerge from typed wikilinks and shared architecture boundaries. Color answers "what kind of node is this?", not "which subgraph does this belong to?"
 
 Good graph shape:

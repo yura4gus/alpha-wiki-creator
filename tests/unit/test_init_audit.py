@@ -66,3 +66,13 @@ def test_write_source_manifest_records_candidates(tmp_path: Path):
     text = out.read_text()
     assert "docs/quickstart.md" in text
     assert "wiki_slot=`specs`" in text
+
+
+def test_init_audit_recognizes_shared_and_user_legacy_contracts(tmp_path):
+    from tools.init_audit import CAT_CANONICAL
+    for name in ("AGENTS.md", "CLAUDE.md"):
+        (tmp_path / name).write_text("# Project instructions\n")
+    contracts = discover_sources(tmp_path)
+    assert {str(item.path) for item in contracts} == {"AGENTS.md", "CLAUDE.md"}
+    assert all(item.category == CAT_CANONICAL for item in contracts)
+    assert all(item.reason == "root project contract" for item in contracts)

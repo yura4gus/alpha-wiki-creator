@@ -88,12 +88,33 @@ def bootstrap(
     dry_run: bool = False,
     safe_existing: bool = True,
 ) -> BootstrapReport:
-    merged = _resolve_merged_config(config)
+    from tools.document_maintenance import _safe
+
+    target = target.resolve()
+    _safe(target, config.wiki_dir)
+    config_path = target / ".alpha-wiki/config.yaml"
+    if config_path.is_file():
+        merged = yaml.safe_load(config_path.read_text())
+        if not isinstance(merged, dict) or not isinstance(merged.get("entity_types"), list):
+            raise ValueError("Existing .alpha-wiki/config.yaml must contain an entity_types list; preserved.")
+    else:
+        merged = {**_resolve_merged_config(config), "wiki_dir": config.wiki_dir,
+                  "schema_evolve_mode": config.schema_evolve_mode}
+    for entity in merged["entity_types"]:
+        if not isinstance(entity, dict) or not isinstance(entity.get("dir"), str):
+            raise ValueError("Each entity type must define a directory")
+        _safe(target / config.wiki_dir, entity["dir"])
+    overlay_dirs = merged.get("overlay_dirs", [])
+    if not isinstance(overlay_dirs, list) or any(not isinstance(path, str) for path in overlay_dirs):
+        raise ValueError("overlay_dirs must be a list of directory paths")
+    for directory in overlay_dirs:
+        _safe(target / config.wiki_dir, directory)
     ctx = _render_context(config, merged)
     report = BootstrapReport(dry_run=dry_run)
 
     if dry_run:
         _render_top_level_files(target, ctx, upgrade=upgrade, report=report, dry_run=True, safe_existing=safe_existing)
+        _copy_assets(target, config, report, dry_run=True)
         _plan_path(report, target / config.wiki_dir)
         _plan_path(report, target / "raw")
         _plan_path(report, target / ".alpha-wiki" / "config.yaml")
@@ -108,11 +129,11 @@ def bootstrap(
     _render_top_level_files(target, ctx, upgrade=upgrade, report=report, dry_run=False, safe_existing=safe_existing)
     _create_wiki_dirs(target, config, merged)
     _initialize_wiki_files(target, ctx, upgrade=upgrade)
-    _copy_assets(target, config)
+    _copy_assets(target, config, report)
     _copy_tools(target)
     _copy_runtime(target)
-    _initialize_graph(target, config, upgrade=upgrade)
-    _write_merged_config(target, merged)
+    _initialize_graph(target, config, upgrade=upgrade or safe_existing)
+    _write_new_text(target, config_path, yaml.safe_dump(merged, sort_keys=False), report)
     _write_bootstrap_report(target, report)
     return report
 
@@ -198,7 +219,6 @@ def _render_top_level_files(
     env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
     files = [
         ("agents-md.j2", "AGENTS.md"),
-        ("claude-md.j2", "CLAUDE.md"),
         ("readme.j2", "README.md"),
         ("gitignore.j2", ".gitignore"),
     ]
@@ -211,7 +231,7 @@ def _render_top_level_files(
 
 def _create_wiki_dirs(target: Path, config: InterviewConfig, merged: dict) -> None:
     wiki = target / config.wiki_dir
-    wiki.mkdir(exist_ok=True)
+    wiki.mkdir(parents=True, exist_ok=True)
     if merged.get("overlay_dirs"):
         for d in merged["overlay_dirs"]:
             (wiki / d).mkdir(parents=True, exist_ok=True)
@@ -230,50 +250,70 @@ def _create_wiki_dirs(target: Path, config: InterviewConfig, merged: dict) -> No
 def _initialize_wiki_files(target: Path, ctx: dict, upgrade: bool) -> None:
     env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
     wiki = target / ctx["wiki_dir"]
-    if not (wiki / "index.md").exists() or not upgrade:
+    if not (wiki / "index.md").exists():
         (wiki / "index.md").write_text(env.get_template("index-md.j2").render(**ctx))
     log_path = wiki / "log.md"
     if not log_path.exists():
         log_path.write_text(env.get_template("log-md.j2").render(**ctx))
-    elif upgrade:
-        log_path.write_text(log_path.read_text() + f"\n## [{ctx['date']}] upgrade | re-bootstrapped via /alpha-wiki:init\n")
 
 
-def _copy_assets(target: Path, config: InterviewConfig) -> None:
+def _copy_assets(target: Path, config: InterviewConfig, report: BootstrapReport, *, dry_run: bool = False) -> None:
+    env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
+    _write_new_text(target, target / ".claude/CLAUDE.md",
+                    env.get_template("claude-md.j2").render(), report, dry_run=dry_run)
     if config.obsidian:
-        obsidian = target / config.wiki_dir / ".obsidian"
-        obsidian.mkdir(exist_ok=True)
-        for f in (ASSETS / "obsidian").iterdir():
-            shutil.copy(f, obsidian / f.name)
-    hook_files = _hook_files_for_mode(config.hooks)
-    if hook_files:
-        hooks_dir = target / ".claude" / "hooks"
-        hooks_dir.mkdir(parents=True, exist_ok=True)
-        for f in (ASSETS / "hooks").iterdir():
-            if f.name not in hook_files:
-                continue
-            dest = hooks_dir / f.name
-            dest.write_text(_render_runtime_asset(f.read_text(), config))
-            dest.chmod(0o755)
+        for source in (ASSETS / "obsidian").iterdir():
+            _write_new_text(target, target / config.wiki_dir / ".obsidian" / source.name,
+                            source.read_text(), report, dry_run=dry_run)
+    for name in sorted(_hook_files_for_mode(config.hooks)):
+        source = ASSETS / "hooks" / name
+        _write_new_text(target, target / ".claude/hooks" / name,
+                        _render_runtime_asset(source.read_text(), config), report,
+                        dry_run=dry_run, executable=True)
     if _uses_session_hooks(config.hooks):
-        env = Environment(loader=FileSystemLoader(str(ASSETS)), keep_trailing_newline=True)
-        (target / ".claude" / "settings.local.json").write_text(
-            env.get_template("settings-local.j2").render(wiki_dir=config.wiki_dir))
-        codex_hooks = target / ".codex" / "hooks"
-        codex_hooks.mkdir(parents=True, exist_ok=True)
-        hook_script = ASSETS / "codex-hooks" / "alpha_wiki_hook.py"
-        hook_dest = codex_hooks / hook_script.name
-        shutil.copy(hook_script, hook_dest)
-        hook_dest.chmod(0o755)
-        (target / ".codex" / "hooks.json").write_text(
-            env.get_template("codex-hooks/hooks.json.j2").render(wiki_dir=config.wiki_dir))
+        for template, destination in (
+            ("settings-local.j2", ".claude/settings.local.json"),
+            ("codex-hooks/hooks.json.j2", ".codex/hooks.json"),
+        ):
+            _write_new_text(target, target / destination,
+                            env.get_template(template).render(wiki_dir=config.wiki_dir),
+                            report, dry_run=dry_run)
+        _write_new_text(target, target / ".codex/hooks/alpha_wiki_hook.py",
+                        (ASSETS / "codex-hooks/alpha_wiki_hook.py").read_text(),
+                        report, dry_run=dry_run, executable=True)
     if config.ci:
-        wf_dir = target / ".github" / "workflows"
-        wf_dir.mkdir(parents=True, exist_ok=True)
-        for f in (ASSETS / "workflows").iterdir():
-            (wf_dir / f.name).write_text(_render_runtime_asset(f.read_text(), config))
-    (target / ".claude" / "agents").mkdir(parents=True, exist_ok=True)
-    (target / ".claude" / "skills").mkdir(parents=True, exist_ok=True)
+        for source in (ASSETS / "workflows").iterdir():
+            _write_new_text(target, target / ".github/workflows" / source.name,
+                            _render_runtime_asset(source.read_text(), config),
+                            report, dry_run=dry_run)
+
+
+def _write_new_text(target: Path, path: Path, content: str, report: BootstrapReport,
+                    *, dry_run: bool = False, executable: bool = False) -> None:
+    from tools.document_maintenance import _safe
+
+    try:
+        _safe(target, path)
+    except ValueError as exc:
+        report.skipped.append(BootstrapConflict(str(path), str(exc)))
+        return
+    if path.exists():
+        if not path.is_file() or path.read_text() != content:
+            report.skipped.append(BootstrapConflict(str(path), "existing user file was preserved; review/merge explicitly"))
+        return
+    _plan_path(report, path)
+    if dry_run:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        with path.open("x") as stream:
+            stream.write(content)
+    except FileExistsError:
+        report.skipped.append(BootstrapConflict(str(path), "file appeared during setup; preserved"))
+        return
+    if executable:
+        path.chmod(0o755)
+    report.written.append(str(path))
 
 
 def _copy_tools(target: Path) -> None:
@@ -435,12 +475,6 @@ def _initialize_graph(target: Path, config: InterviewConfig, upgrade: bool) -> N
     _write_graph_seed(g / "edges.jsonl", "", upgrade)
     _write_graph_seed(g / "context_brief.md", "# Context brief\n\n_(empty — will populate after first ingest)_\n", upgrade)
     _write_graph_seed(g / "open_questions.md", "# Open questions\n\n_(none yet)_\n", upgrade)
-
-
-def _write_merged_config(target: Path, merged: dict) -> None:
-    cfg_dir = target / ".alpha-wiki"
-    cfg_dir.mkdir(exist_ok=True)
-    (cfg_dir / "config.yaml").write_text(yaml.safe_dump(merged, sort_keys=False))
 
 
 def _write_protected_text(

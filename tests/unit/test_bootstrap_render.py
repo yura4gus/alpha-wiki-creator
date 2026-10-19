@@ -12,7 +12,7 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
     )
     bootstrap(target=tmp_path, config=cfg)
     assert (tmp_path / "AGENTS.md").exists()
-    assert (tmp_path / "CLAUDE.md").exists()
+    assert not (tmp_path / "CLAUDE.md").exists()
     assert (tmp_path / "README.md").exists()
     assert (tmp_path / "wiki" / "index.md").exists()
     assert (tmp_path / "wiki" / "log.md").exists()
@@ -26,14 +26,15 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
     # Bootstrap log entry:
     assert "bootstrap" in (tmp_path / "wiki" / "log.md").read_text()
     assert (tmp_path / ".alpha-wiki" / "config.yaml").exists()
-    claude = (tmp_path / "CLAUDE.md").read_text()
-    assert "/alpha-wiki:doctor" in claude
-    assert "/alpha-wiki:review" in claude
-    assert "/alpha-wiki:rollup" in claude
-    assert "/alpha-wiki:audit-project" in claude
-    assert "/alpha-wiki:orchestrate" in claude
     agents = (tmp_path / "AGENTS.md").read_text()
+    assert "# demo Agent Instructions" in agents
+    assert "**Wiki dir:** `wiki/`" in agents
     assert "$alpha-wiki:init" in agents
+    assert "$alpha-wiki:doctor" in agents
+    assert "$alpha-wiki:review" in agents
+    assert "$alpha-wiki:rollup" in agents
+    assert "$alpha-wiki:audit-project" in agents
+    assert "$alpha-wiki:orchestrate" in agents
     assert "wiki/graph/context_brief.md" in agents
     assert "python3 .alpha-wiki/run.py -m tools.doctor" in agents
     assert not (tmp_path / "pyproject.toml").exists()
@@ -42,6 +43,7 @@ def test_bootstrap_creates_expected_files(tmp_path: Path):
     assert "pinned repository/SHA snapshot" in agents
     assert "references/codex-subagent-orchestration.md" in agents
     assert "$alpha-wiki:release-check" in agents
+    assert "only page-schema and cross-reference source of truth" in agents
     assert "references/agentops-control-layer.md" in agents
     assert not (tmp_path / "wiki" / "agentops").exists()
 

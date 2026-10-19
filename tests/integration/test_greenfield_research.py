@@ -12,6 +12,6 @@ def test_greenfield_research(tmp_path: Path):
     bootstrap(target=tmp_path, config=cfg)
     for d in ["papers", "concepts", "topics", "ideas", "experiments", "claims", "foundations", "summaries"]:
         assert (tmp_path / "wiki" / d).is_dir(), f"missing: wiki/{d}"
-    assert "research" in (tmp_path / "CLAUDE.md").read_text()
+    assert "research" in (tmp_path / "AGENTS.md").read_text()
     # CI not installed
     assert not (tmp_path / ".github").exists()

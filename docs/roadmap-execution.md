@@ -278,6 +278,7 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | DOC-001 | P0 | IN_REVIEW | Enforce finite canonical documents and bidirectional change records. | Fix NUL-delimited Git paths and custom wiki/index slugs; validate record/check, explicit registration, ownership hierarchy, and meaningful journal records. | Regression tests and cross-platform lifecycle must pass on the current implementation. Existing broad worktree remains unpublished; no new release authorized by this task. | GOV-001 |
 | GOV-003 | P1 | READY | Define idea-to-task promotion without document proliferation. | Keep hypotheses in this roadmap; require owner/outcome/acceptance/dependency before READY; create AgentOps task files only for an activated wave. | No one-file-per-idea backlog; active wave can be projected deterministically when needed. | GOV-002 |
 | OPS-001 | P0 | IN_REVIEW | Attribute hosted CI and Pages correctly. | New 12fd58d plugin-ci run 39271869745 and docs-pages 39271869737 failed before execution. Check annotation confirms GitHub account billing lock; main is unprotected. | Hosted results are not green. Existing local/package publication succeeded independently under actual branch rules. Owner must restore GitHub Actions billing to rerun hosted CI/docs deployment. | GOV-001 |
+| GOV-004 | P1 | DONE | Finish the single-contract/config-schema migration. | Isolated codex/gov-004-contract-schema from 39a1854; one maintained AGENTS.md, a native Claude import adapter, config-backed type evolution and preservation of existing user files. | Local L2: 336 tests, smoke PASS, audit READY and native fresh/brownfield contract discovery; see section 22 for scope and Claude startup limitation. Unreleased; no AgentOps/nav migration or publication is implied. | Published 0.7.1 base |
 
 ## 9. Wave 1 - Runtime, Workflow, And Trust
 
@@ -332,7 +333,9 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | EVI-004 | P1 | CANDIDATE | Add alias/glossary support only for observed rename/synonym failures. | At least two pilot failures come from unresolved aliases; deterministic lookup solves them. | PILOT-002 |
 | EVI-005 | P2 | CANDIDATE | Add small/medium/large context profiles. | Measured context cost or truncation harms onboarding; profiles preserve answer quality. | PILOT-002 |
 | UPG-001 | P1 | DONE | Recover missing configured hooks without overwriting user hooks. | Published 0.7.1 at 45b590c from the isolated codex/upg-001-hook-recovery branch; existing hooks are not overwritten and unchanged runtime files are not rewritten. | Clean public clone: 309 tests, smoke PASS, audit READY; downloaded source checksum verified. Installed/enabled Codex 0.7.1+codex.local-20261019163734 has 16 skills and matching runtime assets. Broader modified-managed-tool detection remains outside this bounded acceptance. See section 21. | RUN-001, REL-002 |
-| GPH-001 | P1 | READY | Close remaining graph quality gaps from real projects. | Pilots show correct mixed-color clusters, understandable labels, bounded isolated nodes, and deterministic rebuilds. | PILOT-001 |
+| GPH-001 | P1 | IN_REVIEW | Close remaining graph quality gaps from real projects. | Local folder-navigation slice GPH-001.1 is implemented separately below. Mixed-color export regressions pass; broader real-project layout/readability acceptance is still pending. | PILOT-001 |
+| GPH-001.1 | P1 | DONE | Formalize folder navigation without weakening entity checks. | Keep _index.md searchable/linkable/exported, require title/unique slug, preserve entity/link/dependency validation, and resolve vault-relative catalog paths to stable graph identities. | Local L2: 348 tests revalidated after worktree recovery; see section 23. Broader visual evidence is separate in section 24. | GOV-004 local acceptance |
+| GPH-001.2 | P1 | DONE | Verify real graph rendering and correct observed export defects. | Parse/render the actual Alpha-Wiki corpus, repair Mermaid arrows, group explicit ownership under services or standalone modules, and align security-document colors. | Local L2: 352 tests; real Mermaid/Graphviz renders retain 31 nodes/57 edges; desktop/mobile HTML links pass; see section 24. No live Obsidian UI or external-project acceptance is implied. | GOV-004, GPH-001.1 |
 | V1-001 | P1 | READY | Decide v1.0 from evidence, not feature count. | Two pilots pass core journey; release/install receipts are repeatable; docs are honest; no open P0. | All Wave 3 P1 required items |
 
 ## 12. Wave 4 - Optional Integrations
@@ -1072,3 +1075,203 @@ Publication and installation verified on 2026-10-19:
 
 This post-publication receipt changes documentation only; it does not move the
 release tag or change the accepted code, metadata, packaged skills or artifact.
+
+## 22. GOV-004 Contract And Schema Verification
+
+The user authorized the bounded migration on 2026-10-19, not publication.
+Implementation is isolated on codex/gov-004-contract-schema, based on 39a1854,
+in the attached alpha-wiki-upg-001 worktree. The primary main and all its
+unfinished changes remain intact. All 370 tracked/untracked nonignored primary
+paths match their start-of-task content/mode snapshot; no files were added there.
+This is local L2 acceptance, not a new public version or installed plugin.
+
+Delivered behavior:
+
+- AGENTS.md is the maintained Alpha-Wiki operating contract. Fresh init no
+  longer generates a duplicate root CLAUDE.md. A minimal .claude/CLAUDE.md
+  imports @../AGENTS.md through Claude's native memory mechanism.
+- Full init/upgrade preserves existing user contracts, config bytes, wiki
+  content, graph snapshots, hook scripts/routing, CI and Obsidian settings.
+  Missing adapters are created; occupied adapters and incomplete AGENTS files
+  require explicit merge and a doctor follow-up. Existing user CLAUDE files
+  are not deleted or treated as obsolete instructions.
+- Config owns entity_types, cross_ref_rules and schema_evolve_mode. Fresh
+  setup persists wiki_dir and the chosen evolution mode. Existing YAML is
+  reused, never reset to a preset; legacy path metadata remains a read-only
+  fallback. Missing evolution mode means gated, not inferred auto permission.
+- Type addition validates names, fields, duplicate directories, containment
+  and symlinks before writing. It updates config/directory/journal, preserving
+  unrelated values and instruction files. Ordinary write failure rolls back
+  its own writes and new empty directories; abrupt termination is not a
+  multi-file atomic transaction. Explicit schema edits can reformat YAML.
+- Shared init/evolve/doctor guidance, command routing, conceptual docs and
+  migration instructions agree. Generic templates use the target project's
+  existing tracker, not this plugin repository's roadmap.
+- Runtime-only UPG-001 remains separate; managed backends can update without
+  modifying product dependency manifests. No AgentOps enum/session migration,
+  navigation schema, new server, Temporal, global setting or provider change
+  is included.
+
+Verification:
+
+- Final complete suite: 336 passed in 86.26s. Four fresh/brownfield Claude/Codex
+  subprocess cases verify dry-run, repeat setup, custom wiki paths, user-file
+  preservation and config evolution. Existing isolated-runtime and configured
+  hook-recovery tests also pass. Earlier intermediate failures were corrected,
+  not ignored.
+- Executable release_smoke: PASS; doctor 26 pass/2 warn/0 fail in its isolated
+  fixture, ingest/query/status/review and worker checks pass, Mermaid/DOT/HTML
+  exist. Local evidence: /tmp/alpha-wiki-gov004.r0jPNd/final-smoke.
+- Package audit READY (8 pass/0 fail); lint 0 errors/0 warnings; governance
+  and diff check pass. Source archive includes both contract templates, the
+  import adapter and schema helper, and excludes private maintenance/runtime
+  payloads. The artifact retains 0.7.1 metadata for local verification only.
+- Native Codex CLI 0.162.1 returned the already-loaded context markers from
+  nested src directories in fresh and existing fixture projects, with no
+  file-reading tools. Result markers: GOV004_CODEX_FRESH_6E91 and
+  GOV004_CODEX_BROWNFIELD_6E91.
+- Native Claude 2.1.220 /context and InstructionsLoaded receipts prove AGENTS
+  import from both repository roots, including coexistence with a user root
+  CLAUDE.md. Session IDs c83ed7d3-051e-42bd-aeb5-842a5b3b85a4 and
+  ee44374b-2e64-428f-a216-e3ca76821845; load_reason=include, parent is the
+  adapter. This discovery check needs no model/provider request.
+- That Claude version skipped the parent import when launched from a nested
+  directory. Supported guidance is to launch at repo root and verify /context;
+  no silent global trust change is made. Native discovery is not evidence of
+  the wider live writer/reviewer pilot, which remains a separate task.
+
+The authoring worktree doctor has zero failures but five setup warnings:
+unprepared isolated runtime, missing optional Obsidian settings, Claude hooks,
+Claude routing and generated wiki CI. Those source-worktree setup warnings do
+not negate the fresh/brownfield runtime tests. Status still reports 25 aged
+pages, four pending bound documents and 34 unbound canonical inventory entries;
+this task does not refresh unrelated evidence or dates to hide those gaps.
+No commit, push, tag, package publication or global plugin reinstall is made.
+
+## 23. GPH-001.1 Recovery And Revalidation
+
+The previous candidate directory was absent when continuation began. Its branch
+still pointed at 39a1854; uncommitted work was not available from Git alone.
+Recovered the existing source artifact from
+/tmp/alpha-wiki-gph001.VrBt88/final-dist/alpha_wiki-0.7.1.tar.gz, SHA-256
+0d527166456f72e48ef41130588a577b1d6860234369022c73e3fe7c68bd0240.
+Archive paths and links were checked before extraction into a fresh managed
+worktree. Only the known generated root CLAUDE.md was removed there to recover
+the prior single-contract state. No primary user file was changed.
+
+Active candidate: /Users/yuragus/.codex/worktrees/alpha-wiki-gph-pilot/alpha-wiki-creator,
+branch codex/gov-004-contract-schema, base 39a1854. The archive contains the
+GOV-004 and GPH-001.1 code, their tests and earlier journal entries, but predates
+the last GPH-001.1 documentation receipt. This section reconstructs acceptance;
+it does not claim byte-for-byte recovery of the missing final receipt or private
+maintenance state. Recovery baseline independently passed 348 tests in 87.62s.
+
+GPH-001.1 preserves folder catalogs as scanned/linkable/exported pages with
+explicit title/unique slug, without exempting neighbor entities or weakening
+broken-link, duplicate, orphan, dependency and reverse-link checks. Vault-relative
+catalog paths resolve to stable slugs in lint, edges and HTML. The local scope
+is complete. Those tests did not prove real Mermaid parseability; the next
+pilot found and corrected that separate defect rather than reusing a file-only
+PASS as visual evidence.
+
+## 24. GPH-001.2 Real Graph Pilot
+
+User story: an operator inspecting this repository sees its actual maintained
+ownership, colors and labels, without fabricated service pages or extra specs.
+Scope is the existing 31-page Alpha-Wiki memory, rendered from isolated copies;
+primary sources, old user snapshots and global installations remain unchanged.
+
+Observed and fixed:
+
+- Mermaid 12.2.0 rejected the generated labeled edges: the old --| syntax was
+  not a valid directed link. The exporter now uses -->| and the actual parser
+  plus renderer accept the full graph.
+- Export grouping previously recognized service roots only. This corpus has
+  one green module root, not a documented red service. Shared Mermaid/DOT
+  grouping follows explicit ownership chains to a service or module root,
+  keeps cross-links, assigns a node to at most one unambiguous root, and safely
+  leaves rootless cycles or ambiguous owners outside a chosen group.
+- Seven security-memory pages were grey despite being evidence documents.
+  They now use the black document role, including the default Obsidian color
+  query. Existing user graph settings are not overwritten; merge deliberately.
+- No node, source page, ownership claim or service was invented for the pilot.
+  The actual graph remains one cluster because current documents describe one
+  runtime owner. More visual clusters require real ownership subdivisions.
+
+Evidence and acceptance:
+
+- Final complete suite: 352 passed in 95.56s, including fresh/brownfield
+  Claude/Codex runtime cases. New regressions cover module roots, transitive
+  ownership, ambiguous owners, cycles, directed syntax and security colors.
+- Real browser-rendered Graphviz DOT: 31 nodes, 57 edges, one ownership
+  cluster, zero overlapping node boxes. Mermaid: parse/render PASS, 31 nodes.
+  Before/after screenshots were inspected; the one-root graph remains dense.
+  Do not interpret node-box checks as proof of zero edge/label crossings.
+- HTML at 1280 and 390 px: 33 links resolve locally, no horizontal overflow.
+  No hosted deploy or live Obsidian force-layout session is claimed.
+- Visual-only tools were installed outside the repo: @viz-js/viz 3.31.0,
+  Mermaid 12.2.0 and playwright-core 1.64.1, using an existing local Chromium.
+  Product manifests, lockfiles and runtime dependencies were not changed.
+- Release smoke PASS (doctor 26 pass/2 warn/0 fail); package audit READY,
+  8 pass/0 fail; lint zero errors/warnings. Governance and diff check pass.
+  These are local results, not public publishing receipts.
+- Reviewed recovered lint/status/review bindings through source-pinned
+  document_worker plan/apply. Only lint needed new prose; unchanged projections
+  were checked without synthetic edits. Replay is unchanged and the selected
+  three-document plan has zero jobs. Two unrelated jobs, 33 unbound inventory
+  entries and 24 aged pages remain visible, not globally accepted.
+- Evidence copies, tool versions and screenshots are retained outside temporary
+  worktrees at /Users/yuragus/.codex/alpha-wiki-recovery/graph-pilot-20261019.TbH2XE.
+  A private source/state archive is saved alongside them after final checks;
+  it is not a public release artifact and must not be uploaded as one.
+
+GPH-001 remains IN_REVIEW for wider adoption and live Obsidian/multi-project
+readability. GOV-004 and both bounded GPH slices are local candidate work only.
+AgentOps code/status changes are excluded. Version metadata and the installed
+plugin remain 0.7.1; no commit, push, tag, deploy or reinstall is performed.
+The next release-assembly scope can be GOV-004 plus GPH-001.1/GPH-001.2 without
+AgentOps. External corpus compaction and live writer/reviewer pilots retain
+their separate acceptance; they are not implied by this graph pilot.
+
+## 25. Local 0.8.0 Candidate
+
+Date: 2026-10-20. Branch: codex/release-0.8.0, base 39a1854.
+Purpose: assemble the accepted GOV/GPH slices and the requested WF-004 writing
+follow-up. Scope is local verification, not publication or a global upgrade.
+
+| Slice | Delivered behavior | Boundary |
+|---|---|---|
+| GOV-004 | One AGENTS contract, native Claude import, config-owned schema, safe existing-project migration | Preserve user instructions/settings; runtime-only upgrade stays separate |
+| GPH-001.1/2 | Linkable catalogs, valid Mermaid edges, shared ownership grouping, security document colors | No invented ownership or automatic overwrite of user Obsidian settings |
+| WF-004 follow-up | Short technical statements and compact document structure across 16 skills, startup template and bounded helper prompts | Preserve normative meaning, exceptions, uncertainty and references; no personal caveman dependency |
+
+Writing shape: purpose/scope, behavior/interface, acceptance/evidence, gaps,
+sources. Use only applicable sections and retain the configured schema. Link
+shared context; maintain the existing document owner. Review redundancy once,
+not a repeated word-count loop. No automatic prose rewriter or measured token
+saving is claimed. See references/concept.md (Engineering Writing).
+
+Verification:
+
+- Complete working-source suite: 354 passed in 236.46s. Clean source-archive
+  suite: 354 passed in 214.55s. The archive has aligned 0.8.0 metadata.
+- Fresh/brownfield Claude/Codex subprocess cases verify isolated runtime,
+  dry-run, replay, user-file preservation, hooks and unchanged product manifests.
+- Native plugin managers installed the archive into temporary CLAUDE_CONFIG_DIR
+  and CODEX_HOME profiles. Claude reports 0.8.0; Codex reports
+  0.8.0+codex.local-20261019214031. Both cached packages expose 16 skills and
+  bootstrap the shared writing contract without a product pyproject.toml.
+- Clean-archive release_smoke PASS (doctor 26 pass/2 warn/0 fail); release_audit
+  READY (8 pass/0 fail). Lint/governance pass. These prove installation and
+  deterministic behavior, not live-model compliance with writing style.
+- Reviewed five existing source-bound pages through worker plan/apply. Only
+  ingest needed new prose; replay is unchanged, and the selected queue is empty.
+  33 unbound inventory entries and 24 aged pages remain explicit coverage gaps.
+- The previous real 31-node graph pilot remains applicable: render code and
+  graph inputs are unchanged. It does not prove live Obsidian layout acceptance.
+
+No new AgentOps backend, schema/status migration, server or Temporal is included.
+The four existing optional skills receive only shared writing guidance; their
+workflow behavior stays unchanged. Primary unfinished work is preserved outside
+this candidate. Public main and global plugin stay at 0.7.1. No commit, push,
+tag, deploy or public release was requested or performed in this pass.

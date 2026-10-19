@@ -95,7 +95,7 @@ def test_readme_documents_current_codex_upgrade_flow():
 def test_no_stale_skill_count_or_beta_release_references():
     readme = (ROOT / "README.md").read_text()
     marketplace = (ROOT / ".claude-plugin" / "marketplace.json").read_text()
-    claude_md = (ROOT / "CLAUDE.md").read_text()
+    claude_md = (ROOT / "AGENTS.md").read_text()
     for stale in ("11 skills", "11 slash commands", "11 skills + 11 slash"):
         assert stale not in readme, f"stale skill count in README: {stale!r}"
         assert stale not in marketplace, f"stale skill count in marketplace: {stale!r}"

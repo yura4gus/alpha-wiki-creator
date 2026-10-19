@@ -33,6 +33,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Detect wiki dir and config:
    - `--wiki-dir <wiki_dir>`
    - `--config .alpha-wiki/config.yaml`
@@ -60,6 +65,10 @@ apply `references/concept.md` (Release Decisions).
 | `dependency-rule-violation` | Warning | No |
 
 ## Graph And Color Diagnostics
+
+Treat `_index.md` as folder navigation: require title and unique slug, not the
+folder's entity fields or a mandatory owner. Keep link, duplicate, orphan,
+dependency and typed-reverse checks active. See `references/cross-reference-rules.md`.
 
 If the Obsidian graph looks wrong, lint should guide the user:
 

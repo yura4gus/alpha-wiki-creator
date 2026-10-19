@@ -1,0 +1,13 @@
+entity_types:
+  - name: module
+    dir: modules
+    frontmatter_required: [title, slug, status]
+  - name: decision
+    dir: decisions
+    frontmatter_required: [title, slug, status, date]
+  - name: contract
+    dir: contracts
+    frontmatter_required: [title, slug, transport, service, status]
+cross_ref_rules:
+  - forward: "modules/A: depends_on: [[module-B]]"
+    reverse: "modules/B: dependents adds A"

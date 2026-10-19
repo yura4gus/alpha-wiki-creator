@@ -16,6 +16,9 @@ For first-run use, start with [`quickstart.md`](quickstart.md). The `superpowers
 
 ## Execution
 
+- [0.8.0 release scope](../CHANGELOG.md#080---2026-10-20) — GOV-004, GPH and compact engineering writing; no new AgentOps implementation
+- [GOV-004 contract/schema migration](quickstart.md#contract-and-schema-migration-unreleased-gov-004) — single-contract setup from 0.8.0; existing user instructions are preserved
+
 - [`audit-verified-inventory.md`](audit-verified-inventory.md) — Phase 0 verified repository inventory and review/rollup decision
 - [`roadmap-execution.md`](roadmap-execution.md) — the only active Alpha-Wiki product roadmap and backlog
 - [0.7 release execution](roadmap-execution.md#20-release-07-execution) — scoped implementation, verification and publication/install receipts

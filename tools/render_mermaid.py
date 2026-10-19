@@ -7,7 +7,7 @@ from pathlib import Path
 import click
 
 from tools._models import Edge, Page
-from tools.wiki_engine import page_role, read_edges, rebuild_edges, scan_wiki
+from tools.wiki_engine import is_navigation_page, page_role, read_edges, rebuild_edges, scan_wiki
 
 CLUSTER_RELATIONS = {"belongs_to", "owned_by", "service", "defined_in"}
 
@@ -34,7 +34,7 @@ def render_mermaid(wiki_dir: Path) -> str:
     pages = scan_wiki(wiki_dir)
     page_by_slug = {page.slug: page for page in pages}
     edges = _current_edges(wiki_dir)
-    clusters = _service_clusters(wiki_dir, pages, edges)
+    clusters = _ownership_clusters(wiki_dir, pages, edges)
 
     assigned = {slug for members in clusters.values() for slug in members}
     lines = [
@@ -58,7 +58,7 @@ def render_mermaid(wiki_dir: Path) -> str:
             lines.append(_node_line(wiki_dir, page, indent="  "))
 
     for edge in sorted(edges, key=lambda item: (item.source, item.target, item.relation)):
-        lines.append(f'  {_node_id(edge.source)} --|"{_escape_label(edge.relation)}"| {_node_id(edge.target)}')
+        lines.append(f'  {_node_id(edge.source)} -->|"{_escape_label(edge.relation)}"| {_node_id(edge.target)}')
 
     for class_name, definition in CLASS_DEFS.items():
         lines.append(f"  classDef {class_name} {definition};")
@@ -82,14 +82,34 @@ def _current_edges(wiki_dir: Path) -> list[Edge]:
     return read_edges(wiki_dir / "graph" / "edges.jsonl")
 
 
-def _service_clusters(wiki_dir: Path, pages: list[Page], edges: list[Edge]) -> dict[str, set[str]]:
-    service_slugs = {page.slug for page in pages if page_role(wiki_dir, page) == "service"}
-    clusters = {slug: {slug} for slug in service_slugs}
+def _ownership_clusters(wiki_dir: Path, pages: list[Page], edges: list[Edge]) -> dict[str, set[str]]:
+    """Group under one reachable service/module root; ambiguous ownership stays visible outside."""
+    slugs = {page.slug for page in pages}
+    candidates = {page.slug for page in pages
+                  if not is_navigation_page(page) and page_role(wiki_dir, page) in {"service", "module-root"}}
+    owners: dict[str, set[str]] = {}
     for edge in edges:
-        if edge.relation not in CLUSTER_RELATIONS or edge.target not in service_slugs:
-            continue
-        clusters.setdefault(edge.target, {edge.target}).add(edge.source)
-    return {service: members for service, members in clusters.items() if len(members) > 1}
+        if edge.relation in CLUSTER_RELATIONS and edge.source in slugs and edge.target in slugs:
+            owners.setdefault(edge.source, set()).add(edge.target)
+
+    def ancestors(slug: str) -> set[str]:
+        visited: set[str] = set()
+        pending = list(owners.get(slug, ()))
+        while pending:
+            parent = pending.pop()
+            if parent not in visited:
+                visited.add(parent)
+                pending.extend(owners.get(parent, ()))
+        return visited
+
+    # A nested module belongs to its service's group, never two rendered groups.
+    roots = {slug for slug in candidates if not (ancestors(slug) - {slug}) & candidates}
+    clusters = {slug: {slug} for slug in roots}
+    for slug in sorted(slugs):
+        reachable = (ancestors(slug) | {slug}) & roots
+        if len(reachable) == 1:
+            clusters[next(iter(reachable))].add(slug)
+    return {root: members for root, members in clusters.items() if len(members) > 1}
 
 
 def _node_line(wiki_dir: Path, page: Page, indent: str) -> str:

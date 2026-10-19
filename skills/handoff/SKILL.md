@@ -34,6 +34,11 @@ exact diagnostics and uncertainty. Run the smallest sufficient checks; reuse
 results while inputs and environment match, then stop. For release decisions,
 apply `references/concept.md` (Release Decisions).
 
+Apply `references/concept.md` (Engineering Writing) to replies, authored
+documents and helper prompts: short technical statements, compact sections,
+no duplicated context, and no loss of requirements, exact diagnostics,
+uncertainty or sources. Keep required schema; link shared context.
+
 1. Verify source and destination roles exist under `<wiki_dir>/agentops/agents/`.
 2. Link the source session when available.
 3. Summarize facts and evidence. Exclude raw logs, chain-of-thought, secrets,
