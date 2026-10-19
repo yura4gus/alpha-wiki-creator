@@ -278,7 +278,7 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | DOC-001 | P0 | IN_REVIEW | Enforce finite canonical documents and bidirectional change records. | Fix NUL-delimited Git paths and custom wiki/index slugs; validate record/check, explicit registration, ownership hierarchy, and meaningful journal records. | Regression tests and cross-platform lifecycle must pass on the current implementation. Existing broad worktree remains unpublished; no new release authorized by this task. | GOV-001 |
 | GOV-003 | P1 | READY | Define idea-to-task promotion without document proliferation. | Keep hypotheses in this roadmap; require owner/outcome/acceptance/dependency before READY; create AgentOps task files only for an activated wave. | No one-file-per-idea backlog; active wave can be projected deterministically when needed. | GOV-002 |
 | OPS-001 | P0 | IN_REVIEW | Attribute hosted CI and Pages correctly. | New 12fd58d plugin-ci run 39271869745 and docs-pages 39271869737 failed before execution. Check annotation confirms GitHub account billing lock; main is unprotected. | Hosted results are not green. Existing local/package publication succeeded independently under actual branch rules. Owner must restore GitHub Actions billing to rerun hosted CI/docs deployment. | GOV-001 |
-| GOV-004 | P1 | DONE | Finish the single-contract/config-schema migration. | Isolated codex/gov-004-contract-schema from 39a1854; one maintained AGENTS.md, a native Claude import adapter, config-backed type evolution and preservation of existing user files. | Local L2: 336 tests, smoke PASS, audit READY and native fresh/brownfield contract discovery; see section 22 for scope and Claude startup limitation. Unreleased; no AgentOps/nav migration or publication is implied. | Published 0.7.1 base |
+| GOV-004 | P1 | DONE | Finish the single-contract/config-schema migration. | Published in v0.8.0 at 7854cb5: one maintained AGENTS.md, a native Claude import adapter, config-backed type evolution and preservation of existing user files. | Clean public checkout: 354 tests, smoke PASS, audit READY; installed Codex package verified. See sections 22 and 26 for native discovery, Claude startup limitation and release evidence. No new AgentOps behavior is included. | Published 0.7.1 base |
 
 ## 9. Wave 1 - Runtime, Workflow, And Trust
 
@@ -334,8 +334,8 @@ pilot exposes a data-loss, security, install, or core lifecycle failure.
 | EVI-005 | P2 | CANDIDATE | Add small/medium/large context profiles. | Measured context cost or truncation harms onboarding; profiles preserve answer quality. | PILOT-002 |
 | UPG-001 | P1 | DONE | Recover missing configured hooks without overwriting user hooks. | Published 0.7.1 at 45b590c from the isolated codex/upg-001-hook-recovery branch; existing hooks are not overwritten and unchanged runtime files are not rewritten. | Clean public clone: 309 tests, smoke PASS, audit READY; downloaded source checksum verified. Installed/enabled Codex 0.7.1+codex.local-20261019163734 has 16 skills and matching runtime assets. Broader modified-managed-tool detection remains outside this bounded acceptance. See section 21. | RUN-001, REL-002 |
 | GPH-001 | P1 | IN_REVIEW | Close remaining graph quality gaps from real projects. | Local folder-navigation slice GPH-001.1 is implemented separately below. Mixed-color export regressions pass; broader real-project layout/readability acceptance is still pending. | PILOT-001 |
-| GPH-001.1 | P1 | DONE | Formalize folder navigation without weakening entity checks. | Keep _index.md searchable/linkable/exported, require title/unique slug, preserve entity/link/dependency validation, and resolve vault-relative catalog paths to stable graph identities. | Local L2: 348 tests revalidated after worktree recovery; see section 23. Broader visual evidence is separate in section 24. | GOV-004 local acceptance |
-| GPH-001.2 | P1 | DONE | Verify real graph rendering and correct observed export defects. | Parse/render the actual Alpha-Wiki corpus, repair Mermaid arrows, group explicit ownership under services or standalone modules, and align security-document colors. | Local L2: 352 tests; real Mermaid/Graphviz renders retain 31 nodes/57 edges; desktop/mobile HTML links pass; see section 24. No live Obsidian UI or external-project acceptance is implied. | GOV-004, GPH-001.1 |
+| GPH-001.1 | P1 | DONE | Formalize folder navigation without weakening entity checks. | Published in v0.8.0 at 7854cb5: keep _index.md searchable/linkable/exported, require title/unique slug, preserve entity/link/dependency validation, and resolve vault-relative catalog paths to stable graph identities. | Clean public checkout: 354 tests; release/install evidence in section 26. Broader visual evidence is separate in section 24. | GOV-004 |
+| GPH-001.2 | P1 | DONE | Verify real graph rendering and correct observed export defects. | Published in v0.8.0 at 7854cb5: repair Mermaid arrows, group explicit ownership under services or standalone modules, and align security-document colors. | Clean public checkout: 354 tests. Real Mermaid/Graphviz pilot retains 31 nodes/57 edges; desktop/mobile HTML links pass; see sections 24 and 26. No live Obsidian UI or external-project acceptance is implied. | GOV-004, GPH-001.1 |
 | V1-001 | P1 | READY | Decide v1.0 from evidence, not feature count. | Two pilots pass core journey; release/install receipts are repeatable; docs are honest; no open P0. | All Wave 3 P1 required items |
 
 ## 12. Wave 4 - Optional Integrations
@@ -1275,3 +1275,41 @@ The four existing optional skills receive only shared writing guidance; their
 workflow behavior stays unchanged. Primary unfinished work is preserved outside
 this candidate. Public main and global plugin stay at 0.7.1. No commit, push,
 tag, deploy or public release was requested or performed in this pass.
+
+## 26. Release 0.8.0 Execution
+
+Date: 2026-10-20. The user authorized commit, push, release and Codex upgrade
+after the local candidate acceptance above. Release source is
+7854cb573dc6af0372b732e90828eeb1fd5b5f5e; annotated tag v0.8.0 points to it.
+The later documentation receipt does not move that tag.
+
+Release: https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.8.0
+
+| Check | Observed result |
+|---|---|
+| Source publication | Normal fast-forward push to public main using yura4gus; clean GitHub checkout contains 7854cb5 |
+| Full tests | Working source 354 passed in 173.69s; public checkout 354 passed in 192.38s |
+| Lifecycle | Public and installed-package release_smoke PASS; graph/HTML exports, ingest/query/status/review and document journal checks pass |
+| Package audit | READY, 8 pass, 0 warn, 0 fail |
+| Published artifact | alpha_wiki-0.8.0.tar.gz downloaded from the Release matches the local source build; private maintenance state excluded |
+| Codex installation | Enabled alpha-wiki@plugins-cli, version 0.8.0+codex.local-20261019220334, 16 skills; zero managed standalone/legacy duplicates |
+| Installed bytes | All 16 transformed skills plus tools/assets/references match public release code in the stable plugin directory and native cache |
+| Actual project launcher | Fresh installed-package project: Codex doctor 25 pass, 0 warn, 0 fail; dependencies isolated outside the product environment |
+| Preservation | All 370 primary tracked/untracked nonignored paths retain their original content/modes; primary branch remains parked at 39a1854 with unfinished work |
+
+Source artifact SHA-256:
+15e23d15b421078b603d90ca507255c624e3a655fcc5392c58fbb27e6810771d.
+Private primary/plugin backups and verification evidence are retained outside
+the repository under the local Alpha-Wiki recovery directory, never uploaded.
+
+Hosted checks remain separate. plugin-ci run 39331604931 and docs-pages run
+39331604929 did not execute: "The job was not started because your account is
+locked due to a billing issue." Pages deploy was skipped. These are not green
+CI/deployment receipts; the repository main branch is unprotected. The owner
+must restore GitHub Actions billing before rerunning hosted checks.
+
+The release includes GOV-004, GPH-001.1/2 and WF-004 writing guidance, not new
+AgentOps behavior. Existing project runtimes, user contracts and Obsidian
+settings were not globally migrated. Start a new Codex task for the updated
+skills. Ratex pilot, external-corpus adoption, live-model writing compliance
+and live Obsidian layout remain separate work; no Ratex pilot began here.
