@@ -49,3 +49,7 @@
 ## [2026-10-20] document-update | Prepare authorized 0.8.0 release from the verified GOV/GPH and writing candidate; align current installation and migration documentation, preserve historical candidate receipts, exclude new AgentOps behavior and preserve unfinished primary work | documents=`README.md`, `CHANGELOG.md`, `docs/README.md`, `docs/quickstart.md`, `wiki/specs/alpha-wiki-init-operation.md` | change=88bf26523fb9bbd43809
 
 ## [2026-10-20] document-update | Record v0.8.0 source/tag/Release publication, 354 public tests, downloaded artifact hash and enabled 16-skill Codex installation; preserve 370 primary paths and distinguish GitHub billing-blocked CI/Pages from passing local/runtime evidence | documents=`docs/roadmap-execution.md` | change=57552193bdc39773840c
+
+## [2026-10-29] document-update | Prepare authorized 0.8.1 hook-repair release: preserve dirty primary, add explicit known-adapter repair, configured-command doctor checks, bounded lifecycle and native OpenCode installer; publication and installation receipts remain pending | documents=`README.md`, `CHANGELOG.md`, `docs/quickstart.md`, `docs/roadmap-execution.md` | change=6fd85c6c162eb6fa0588
+
+## [2026-10-29] document-update | Record 0.8.1 local acceptance: 402 full and 91 final-scope tests, release smoke PASS, audit READY, repaired Core lifecycle commands, preserved project evidence and observed GitHub Actions billing blocker | documents=`docs/roadmap-execution.md` | change=ff92ae1a05c422801381

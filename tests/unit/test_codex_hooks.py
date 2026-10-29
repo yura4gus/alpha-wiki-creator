@@ -2,7 +2,10 @@ import importlib.util
 import json
 import subprocess
 import sys
+import shutil
 from pathlib import Path
+
+import pytest
 
 
 HOOK_PATH = Path(__file__).resolve().parents[2] / "assets" / "codex-hooks" / "alpha_wiki_hook.py"
@@ -10,6 +13,43 @@ SPEC = importlib.util.spec_from_file_location("alpha_wiki_hook", HOOK_PATH)
 assert SPEC and SPEC.loader
 HOOK = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(HOOK)
+
+
+@pytest.mark.parametrize("command", ["cat wiki/index.md", "rg title wiki/", "git diff -- wiki/index.md", "sed -n '1,10p' wiki/index.md"])
+def test_read_only_wiki_calls_do_not_refresh(command):
+    assert not HOOK._touches_wiki({"tool_name": "Bash", "tool_input": {"command": command}}, "wiki")
+
+
+@pytest.mark.parametrize("command", ["cat source.md > wiki/index.md", "cat wiki/index.md; touch wiki/new.md", "sed -i '' s/old/new/ wiki/index.md"])
+def test_wiki_shell_writes_still_refresh(command):
+    assert HOOK._touches_wiki({"tool_name": "Bash", "tool_input": {"command": command}}, "wiki")
+
+
+@pytest.mark.parametrize("event", ["session-start", "subagent-start", "pre-tool", "post-tool", "session-end"])
+@pytest.mark.parametrize("payload", ["{broken", "[]", '{"cwd":"/missing-worktree","tool_input":{"command":"pwd"}}'])
+@pytest.mark.parametrize("interpreter", ["python3", "/usr/bin/python3"])
+def test_all_events_run_with_path_python_without_product_dependencies(tmp_path: Path, event, payload, interpreter):
+    python = shutil.which(interpreter)
+    if not python:
+        pytest.skip(f"{interpreter} is unavailable")
+    hook = tmp_path / ".codex/hooks/alpha_wiki_hook.py"
+    hook.parent.mkdir(parents=True)
+    shutil.copyfile(HOOK_PATH, hook)
+    # No wiki or runtime: startup reports missing context, tool events do no work.
+    result = subprocess.run([python, str(hook), event], input=payload,
+                            cwd=tmp_path, capture_output=True, text=True, timeout=5)
+    assert result.returncode == 0, result.stderr
+    assert "hook skipped" not in result.stdout
+
+
+@pytest.mark.parametrize("error", [subprocess.TimeoutExpired("runtime", 1), OSError("runtime missing")])
+def test_runtime_launch_errors_are_reported_without_crashing(tmp_path, monkeypatch, error):
+    def fail(*args, **kwargs):
+        raise error
+    monkeypatch.setattr(HOOK.subprocess, "run", fail)
+    result = HOOK._run(tmp_path, ["-m", "tools.lint"], timeout=1)
+    assert result.returncode in {124, 127}
+    assert result.stderr
 
 
 def test_codex_hook_detects_source_wiki_write():

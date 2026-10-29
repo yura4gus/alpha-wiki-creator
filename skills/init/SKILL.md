@@ -36,7 +36,7 @@ Create the smallest safe Alpha-Wiki runtime that can grow over time: immutable r
 ## Workflow
 
 For a runtime-only upgrade of an existing wiki, run
-`UV_PROJECT_ENVIRONMENT="<runtime_root>/.venv" uv run --project <runtime_root> --directory <runtime_root> --no-dev python -m scripts.bootstrap_cli --target <absolute-project> --runtime-only`.
+`UV_PROJECT_ENVIRONMENT="<runtime_root>/.venv" uv run --project <runtime_root> --directory <runtime_root> --no-dev python -m scripts.bootstrap_cli --target <absolute-project> --runtime-only`. Add `--refresh-hooks` only for a requested hook repair; it updates exact known legacy Codex adapters and preserves custom scripts. Preview with `--dry-run` first.
 Use `--dry-run` to preview it. This does not regenerate schema, agent contracts,
 wiki documents, CI settings, or hook routing. Keep full bootstrap for initial
 setup or an explicitly requested broader reconfiguration.

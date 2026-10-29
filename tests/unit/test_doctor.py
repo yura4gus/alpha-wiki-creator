@@ -11,6 +11,57 @@ from scripts.install_codex import install_codex
 from tools.doctor import cli, doctor_report, run_doctor
 
 
+def test_hook_smoke_uses_configured_interpreter_and_wiki_path(tmp_path, monkeypatch):
+    import subprocess
+    from tools.doctor import _check_codex_hook_runtime
+    project = _bootstrap_project(tmp_path)
+    path = project / ".codex/hooks.json"
+    routing = json.loads(path.read_text())
+    for event in ("PreToolUse", "PostToolUse"):
+        hook = routing["hooks"][event][0]["hooks"][0]
+        hook["command"] = hook["command"].replace("python3 ", "/custom/bin/python3 ").replace('"wiki"', '".wiki"')
+    path.write_text(json.dumps(routing))
+    calls = []
+    def run(command, **kwargs):
+        calls.append(command)
+        return subprocess.CompletedProcess(command, 0, "", "")
+    monkeypatch.setattr(subprocess, "run", run)
+    check = _check_codex_hook_runtime(project, project / ".codex/hooks/alpha_wiki_hook.py")
+    assert check.status == "PASS"
+    assert len(calls) == 2
+    assert all(command[0] == "/custom/bin/python3" and command[-1] == ".wiki" for command in calls)
+
+
+@pytest.mark.parametrize("exit_code,stdout,stderr", [
+    (1, "", "ImportError: cannot import name 'UTC' from 'datetime'"),
+    (0, '{"systemMessage":"Alpha-Wiki hook skipped after an unexpected TypeError."}', ""),
+])
+def test_hook_smoke_reports_import_errors_and_advisory_failures(tmp_path, monkeypatch, exit_code, stdout, stderr):
+    import subprocess
+    from tools.doctor import _check_codex_hook_runtime
+    project = _bootstrap_project(tmp_path)
+    monkeypatch.setattr(subprocess, "run", lambda command, **kwargs:
+                        subprocess.CompletedProcess(command, exit_code, stdout, stderr))
+    check = _check_codex_hook_runtime(project, project / ".codex/hooks/alpha_wiki_hook.py")
+    assert check.status == "FAIL"
+    assert "PreToolUse via python3" in check.message
+    assert "--refresh-hooks" in check.action
+
+
+def test_hook_smoke_does_not_execute_custom_shell_wrappers(tmp_path, monkeypatch):
+    import subprocess
+    from tools.doctor import _check_codex_hook_runtime
+    project = _bootstrap_project(tmp_path)
+    path = project / ".codex/hooks.json"
+    routing = json.loads(path.read_text())
+    routing["hooks"]["PreToolUse"][0]["hooks"][0]["command"] = "sh -c 'touch /tmp/should-not-run'"
+    path.write_text(json.dumps(routing))
+    def run(*args, **kwargs):
+        pytest.fail("custom wrapper must not run")
+    monkeypatch.setattr(subprocess, "run", run)
+    assert _check_codex_hook_runtime(project, project / ".codex/hooks/alpha_wiki_hook.py").status == "WARN"
+
+
 @pytest.mark.parametrize("value", ["null", "{}"])
 def test_doctor_reports_invalid_entity_list_without_traceback(tmp_path, value):
     from tools.doctor import _check_project_config

@@ -62,11 +62,15 @@ def cli() -> None:
     parser.add_argument("--upgrade", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--runtime-only", action="store_true", help="Update managed runtime/tools and restore missing configured hooks; preserve existing hooks, schema, contracts, wiki, and routing.")
+    parser.add_argument("--refresh-hooks", action="store_true", help="With --runtime-only, refresh configured Codex adapters with a known legacy checksum; preserve custom hooks and routing.")
     args = parser.parse_args()
+    if args.refresh_hooks and not args.runtime_only:
+        parser.error("--refresh-hooks requires --runtime-only")
 
     if args.runtime_only:
         try:
-            report = upgrade_runtime_assets(args.target.expanduser(), wiki_dir=args.wiki_dir, dry_run=args.dry_run)
+            report = upgrade_runtime_assets(args.target.expanduser(), wiki_dir=args.wiki_dir, dry_run=args.dry_run,
+                                            refresh_hooks=args.refresh_hooks)
         except ValueError as exc:
             parser.error(str(exc))
         print(report.to_markdown())
