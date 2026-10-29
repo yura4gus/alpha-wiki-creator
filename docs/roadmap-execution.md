@@ -1334,8 +1334,8 @@ preserves this existing adapter and therefore does not repair the project.
 | HOOK-005 | Native OpenCode v2 installer and integrity checks | 16 skills/commands, repeat safety and user-modification preservation |
 | HOOK-006 | Publish and upgrade Codex, Claude and OpenCode | Record source/tag/Release, local gates and installed versions after execution |
 
-Release checks and publication/install receipts are recorded below after they
-complete. No hosted CI or live-agent acceptance is inferred from local tests.
+All HOOK-001 through HOOK-006 tasks are DONE within the acceptance below.
+No hosted CI or live-agent reasoning acceptance is inferred from local tests.
 
 Local acceptance before publication:
 
@@ -1355,3 +1355,37 @@ Local acceptance before publication:
 - GitHub's prior plugin-ci run 39332542573 never started its steps: annotation
   states “The job was not started because your account is locked due to a billing
   issue.” Local acceptance does not claim hosted CI/Pages success.
+
+
+Publication and installation receipt:
+
+- Fix commit `97ff78d35658bc65f8beb1d017d42dd021883cb7`; PR #2 merged into public
+  main as `6ea1555f411e8d2ca4d31c69eced1ea25517b63a`.
+- Annotated tag `v0.8.1` points to that merge. GitHub Release published on
+  2026-10-29 with source distribution and wheel:
+  https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.8.1
+- Downloaded source archive SHA-256 matches the local build:
+  `2d02bd76da8afd89659f5efa30398df3c2499d90ae709b1e559f6a20b95df18d`.
+  Its clean extraction passed the same 91 changed-scope tests.
+- Codex `alpha-wiki@plugins-cli` is installed/enabled at
+  `0.8.1+codex.local-20261029134737`, with 16 skills and no managed standalone
+  duplicates. Installed doctor reports 21 pass, 3 warnings, 0 failures for the
+  originally reported Core worktree.
+- Claude `alpha-wiki@alpha` is installed/enabled at `0.8.1`; its cache records
+  source merge `6ea1555f411e8d2ca4d31c69eced1ea25517b63a` and 16 skills.
+- OpenCode v2.1.4 has Alpha-Wiki 0.8.1 with 16 native skills and 16 commands;
+  integrity checks pass and a repeated installation plans zero writes. Installed
+  doctor reports 17 pass, 2 warnings, 0 failures for the same Core worktree.
+- Main Core also passed all five actual lifecycle commands, with SessionEnd at
+  1.26 seconds. An isolated real wiki write rebuilt the graph; read-only calls
+  left graph bytes unchanged. All six observed UTC-regression copies are repaired.
+- The repository's own Codex adapter is synchronized with the released asset.
+  Four local Claude session scripts were missing in the linked release checkout
+  when Claude reused primary local settings; restore the bundled scripts without
+  changing routing. These repository adapters do not change the release assets.
+- Installation backups: `~/.codex/backups/alpha-wiki-before-081-20261029`.
+  Project runtime originals: `/tmp/alpha-wiki-081-project-backups`.
+- Current PR CI also failed before any step: run 40884991421 has the same billing
+  lock annotation. Source/Release/client rollout is complete; GitHub Actions and
+  Pages remain externally blocked by the account billing state. Restart existing
+  agent sessions to load updated skill instructions.

@@ -53,3 +53,5 @@
 ## [2026-10-29] document-update | Prepare authorized 0.8.1 hook-repair release: preserve dirty primary, add explicit known-adapter repair, configured-command doctor checks, bounded lifecycle and native OpenCode installer; publication and installation receipts remain pending | documents=`README.md`, `CHANGELOG.md`, `docs/quickstart.md`, `docs/roadmap-execution.md` | change=6fd85c6c162eb6fa0588
 
 ## [2026-10-29] document-update | Record 0.8.1 local acceptance: 402 full and 91 final-scope tests, release smoke PASS, audit READY, repaired Core lifecycle commands, preserved project evidence and observed GitHub Actions billing blocker | documents=`docs/roadmap-execution.md` | change=ff92ae1a05c422801381
+
+## [2026-10-29] document-update | Close HOOK-001 through HOOK-006 with merged 0.8.1 source/tag/Release, matching downloaded archive and 91 public-artifact checks, enabled Codex/Claude plus OpenCode installs, six repaired Core copies and synchronized repository adapters; preserve observed billing-blocked CI/Pages limitation | documents=`docs/roadmap-execution.md` | change=50e08a9af58b94d00894
