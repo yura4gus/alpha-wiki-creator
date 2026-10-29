@@ -6,6 +6,7 @@ import argparse
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -64,6 +65,23 @@ def _tool_text(payload: dict[str, Any]) -> str:
 
 
 def _touches_wiki(payload: dict[str, Any], wiki_dir: str) -> bool:
+    tool_input = payload.get("tool_input", {})
+    command = tool_input.get("command") if isinstance(tool_input, dict) else None
+    if isinstance(command, str):
+        try:
+            words = shlex.split(command)
+        except ValueError:
+            words = []
+        # Skip simple read-only shell calls. Compound/unknown commands remain
+        # conservative because they may also write a source page.
+        if words and not re.search(r"[;&|<>\n`]|\$\(", command):
+            executable = Path(words[0]).name
+            if executable in {"cat", "rg", "grep", "ls", "head", "tail", "wc", "pwd"}:
+                return False
+            if executable == "sed" and not any(re.match(r"^-[^-]*i", word) for word in words[1:]):
+                return False
+            if executable == "git" and len(words) > 1 and words[1] in {"status", "diff", "show", "log"} and not any(word.startswith("--output") for word in words):
+                return False
     normalized = _tool_text(payload).replace("\\\\", "/")
     token = wiki_dir.strip("/") + "/"
     return re.search(re.escape(token) + r"(?!graph/)", normalized) is not None
@@ -160,7 +178,7 @@ def _session_end(project: Path, wiki_dir: str) -> None:
     lint = _run(
         project,
         ["-m", "tools.lint", "--wiki-dir", wiki_dir, "--config", ".alpha-wiki/config.yaml", "--suggest"],
-        timeout=3,
+        timeout=1,
     )
     governance = _run(
         project,
@@ -173,7 +191,7 @@ def _session_end(project: Path, wiki_dir: str) -> None:
             "--config",
             ".alpha-wiki/config.yaml",
         ],
-        timeout=4,
+        timeout=1,
     )
     errors = lint.stdout.count("ERROR")
     warnings = lint.stdout.count("WARN")

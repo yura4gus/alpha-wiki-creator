@@ -4,6 +4,27 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+## [0.8.1] - 2026-10-29
+
+### Codex Hook Repair
+
+- Add explicit runtime-only `--refresh-hooks` for configured Codex adapters with
+  known legacy checksums, including the observed `datetime.UTC` import failure
+  on macOS Python 3.9. Preserve custom scripts, routing, schema and project memory.
+- Check configured hook interpreters, arguments and advisory failures in doctor;
+  do not substitute the doctor's Python or execute unknown shell wrappers.
+- Skip graph refresh for simple read-only wiki commands. Bound session-end checks
+  to fit older three-second routing; new routing allows ten seconds.
+- Cover five lifecycle events, malformed payloads, stale worktrees, runtime launch
+  failures, explicit upgrade, zero-write preview and repeat safety.
+
+### OpenCode v2 Installation
+
+- Publish the existing native skill/command adapter and checksum-managed installer.
+  Add `doctor --platform opencode` with installed-file integrity checks.
+- Install 16 skills and commands without modifying user config, models,
+  permissions or adding event-hook automation.
+
 ## [0.8.0] - 2026-10-20
 
 ### Engineering Writing (WF-004 Follow-Up)

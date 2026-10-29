@@ -289,6 +289,40 @@ modification times. This recovery behavior is available in 0.7.1 (UPG-001);
 0.7.0 does not include it. Updating a plugin does not silently upgrade existing
 projects: run the explicit runtime-only command against each intended target.
 
+### Repair Stale Codex Hooks (0.8.1)
+
+A global plugin update does not replace an existing project adapter. Older copies
+may fail at `from datetime import UTC` when `python3` resolves to macOS Python
+3.9. The current adapter needs no product dependencies and launches deterministic
+tools through the isolated project runtime.
+
+From the installed Alpha-Wiki runtime, preview and apply:
+
+```bash
+uv run python -m scripts.bootstrap_cli --target /absolute/project --runtime-only --refresh-hooks --dry-run
+uv run python -m scripts.bootstrap_cli --target /absolute/project --runtime-only --refresh-hooks
+```
+
+`--refresh-hooks` requires `--runtime-only`. It replaces only explicitly configured
+Codex scripts whose exact checksum matches a supported legacy adapter. Custom
+scripts and hook routing remain unchanged; unknown adapters are reported for
+explicit review/merge. Default runtime-only behavior remains unchanged. Repeating
+the repair produces zero writes. Review changes to routing separately with `/hooks`.
+
+Run the installed doctor from its own directory when project tools are stale:
+
+```bash
+uv run --project /absolute/alpha-wiki-runtime --directory /absolute/alpha-wiki-runtime --no-dev python -m tools.doctor --project-dir /absolute/project --platform codex
+```
+
+Doctor executes recognized configured tool-hook commands with their configured
+interpreter and wiki argument. It reports interpreter/import errors and advisory
+adapter failures. Custom shell wrappers are not executed automatically. After the
+project upgrade, use `python3 .alpha-wiki/run.py -m tools.doctor --platform codex`.
+
+For OpenCode v2, install with `python3 scripts/install_opencode.py --upgrade` and
+verify with `doctor --platform opencode`. See the [adapter contract](../references/opencode-adapter.md).
+
 Keep four layers separate: canonical specifications/contracts maintained in
 place; immutable source evidence; unaccepted research/candidates; and generated
 wiki/graph/HTML projections. A maintained wiki page is not a competing API spec.

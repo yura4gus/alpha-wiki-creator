@@ -1,6 +1,7 @@
 """Render pipeline: InterviewConfig → target file tree."""
 from __future__ import annotations
 import json
+import hashlib
 import shlex
 import shutil
 from dataclasses import dataclass, field
@@ -339,7 +340,8 @@ def _copy_runtime(target: Path) -> None:
     (runtime / ".gitignore").write_text(".venv/\nuv.lock\n")
 
 
-def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: bool = False) -> BootstrapReport:
+def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: bool = False,
+                           refresh_hooks: bool = False) -> BootstrapReport:
     """Update managed runtime; recover missing routed hooks without replacing hooks."""
     from tools.doctor import _resolve_wiki_dir
 
@@ -359,7 +361,9 @@ def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: b
         (ASSETS / "runtime/run.py", target / ".alpha-wiki/run.py"),
         (ASSETS / "runtime/pyproject.toml", target / ".alpha-wiki/runtime/pyproject.toml"),
     ])
-    hooks = _missing_configured_hooks(target, report)
+    hooks = _missing_configured_hooks(target, report, refresh_hooks=refresh_hooks)
+    previous_hooks = {destination: destination.read_bytes() for _, destination in hooks
+                      if destination.is_file()}
     writes = [(destination, source.read_bytes()) for source, destination in copies]
     writes.append((target / ".alpha-wiki/runtime/.gitignore", b".venv/\nuv.lock\n"))
     writes = [(path, content) for path, content in writes
@@ -373,6 +377,13 @@ def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: b
     for destination, content in writes:
         destination.parent.mkdir(parents=True, exist_ok=True)
         if destination in hook_paths:
+            if destination in previous_hooks:
+                if destination.is_symlink() or destination.read_bytes() != previous_hooks[destination]:
+                    report.skipped.append(BootstrapConflict(str(destination), "hook changed after planning; preserved"))
+                    continue
+                destination.write_bytes(content)
+                report.written.append(str(destination))
+                continue
             # Exclusive creation preserves a user file created after planning too.
             try:
                 with destination.open("xb") as stream:
@@ -387,7 +398,8 @@ def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: b
     return report
 
 
-def _missing_configured_hooks(target: Path, report: BootstrapReport) -> list[tuple[Path, Path]]:
+def _missing_configured_hooks(target: Path, report: BootstrapReport,
+                              *, refresh_hooks: bool = False) -> list[tuple[Path, Path]]:
     """Read project routing as data, never execute or expand a configured command."""
     configured: set[Path] = set()
     for relative in (".claude/settings.json", ".claude/settings.local.json", ".codex/hooks.json"):
@@ -421,6 +433,15 @@ def _missing_configured_hooks(target: Path, report: BootstrapReport) -> list[tup
             source = (ASSETS / "hooks" / path.name if path.suffix == ".sh"
                       else ASSETS / "codex-hooks/alpha_wiki_hook.py")
             missing.append((source, path))
+        elif refresh_hooks and path.name == "alpha_wiki_hook.py":
+            source = ASSETS / "codex-hooks/alpha_wiki_hook.py"
+            if path.read_bytes() == source.read_bytes():
+                continue
+            known = json.loads((ASSETS / "codex-hooks/legacy-sha256.json").read_text())
+            if hashlib.sha256(path.read_bytes()).hexdigest() in known:
+                missing.append((source, path))
+            else:
+                report.skipped.append(BootstrapConflict(str(path), "custom or unknown Codex hook; review/merge explicitly"))
     return missing
 
 

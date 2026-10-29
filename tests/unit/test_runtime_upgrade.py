@@ -1,10 +1,45 @@
 from pathlib import Path
 import json
+import shutil
 
 import pytest
 
 from scripts.bootstrap import upgrade_runtime_assets
 from scripts.bootstrap_cli import bootstrap_project
+
+
+def test_refresh_known_legacy_hook_is_explicit_repeatable_and_preserves_routing(tmp_path: Path):
+    bootstrap_project(tmp_path, hooks="session")
+    hook = tmp_path / ".codex/hooks/alpha_wiki_hook.py"
+    fixture = Path(__file__).parents[1] / "fixtures/legacy-codex-hook.py"
+    shutil.copyfile(fixture, hook)
+    hook.chmod(0o700)
+    before = snapshot(tmp_path)
+    assert not upgrade_runtime_assets(tmp_path).written
+    assert snapshot(tmp_path) == before
+    preview = upgrade_runtime_assets(tmp_path, refresh_hooks=True, dry_run=True)
+    assert preview.planned == [str(hook)]
+    assert snapshot(tmp_path) == before
+    applied = upgrade_runtime_assets(tmp_path, refresh_hooks=True)
+    assert applied.written == preview.planned
+    assert b"from datetime import UTC" not in hook.read_bytes()
+    assert hook.stat().st_mode & 0o777 == 0o700
+    after = snapshot(tmp_path)
+    assert not upgrade_runtime_assets(tmp_path, refresh_hooks=True).written
+    assert snapshot(tmp_path) == after
+    assert {key: value for key, value in after.items() if key != str(hook.relative_to(tmp_path))} == {
+        key: value for key, value in before.items() if key != str(hook.relative_to(tmp_path))}
+
+
+def test_refresh_preserves_custom_hook_even_with_legacy_import(tmp_path: Path):
+    bootstrap_project(tmp_path, hooks="session")
+    hook = tmp_path / ".codex/hooks/alpha_wiki_hook.py"
+    hook.write_text("from datetime import UTC\n# User-owned behavior.\n")
+    before = snapshot(tmp_path)
+    report = upgrade_runtime_assets(tmp_path, refresh_hooks=True)
+    assert not report.written
+    assert snapshot(tmp_path) == before
+    assert any("custom or unknown" in conflict.reason for conflict in report.skipped)
 
 
 def test_runtime_upgrade_preserves_user_schema_contracts_and_hook_routing(tmp_path: Path):

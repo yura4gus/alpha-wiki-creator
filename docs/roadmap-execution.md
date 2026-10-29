@@ -1313,3 +1313,45 @@ AgentOps behavior. Existing project runtimes, user contracts and Obsidian
 settings were not globally migrated. Start a new Codex task for the updated
 skills. Ratex pilot, external-corpus adoption, live-model writing compliance
 and live Obsidian layout remain separate work; no Ratex pilot began here.
+
+
+## 27. Release 0.8.1 - Codex Hook Repair
+
+Date: 2026-10-29. Isolated branch: `fix/codex-hook-upgrade-081`, base `48b0889`.
+The dirty primary checkout is outside this release boundary.
+
+Observed failure: project hook routing invokes macOS Python 3.9.6; the legacy
+Core adapter imports `datetime.UTC`, so both tool hooks exit 1 before dispatch.
+The global caveman hook exits 0. Updating the global Alpha-Wiki package alone
+preserves this existing adapter and therefore does not repair the project.
+
+| Task | Result | Acceptance |
+| --- | --- | --- |
+| HOOK-001 | Reproduce the Python 3.9 import failure and retain the exact legacy fixture | Before repair: exit 1; after repair: five lifecycle events start on system Python |
+| HOOK-002 | Explicit checksum-based configured-adapter refresh | Preview writes nothing; custom hooks/routing stay unchanged; repeat writes nothing |
+| HOOK-003 | Doctor uses actual configured interpreter and arguments | Import errors and advisory failures fail; custom wrappers are reported without execution |
+| HOOK-004 | Bound maintenance and avoid read-only refresh | Read commands do no graph work; wiki writes still refresh; session-end fits old routing |
+| HOOK-005 | Native OpenCode v2 installer and integrity checks | 16 skills/commands, repeat safety and user-modification preservation |
+| HOOK-006 | Publish and upgrade Codex, Claude and OpenCode | Record source/tag/Release, local gates and installed versions after execution |
+
+Release checks and publication/install receipts are recorded below after they
+complete. No hosted CI or live-agent acceptance is inferred from local tests.
+
+Local acceptance before publication:
+
+- Full suite: 402 tests passed. Final changed-scope rerun: 91 passed.
+- Release smoke PASS: fresh Claude/Codex doctor, ingest/query/status/review,
+  canonical document worker and Mermaid/DOT/HTML exports.
+- Release audit READY: 8 pass, 0 warn, 0 fail. Wiki lint: 0 errors, 0 warnings.
+  Claude marketplace validation and skill frontmatter validation passed.
+- The reported Core worktree now reports doctor 21 pass, 3 warnings, 0 failures;
+  warnings concern pre-existing Claude import, optional governance and wiki links.
+- Five Core worktrees passed all five configured lifecycle commands under system
+  Python 3.9.6. SessionEnd took 1.29-1.76 seconds within existing three-second
+  routing. Read-only wiki calls left generated graph bytes unchanged.
+- Main Core runtime is updated with its existing wiki-engine rstrip customization
+  merged explicitly. Original managed files are backed up outside the checkout.
+  Product configuration, source wiki, raw evidence and hook routing are preserved.
+- GitHub's prior plugin-ci run 39332542573 never started its steps: annotation
+  states “The job was not started because your account is locked due to a billing
+  issue.” Local acceptance does not claim hosted CI/Pages success.

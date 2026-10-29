@@ -2,9 +2,11 @@
 from __future__ import annotations
 
 import importlib.util
+import hashlib
 import json
 import os
 import re
+import shlex
 import shutil
 import subprocess
 import sys
@@ -133,7 +135,10 @@ def run_doctor(
 
     checks.extend(_check_python_and_tools())
     checks.append(_check_project_runtime(project))
-    checks.extend(_check_project_contract(project))
+    contract_checks = _check_project_contract(project)
+    if platform == "opencode":
+        contract_checks = [check for check in contract_checks if check.name == "project instructions"]
+    checks.extend(contract_checks)
     checks.extend(_check_project_config(project, platform))
     checks.extend(_check_wiki(project, wiki, refresh=refresh, platform=platform))
     checks.extend(_check_lint(project, wiki, platform))
@@ -357,6 +362,52 @@ def _check_platform(project_dir: Path, platform: str) -> list[DoctorCheck]:
         checks.extend(_check_claude(project_dir))
     if "codex" in selected:
         checks.extend(_check_codex(project_dir))
+    if "opencode" in selected:
+        checks.extend(_check_opencode())
+    return checks
+
+
+def _check_opencode() -> list[DoctorCheck]:
+    checks: list[DoctorCheck] = []
+    binary = shutil.which("opencode")
+    if not binary:
+        checks.append(DoctorCheck("opencode cli", WARN, "OpenCode CLI not found on PATH", "Install OpenCode v2 and restart the terminal."))
+    else:
+        try:
+            result = subprocess.run([binary, "--version"], capture_output=True, text=True, timeout=10, check=False)
+            version = re.search(r"(\d+)\.\d+", result.stdout)
+            supported = result.returncode == 0 and version is not None and int(version.group(1)) >= 2
+            checks.append(DoctorCheck("opencode cli", PASS if supported else FAIL,
+                                      result.stdout.strip() or result.stderr.strip() or "version unavailable",
+                                      None if supported else "This adapter requires OpenCode v2."))
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            checks.append(DoctorCheck("opencode cli", FAIL, str(exc), "Check the installed OpenCode CLI."))
+    config = Path(os.environ.get("ALPHA_WIKI_OPENCODE_CONFIG_DIR",
+                  str(Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "opencode"))).expanduser().resolve()
+    manifest_path = config / "alpha-wiki/install-manifest.json"
+    action = "Run python3 scripts/install_opencode.py --upgrade from the Alpha-Wiki source checkout."
+    try:
+        manifest = json.loads(manifest_path.read_text())
+        if not isinstance(manifest, dict) or manifest.get("managed_by") != "alpha-wiki-opencode-v1" or not isinstance(manifest.get("files"), dict):
+            raise ValueError("invalid OpenCode install manifest")
+    except (OSError, ValueError) as exc:
+        checks.append(DoctorCheck("opencode adapter", WARN, str(exc), action))
+        return checks
+    expected = {f"skills/alpha-wiki-{op}/SKILL.md" for op in CODEX_SKILLS}
+    expected |= {f"commands/alpha-wiki/{op}.md" for op in CODEX_SKILLS}
+    expected |= {"alpha-wiki/references/concept.md", "alpha-wiki/references/opencode-adapter.md"}
+    bad: list[str] = []
+    for relative in sorted(expected):
+        path = config / relative
+        if (not path.is_file() or path.is_symlink() or config not in path.resolve().parents
+                or hashlib.sha256(path.read_bytes()).hexdigest() != manifest["files"].get(relative)):
+            bad.append(relative)
+    checks.append(DoctorCheck("opencode adapter", FAIL if bad else PASS,
+                              "missing/modified: " + ", ".join(bad) if bad else
+                              f"16 native skills and commands; Alpha-Wiki {manifest.get('base_version', 'unknown')}",
+                              action if bad else None))
+    checks.append(DoctorCheck("opencode automation", PASS,
+                              "explicit deterministic lifecycle; no event-hook or background-worker claim"))
     return checks
 
 
@@ -554,50 +605,70 @@ def _check_codex(project_dir: Path) -> list[DoctorCheck]:
 
 
 def _check_codex_hook_runtime(project_dir: Path, hook_script: Path) -> DoctorCheck:
-    python = shutil.which("python3") or sys.executable
-    stale_cwd = project_dir / ".alpha-wiki" / "missing-hook-cwd"
+    runtime = Path(os.environ.get("ALPHA_WIKI_RUNTIME", Path.home() / "plugins/alpha-wiki")).expanduser()
+    action = (
+        f'Run uv run --project "{runtime}" --directory "{runtime}" --no-dev python '
+        f'-m scripts.bootstrap_cli --target "{project_dir}" --runtime-only --refresh-hooks --dry-run; '
+        "review and apply, then rerun doctor. Review changed hook definitions with /hooks."
+    )
+    routing = json.loads((project_dir / ".codex/hooks.json").read_text())
+    environment = dict(os.environ)
+    # uv prepends the doctor's environment to PATH. Hooks launched by Codex do
+    # not inherit that temporary environment; check the underlying PATH instead.
+    if sys.prefix != sys.base_prefix:
+        own_bin = Path(sys.prefix) / ("Scripts" if os.name == "nt" else "bin")
+        environment["PATH"] = os.pathsep.join(
+            entry for entry in environment.get("PATH", "").split(os.pathsep)
+            if Path(entry).absolute() != own_bin.absolute()
+        )
+    environment.pop("VIRTUAL_ENV", None)
     common = {
-        "cwd": str(stale_cwd),
-        "session_id": "alpha-wiki-doctor",
-        "turn_id": "alpha-wiki-doctor",
-        "permission_mode": "default",
-        "tool_name": "Bash",
+        "cwd": str(project_dir / ".alpha-wiki/missing-hook-cwd"),
+        "session_id": "alpha-wiki-doctor", "turn_id": "alpha-wiki-doctor",
+        "permission_mode": "default", "tool_name": "Bash",
         "tool_use_id": "alpha-wiki-doctor",
         "tool_input": {"command": "git status --short"},
     }
+    checked = 0
     for event, hook_event_name in (("pre-tool", "PreToolUse"), ("post-tool", "PostToolUse")):
-        payload = {**common, "hook_event_name": hook_event_name}
-        try:
-            result = subprocess.run(
-                [python, str(hook_script), event, "--wiki-dir", "wiki"],
-                cwd=project_dir,
-                input=json.dumps(payload),
-                capture_output=True,
-                text=True,
-                check=False,
-                timeout=10,
-            )
-        except (OSError, subprocess.TimeoutExpired) as exc:
-            return DoctorCheck(
-                "codex hook smoke",
-                FAIL,
-                f"could not execute {hook_event_name}: {exc}",
-                "Rerun init/upgrade, then review the refreshed hooks with /hooks.",
-            )
-        if result.returncode != 0:
-            detail = (result.stderr or result.stdout).strip().splitlines()
-            message = detail[-1] if detail else f"exit code {result.returncode}"
-            return DoctorCheck(
-                "codex hook smoke",
-                FAIL,
-                f"{hook_event_name} failed: {message}",
-                "Rerun init/upgrade, then review the refreshed hooks with /hooks.",
-            )
-    return DoctorCheck(
-        "codex hook smoke",
-        PASS,
-        "PreToolUse and PostToolUse survive a stale session cwd",
-    )
+        for group in routing.get("hooks", {}).get(hook_event_name, []):
+            for hook in group.get("hooks", []):
+                if hook.get("type") != "command":
+                    continue
+                try:
+                    parts = shlex.split(hook.get("command", ""))
+                except ValueError:
+                    parts = []
+                aliases = {
+                    str(hook_script), ".codex/hooks/alpha_wiki_hook.py",
+                    "./.codex/hooks/alpha_wiki_hook.py",
+                    "$(git rev-parse --show-toplevel)/.codex/hooks/alpha_wiki_hook.py",
+                }
+                if not (len(parts) in {3, 5} and re.fullmatch(r"python(?:3(?:\.\d+)?)?", Path(parts[0]).name)
+                        and parts[1] in aliases and parts[2] == event
+                        and (len(parts) == 3 or parts[3] == "--wiki-dir")):
+                    return DoctorCheck("codex hook smoke", WARN,
+                                       f"{hook_event_name} custom command was not executed; verify its wrapper manually", action)
+                command = [parts[0], str(hook_script), *parts[2:]]
+                try:
+                    result = subprocess.run(
+                        command, cwd=project_dir, env=environment,
+                        input=json.dumps({**common, "hook_event_name": hook_event_name}),
+                        capture_output=True, text=True, check=False, timeout=10,
+                    )
+                except (OSError, subprocess.TimeoutExpired) as exc:
+                    return DoctorCheck("codex hook smoke", FAIL,
+                                       f"{hook_event_name} via {parts[0]} could not execute: {exc}", action)
+                if result.returncode != 0 or "Alpha-Wiki hook skipped" in result.stdout:
+                    detail = (result.stderr or result.stdout).strip().splitlines()
+                    message = detail[-1] if detail else f"exit code {result.returncode}"
+                    return DoctorCheck("codex hook smoke", FAIL,
+                                       f"{hook_event_name} via {parts[0]} failed: {message}", action)
+                checked += 1
+    if not checked:
+        return DoctorCheck("codex hook smoke", WARN, "No command hooks were available to execute", action)
+    return DoctorCheck("codex hook smoke", PASS,
+                       f"{checked} configured tool hook command(s) survive a stale session cwd")
 
 
 def _marketplace_has_alpha_wiki(path: Path) -> bool:
@@ -618,6 +689,8 @@ def _display_path(path: Path, project_dir: Path) -> str:
 
 
 def _operation_hint(platform: str, operation: str) -> str:
+    if platform == "opencode":
+        return f"/alpha-wiki/{operation}"
     if platform == "codex":
         return f"$alpha-wiki:{operation}"
     if platform == "claude":
@@ -628,7 +701,7 @@ def _operation_hint(platform: str, operation: str) -> str:
 @click.command()
 @click.option("--project-dir", type=click.Path(path_type=Path, exists=True, file_okay=False), default=Path("."), show_default=True)
 @click.option("--wiki-dir", type=click.Path(path_type=Path), help="Override wiki directory. Defaults to config wiki_dir, legacy AGENTS/CLAUDE path metadata, or wiki/.")
-@click.option("--platform", type=click.Choice(["auto", "claude", "codex", "both"]), default="auto", show_default=True)
+@click.option("--platform", type=click.Choice(["auto", "claude", "codex", "opencode", "both"]), default="auto", show_default=True)
 @click.option("--refresh", is_flag=True, help="Rebuild graph artifacts before checking them.")
 @click.option("--strict", is_flag=True, help="Exit nonzero on warnings as well as failures.")
 def cli(project_dir: Path, wiki_dir: Path | None, platform: str, refresh: bool, strict: bool) -> None:

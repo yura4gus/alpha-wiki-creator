@@ -8,6 +8,23 @@ A Claude Code and OpenAI Codex plugin that turns Andrej Karpathy's LLM-Wiki sket
 
 ---
 
+## Hook Repair And OpenCode
+
+Version 0.8.1 repairs known stale Codex adapters without replacing custom hooks.
+The adapter starts on system Python 3.9; deterministic tools keep their isolated
+Python 3.12+ environment. Updating a global plugin does not update project hooks.
+See [project repair](docs/quickstart.md#repair-stale-codex-hooks-081).
+
+OpenCode v2 uses native skills and commands:
+
+```bash
+python3 scripts/install_opencode.py --upgrade --dry-run
+python3 scripts/install_opencode.py --upgrade
+```
+
+The installer preserves modified user files and does not change OpenCode config,
+models or permissions. See [OpenCode adapter](references/opencode-adapter.md).
+
 ## What Alpha-Wiki Is
 
 Alpha-Wiki is repo-native markdown memory for AI agents, developers, and project teams. It keeps project context, architecture notes, decisions, contracts, risks, status, and lightweight graph links in files your team can read, diff, and review.
@@ -21,7 +38,7 @@ Alpha-Wiki is published for real Claude Code and Codex use on active projects.
 Current release program:
 
 - Branch: `main`
-- Release version: [`v0.8.0`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.8.0) (Shared Contract, Graph And Engineering Writing)
+- Release version: [`v0.8.1`](https://github.com/yura4gus/alpha-wiki-creator/releases/tag/v0.8.1) (Codex Hook Repair And OpenCode Installation)
 - Status: source-bound document maintenance and dependency-safe tools; not v1.0
 - Workflows: **12 core + 4 optional AgentOps** (orchestrate, backlog, handoff, release-check)
 - Live docs: https://yura4gus.github.io/alpha-wiki-creator/
