@@ -31,6 +31,34 @@ def test_refresh_known_legacy_hook_is_explicit_repeatable_and_preserves_routing(
         key: value for key, value in before.items() if key != str(hook.relative_to(tmp_path))}
 
 
+@pytest.mark.parametrize("custom", [False, True])
+def test_refresh_claude_post_hook_preserves_routing_and_custom_scripts(tmp_path: Path, custom: bool):
+    bootstrap_project(tmp_path, wiki_dir=".wiki", hooks="session")
+    hook = tmp_path / ".claude/hooks/post-tool-use.sh"
+    repaired = hook.read_bytes()
+    legacy = (Path(__file__).parents[1] / "fixtures/legacy-claude-post-tool-use.sh").read_bytes()
+    hook.write_bytes(legacy.replace(b"WIKI_DIR:-wiki", b"WIKI_DIR:-.wiki")
+                     + (b"\n# User customization.\n" if custom else b""))
+    hook.chmod(0o700)
+    settings = tmp_path / ".claude/settings.local.json"
+    before = snapshot(tmp_path)
+    assert not upgrade_runtime_assets(tmp_path).written
+    preview = upgrade_runtime_assets(tmp_path, refresh_hooks=True, dry_run=True)
+    assert preview.planned == ([] if custom else [str(hook)])
+    assert snapshot(tmp_path) == before
+
+    result = upgrade_runtime_assets(tmp_path, refresh_hooks=True)
+    assert result.written == ([] if custom else [str(hook)])
+    assert hook.stat().st_mode & 0o777 == 0o700
+    assert snapshot(tmp_path)[str(settings.relative_to(tmp_path))] == before[str(settings.relative_to(tmp_path))]
+    if custom:
+        assert snapshot(tmp_path) == before
+        assert any("custom or unknown Claude hook" in entry.reason for entry in result.skipped)
+    else:
+        assert hook.read_bytes() == repaired
+    assert not upgrade_runtime_assets(tmp_path, refresh_hooks=True).written
+
+
 def test_refresh_preserves_custom_hook_even_with_legacy_import(tmp_path: Path):
     bootstrap_project(tmp_path, hooks="session")
     hook = tmp_path / ".codex/hooks/alpha_wiki_hook.py"

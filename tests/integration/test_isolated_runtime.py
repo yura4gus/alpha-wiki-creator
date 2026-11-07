@@ -193,14 +193,18 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     assert "completed writes: 0" in execute(upgrade, bootstrap_root)
     assert tree_state(project) == repaired
 
-    def hook(event):
-        command = (["bash", project / ".claude/hooks" / (event + ".sh")]
+    claude_events = {"session-start": "SessionStart", "session-end": "SessionEnd",
+                     "pre-tool-use": "PreToolUse", "post-tool-use": "PostToolUse"}
+    routing = json.loads((project / ".claude/settings.local.json").read_text())["hooks"]
+
+    def hook(event, event_payload=payload):
+        command = (["bash", "-c", routing[claude_events[event]][0]["hooks"][0]["command"]]
                    if platform == "claude" else
                    [entry_python, project / ".codex/hooks/alpha_wiki_hook.py",
                     {"session-start": "session-start", "session-end": "session-end",
                      "pre-tool-use": "pre-tool", "post-tool-use": "post-tool"}[event],
                     "--wiki-dir", wiki_dir])
-        return execute(command, nested, environment, payload)
+        return execute(command, nested, environment, event_payload)
 
     for name in ("edges.jsonl", "context_brief.md", "open_questions.md"):
         (wiki / "graph" / name).write_text("STALE\n")
@@ -209,6 +213,20 @@ def test_generated_runtime_lifecycle_and_hooks(tmp_path: Path, platform: str, ex
     assert "failed" not in post.lower()
     for name in ("edges.jsonl", "context_brief.md", "open_questions.md"):
         assert (wiki / "graph" / name).read_text() != "STALE\n"
+    if platform == "claude":
+        # A second source edit must reach the graph even inside the former debounce window.
+        with module.open("a") as stream:
+            stream.write("\n## Open questions\n- Has the second write reached the graph?\n")
+        relative_payload = json.dumps({"cwd": str(module.parent), "tool_name": "Edit",
+                                       "tool_input": {"file_path": module.name}})
+        hook("post-tool-use", relative_payload)
+        questions = wiki / "graph/open_questions.md"
+        assert "Has the second write reached the graph?" in questions.read_text()
+        before = questions.stat().st_mtime_ns
+        derived_payload = json.dumps({"cwd": str(project), "tool_name": "Write",
+                                      "tool_input": {"file_path": str(questions)}})
+        hook("post-tool-use", derived_payload)
+        assert questions.stat().st_mtime_ns == before
     assert "context" in hook("session-start").lower()
     log = (wiki / "log.md").read_bytes()
     hook("session-end")

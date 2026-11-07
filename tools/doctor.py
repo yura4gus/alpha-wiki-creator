@@ -423,11 +423,13 @@ def _check_claude(project_dir: Path) -> list[DoctorCheck]:
     else:
         checks.append(DoctorCheck("claude hooks", WARN, ".claude/hooks is missing", "Install hooks via /alpha-wiki:init or rerun init with hooks enabled."))
 
-    settings = project_dir / ".claude" / "settings.local.json"
-    if settings.exists():
-        checks.append(DoctorCheck("claude settings", PASS, ".claude/settings.local.json exists"))
+    settings = [name for name in (".claude/settings.json", ".claude/settings.local.json")
+                if (project_dir / name).is_file()]
+    if settings:
+        checks.append(DoctorCheck("claude settings", PASS, f"{', '.join(settings)} present (configuration only)"))
     else:
-        checks.append(DoctorCheck("claude settings", WARN, ".claude/settings.local.json is missing", "Session hooks need settings.local.json to route wiki writes."))
+        checks.append(DoctorCheck("claude settings", WARN, "No Claude project or local settings found",
+                                  "Enable session hooks during init or restore the existing routing."))
 
     workflows = project_dir / ".github" / "workflows"
     expected = {"wiki-lint.yml", "wiki-review.yml", "wiki-rollup.yml"}

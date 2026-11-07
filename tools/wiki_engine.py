@@ -372,6 +372,21 @@ def cli():
     """alpha-wiki deterministic engine."""
 
 
+@cli.command("rebuild-graph")
+@click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True, file_okay=False), required=True)
+def cli_rebuild_graph(wiki_dir: Path):
+    """Refresh the derived graph after a source write, serializing Claude hooks."""
+    import fcntl
+
+    graph = wiki_dir / "graph"
+    graph.mkdir(parents=True, exist_ok=True)
+    with (graph / ".rebuild.lock").open("a") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        rebuild_edges(wiki_dir)
+        rebuild_context_brief(wiki_dir)
+        rebuild_open_questions(wiki_dir)
+
+
 @cli.command("rebuild-edges")
 @click.option("--wiki-dir", type=click.Path(path_type=Path, exists=True), required=True)
 def cli_rebuild_edges(wiki_dir: Path):
