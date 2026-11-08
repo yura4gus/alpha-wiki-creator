@@ -1,13 +1,27 @@
+---
+source_files:
+- references/hooks-design.md
+- docs/alphawiki-openflowkit-v1/SPEC.md
+- scripts/openflowkit_pilot.py
+- scripts/harness2_alpha_wiki.py
+- references/agentops-control-layer.md
+- skills/doctor/SKILL.md
+- skills/orchestrate/SKILL.md
+---
 # Alpha-Wiki Product Roadmap And Backlog
 
 Status: canonical development roadmap
 
-Updated: 2026-10-19
+Updated: 2026-11-08
 
 Alpha-Wiki is repo-native Markdown memory for AI agents and teams. This file is
 the single maintained roadmap and backlog for the Alpha-Wiki product. Dated
 plans, audits, case logs, and research notes are evidence for this roadmap, not
 competing execution plans.
+
+The [current integration wave](#xplan-harness-alpha-wiki) covers xPlan,
+Harness², and Claude hook reliability. The [architecture pilot](#openflowkit-pilot)
+adds source-pinned discovery, Canvas, and drift checks.
 
 ## 1. Product Boundary
 
@@ -1389,3 +1403,162 @@ Publication and installation receipt:
   lock annotation. Source/Release/client rollout is complete; GitHub Actions and
   Pages remain externally blocked by the account billing state. Restart existing
   agent sessions to load updated skill instructions.
+
+<a id="xplan-harness-alpha-wiki"></a>
+
+## 28. xPlan + Harness² + Alpha-Wiki
+
+Date: 2026-11-07. Integration baseline: public main `d34c302`, Alpha-Wiki
+0.8.1. Claude's candidate repair and the integration pilot have separate
+acceptance. See section 27 for the released Codex repair and its evidence.
+
+### Existing Adoption
+
+- xPlan already tracks engineering work for [RateXAI H2REC](https://plan.value8.dev/ratexai/H2REC)
+  and [4prime X2B](https://plan.value8.dev/ratexai/X2B). Authenticated readback
+  confirmed both projects and their columns. H2REC has a dedicated Blocked
+  column. X2B represents blockers without that column. The visible project
+  list had no dedicated Alpha-Wiki board. This file remains the Alpha-Wiki
+  product backlog while an authorized pilot target is identified.
+- Installed Google Research [Harness²](https://github.com/google-research/harness2/tree/6868817518876de8fd170c6a8354daca273b6191)
+  is pinned to `6868817518876de8fd170c6a8354daca273b6191`. Offline checks
+  passed for the RateXAI profile (5 projects, 17 tracks, 6 cases) and 4prime
+  profile (3 fixtures). The RateXAI November 6 checkpoint records six Codex
+  evidence scenarios with holdouts and a separate OpenCode HTTP 429.
+  These are profile and evidence-replay results. The Alpha-Wiki integration
+  still needs its own qualification.
+- Alpha-Wiki already has bounded source-drift maintenance under DOC-002.
+  Keep the optional [AgentOps boundary](../references/agentops-control-layer.md).
+  Existing project skills provide pilot inputs, including RateXAI's
+  `ratexai-harness` and 4prime's `x2b-harness`.
+
+### Proposed Pilot Contract
+
+| Authority | Owns |
+|---|---|
+| xPlan | Operational issue identity, assignee, priority, dependencies, and workflow state. Use the project's actual columns and API permission scope. |
+| Alpha-Wiki | Canonical project context, accepted decisions, reviewed document changes, provenance, and the journal. |
+| Harness² | Agent-quality experiments. Compare a pinned baseline and candidate on the same failure, then validate the candidate on a separate holdout before adopting a versioned change. |
+| Git, CI, runtime, and reviewer | Evidence for the exact implementation, build, deployment, and acceptance scopes. The controller accepts the task against its applicable gates. |
+
+Run one vertical pilot on an existing bounded issue. Start from owner intent,
+source and acceptance criteria. Bind the xPlan project ref and issue ID to a
+repository, SHA or worktree snapshot, scope, evidence level, and run ID.
+Execution returns evidence and remaining work. A context worker runs
+`document_worker plan` on affected sources and produces a reviewed patch or
+`NO_CHANGE`. A reviewer checks provenance, scope and acceptance independently.
+The controller approves the wiki apply and the allowed xPlan transition.
+Review the readback in both systems and keep the same issue on reopen.
+
+Keep process state distinct from evidence. An issue can be in progress while
+its review is pending or a release gate is blocked. Keep unfinished work in
+the actual board's mapped column and record the gate, evidence, owner and next
+action. Mark Done only after applicable acceptance. Record canceled work
+through the board's cancellation path.
+
+### Backlog
+
+Target: local maintenance candidate for CLAUDE-001 and one opt-in integration
+pilot for H2-001 through H2-005. Pilot closure requires L3 against the selected
+xPlan project and repository. Production rollout is outside this wave.
+
+| ID | P | Status | Owner | Outcome and bounded implementation | Acceptance and current evidence | Depends |
+|---|---|---|---|---|---|---|
+| CLAUDE-001 | P0 | IN_REVIEW | Runtime maintainer | Register shared routing for this repository. Preserve custom settings. Repair legacy post-write debounce and bound `SessionEnd`. Update doctor and recovery guidance. | Local L2. Claude Code 2.1.314 dispatched all four configured events with status 0 in an isolated project with a spaced path and custom wiki directory. A local model fixture drove Write and the graph reflected it. Configured-command tests cover rapid edits and the upgrade. Installed brownfield settings and live client worktree-switch behavior require a separate acceptance run. | HOOK-002, HOOK-003 |
+| H2-001 | P0 | IN_REVIEW | Integration owner | Select one authorized xPlan project and one bounded issue. Pin the public API version, project ref, column map and scoped access. Compare xPlan's existing agent schedules and workflows before adding worker orchestration. | L3 readback of issue identity, revision, assignee, dependencies and mapped states. Record the pilot target and required write authority. Current evidence is authenticated read-only discovery. | [xPlan API 1.10.0](https://plan-api.value8.dev/docs) |
+| H2-002 | P1 | IN_REVIEW | Harness and skill maintainer | Exercise existing query, doctor, orchestrate and ingest skills against one known failure and a held-out case. Keep the same task and evaluator across baseline and candidate. Review one instruction or tool change per experiment. | L2 reproducible evidence for startup recovery, task continuation, correct completion and preservation of failed or skipped gates. Record harness and skill versions, results, regressions and human review. Cross-platform receipts stay separate. | QA-001, CLAUDE-001 |
+| H2-003 | P1 | CANDIDATE | Context worker and reviewer | Reuse `document_worker plan/apply` for one source-bound scope. The worker proposes a bounded change or `NO_CHANGE`. The reviewer checks sources and required gates. | L3 with the same issue and run ID. Show stale-source refusal, interrupted apply recovery, journal and cited readback, then idle replay with no write. | DOC-002, H2-001 |
+| H2-004 | P0 | IN_REVIEW | Sync worker owner | Start with dry-run readback using documented xPlan routes. Record issue revision, source SHA, run and transition. Check the current issue before applying an approved transition. Reconcile after retry, duplicate input or partial failure without creating another issue. | L3 replay exercises duplicate delivery, a conflicting manual change and a failure between wiki apply and tracker write. Confirm readback before retrying an unknown write outcome. Leave accepted wiki changes traceable if the tracker write fails. | H2-001, H2-003 |
+| H2-005 | P0 | IN_REVIEW | Controller and QA | Run one complete issue through planning, execution, independent review, memory maintenance, synchronization and reopen. Keep provider and release gates with their existing owners. | L3 linked receipts from xPlan, Git, Harness² and Alpha-Wiki. Exercise accepted, unfinished and reopened work. Report missing receipts by step. | H2-003, H2-004 |
+
+xPlan API 1.10.0 documents `GET /sync/rev` as change markers. The documented
+`PATCH /issues/{issueId}` exposes no conditional revision or `If-Match`
+parameter. Use change markers to trigger readback. Keep automatic transitions
+in dry-run until the pilot proves a conflict-safe write mechanism that protects
+manual changes. Until then, the controller reconciles differences and applies
+the reviewed status in xPlan.
+
+Use existing xPlan workers or schedules when they meet the pilot contract.
+Claude and Codex hooks remain deterministic lifecycle handlers. xPlan Git
+webhooks and agent scheduling have separate routes, credentials, and acceptance.
+The pilot does not require always-on model calls, a second tracker, a new
+service, or a new Alpha-Wiki schema.
+
+### First H2REC Pilot
+
+Execute H2-001 (binding), H2-004 (read-only dry-run), CLAUDE-001 (focused PR),
+and H2-005 (one task through reconciliation) in that order. H2-003 supplies
+the reviewed context update. Keep the deterministic task quality gate and
+cross-client skill parity under H2-003 and H2-002 after the first accepted
+closure. Run the Harness² evaluation under H2-002 independently of closure.
+Sprint observation and multi-host workers remain deferred.
+
+- **H2-001 — pilot binding complete.** Use existing H2REC-3, “Triage protected
+  CI failures.” Authenticated readback pinned the original criteria, issue ID
+  47, revision `2026-11-06T14:27:18.927Z`, and the actual board columns.
+  The board returned zero agent schedules. Agent workflows returned HTTP 403.
+  The issue has no assignee. The local CI evidence worker owns triage. GitLab
+  owners retain protected CI and remediation authority. The run records all
+  three repositories and SHAs. The primary Data Platform worktree is clean
+  at `44a0fbbc1b960e776a690a5fff0ec8b957b45b3a` for both base and result.
+- **H2-004 — read-only dry-run passed.** `tools.xplan_dry_run` produced nine
+  receipts. The live card proposed Todo → In Progress at startup and
+  `NEEDS_OWNER` at reconciliation. Repeat returned `NO_CHANGE`. Replays
+  returned `SKIP_CONFLICT` for a manual edit, `STALE_SHA` for an outdated
+  review, and `REWORK` for the bound worker. Only the positive synthetic
+  acceptance case proposed Done. Final live readback matched the original
+  Todo column and revision. Write-side acceptance remains pending.
+- **CLAUDE-001 — draft review.** [PR #3](https://github.com/yura4gus/alpha-wiki-creator/pull/3)
+  carries the Claude-only release candidate. All 404 local tests passed.
+  Native fresh and brownfield probes passed all four hooks. The brownfield
+  upgrade preserved custom settings. GitHub Actions failed before running
+  its steps because the account is locked for billing.
+- **H2-005 — reached reconciliation, delivery gate pending.** Protected
+  GitLab checks on the pinned Core and Flink SHAs failed with
+  `runner_system_failure`. Data Platform job `119021` failed in dependency
+  setup while reaching Debian, before the pytest step. The separate Codex
+  review corroborated triage from the supplied evidence. Rerun each protected
+  check on its pinned SHA after the runner and CI image owners resolve these
+  failures. No live transition is proposed at reconciliation.
+- **H2-002 — measured Codex experiment.** One live Harness² Infrastructure
+  challenge used the same model, evaluator and recursion budget. The injected
+  baseline scored 6/7, the candidate scored 7/7, and reference and candidate
+  scored 5/5 on a separate holdout. Candidate status is `READY_FOR_REVIEW`.
+  One sample supports review of the candidate, with adoption and cross-client
+  parity still pending.
+
+<a id="openflowkit-pilot"></a>
+
+## 29. Alpha-Wiki Architecture and OpenFlowKit Pilot
+
+The [supplied OpenFlowKit specification](alphawiki-openflowkit-v1/SPEC.md) is
+proposal evidence. This section owns the execution backlog and actual receipts.
+The [pilot runbook](alphawiki-openflowkit-v1/README.md) owns commands. Keep the
+existing H2 and Claude tracks in section 28. The Claude-only PR and the
+OpenFlowKit release candidate have separate review and acceptance.
+
+Alpha-Wiki retains accepted contracts and the typed wiki graph. xPlan retains
+operational task state. OpenFlowKit reads pinned source and renders proposed
+views. Git, CI and runtime observations supply delivery evidence. The
+Alpha-Wiki Harness² profile runs isolated candidate and holdout exercises.
+cmux stays optional as an operator view.
+
+| ID | P | Status | Owner | Scope and acceptance |
+|---|---|---|---|---|
+| CAN-001 | P0 | IN_REVIEW | Architecture | macOS discovery and offline render passed with OpenFlowKit CLI 0.3.0 on clean Alpha-Wiki `d34c302040c86e0c72780f12d97052a70c76557b`. The snapshot exposed two manifest units, zero discovered service relations, and 92 resolved imports across 40 mapped files. CLI render, conversion and document reopen passed. |
+| CAN-002 | P0 | IN_REVIEW | Architecture and QA | Baseline static drift passed. An isolated commit added two Compose services. Drift returned exit 1 and cited `compose.yaml:2` and `:6`. The repo-specific discovery remains a draft. Promote only after source review. |
+| CAN-003 | P0 | IN_REVIEW | Alpha-Wiki maintainer | The curated AgentOps state view binds accepted ADR-007 and the observed path resolver to the pinned source. Existing graph and supplied cross-system views have distinct scopes. |
+| CAN-004 | P1 | IN_REVIEW | Reviewer | A real OpenFlowKit MCP call passed in an isolated native Claude session with a local model fixture. A separate live Claude reviewer flagged the injected xPlan write edge and cited the exact ADR and code. The preferred OpenCode Go reviewer is pending: V4 Flash returned `provider.no-route` and V4.1 Flash returned HTTP 429 `Go usage limit exceeded`. |
+| CAN-005 | P1 | IN_REVIEW | Integration owner | Read-only H2REC-34 overlay pins issue revision, view hash and Git SHA. The live readback returned `NO_CHANGE`; the manual-edit fixture returned `SKIP_CONFLICT`. The local overlay has no xPlan write path. |
+| CAN-006 | P1 | CANDIDATE | Engineering | After accepting the first scope, exercise a second architecture class with an explicit data or API contract and measure missing topology and drift coverage. |
+| CAN-007 | P2 | DEFERRED | Operations | Optional cmux result and internal view after pilot acceptance. Keep the projection local and task authority in xPlan. |
+
+The pinned Alpha-Wiki Harness² replay passed one injected unsupported edge
+and two independent holdouts using the real engine and deterministic executor.
+The holdouts cover stale source and a supported edge. The result qualifies
+the replay and its candidate rule. Live model quality and reviewed adoption
+retain separate acceptance under H2-002.
+
+Release candidate 0.8.2 adds a separate CI job for strict validation, offline
+render, and a deliberate drift fixture. The package version describes a
+candidate until PR review, applicable CI, and publication evidence are present.

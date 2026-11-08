@@ -1,0 +1,11 @@
+%% ofk 1
+flowchart right
+title: Alpha-Wiki AgentOps State Boundary
+
+// DECLARED: docs/ADR-007-optional-agentops-control-layer.md:16-25
+// OBSERVED: tools/_agentops.py:101-102
+// Source: d34c302040c86e0c72780f12d97052a70c76557b
+"Opt-in AgentOps tools" [blue]
+"wiki/agentops/ Markdown state" [teal]
+
+"Opt-in AgentOps tools" -> "wiki/agentops/ Markdown state" : scopes operational state
