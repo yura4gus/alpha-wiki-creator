@@ -1,0 +1,42 @@
+%% ofk 1
+flowchart right
+title: Source Bound Discovery and Architecture Drift
+
+group "Authoritative Inputs" {
+  "Local Git checkout" [blue]
+  "Accepted specs and ADR" [blue]
+  "OpenAPI and event contracts" [blue]
+  "xPlan issue metadata" [blue]
+  "CI and runtime receipts" [blue]
+}
+
+group "Deterministic Projections" {
+  "Repo discovery" [teal]
+  "Discovered architecture.ofk" [teal]
+  "Curated system views" [violet]
+  "Evidence manifest" [teal]
+  "Drift check" [orange]
+}
+
+group "Review and Publication" {
+  "OpenCode source review" [violet]
+  "Quality gate" [orange]
+  "Git PR and accepted diagram" [green]
+  "Local Canvas or static site" [green]
+}
+
+"Local Git checkout" -> "Repo discovery" : tracked files and manifests
+"Repo discovery" -> "Discovered architecture.ofk" : static structural evidence
+"Accepted specs and ADR" -> "Curated system views" : reviewed contract links
+"OpenAPI and event contracts" -> "Curated system views" : declared flows
+"xPlan issue metadata" -> "Evidence manifest" : task identity
+"CI and runtime receipts" -> "Evidence manifest" : verified status
+"Discovered architecture.ofk" -> "Drift check"
+"Local Git checkout" -> "Drift check" : new snapshot
+"Curated system views" -> "Quality gate"
+"Drift check" -> "Quality gate" : exact findings
+"Evidence manifest" -> "Quality gate" : source hashes
+"Quality gate" -> "OpenCode source review" : approved evidence
+"OpenCode source review" -> "Git PR and accepted diagram" : findings resolved
+"Quality gate" -> "Git PR and accepted diagram" : deterministic PASS
+"Git PR and accepted diagram" -> "Local Canvas or static site"
