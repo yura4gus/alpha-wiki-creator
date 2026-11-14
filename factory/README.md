@@ -40,9 +40,16 @@ the worker environment and never enter workflow history.
 ## Config (env)
 `FACTORY_HOME`, `FACTORY_WORK_ROOT` (ephemeral), `FACTORY_STATE_DIR` (durable),
 `FACTORY_TEMPORAL_ADDRESS`, `FACTORY_TASK_QUEUE`, `FACTORY_PLUGIN_ROOT`,
-reviewer: `DEEPSEEK_API_KEY`, `FACTORY_REVIEW_MODEL`, `FACTORY_REVIEW_BASE_URL`.
+reviewer: `FACTORY_OPENCODE_BIN` (default `opencode`; tests point it at a fake).
+
+## Review through OpenCode
+All models go through OpenCode: `reviewer: "opencode"`, `review_model: "provider/model"`
+(default `opencode/deepseek-v4.1-flash-free`). Authentication is OpenCode's own store; no key
+enters this package. The reviewer runs in an empty scratch directory and sees only the prompt.
+Failure, quota errors or an unparseable reply give `BLOCKED_REVIEW`, never an approval.
+The diff goes to the model's provider: free OpenCode models may retain prompts, so use a
+paid model for confidential code. Live check: `FACTORY_LIVE_OPENCODE=1 uv run pytest -k live`.
 
 ## Not covered in V1
-Real DeepSeek review (adapter written, not run: no credentials), real `gh` PRs
-(adapter written, not run), live OpenCode/Codex runs, cmux, xPlan writes,
+Real `gh` PRs (adapter written, not run), live OpenCode/Codex *implementation* runs, cmux, xPlan writes,
 Continue-As-New for very long tasks, multi-host task queues.

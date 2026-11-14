@@ -238,13 +238,61 @@ async def test_failing_tests_stop_before_review(env, origin, dirs, queue):
     assert "review" not in receipt(state, "ft")["entries"]
 
 
-async def test_review_without_credentials_blocks_never_approves(env, origin, dirs, queue):
+def fake_opencode(tmp_path, body: str, code: int = 0) -> str:
+    path = tmp_path / "fake-opencode"
+    path.write_text(f"#!/bin/sh\ncat <<'EOF'\n{body}\nEOF\nexit {code}\n")
+    path.chmod(0o755)
+    return str(path)
+
+
+async def test_opencode_review_approves_and_is_recorded(env, origin, dirs, queue, tmp_path, monkeypatch):
     _, state = dirs
-    spec = make_spec(origin, queue, "blk", "src/a", [agent("write", "src/a/one.txt", "1")],
-                     reviewer="deepseek")
+    monkeypatch.setenv("FACTORY_OPENCODE_BIN", fake_opencode(
+        tmp_path, '\x1b[1mreview\x1b[0m {"verdict": "APPROVE", "findings": "scoped and tested"}'))
+    spec = make_spec(origin, queue, "ocr", "src/a", [agent("write", "src/a/one.txt", "1")],
+                     reviewer="opencode", review_model="opencode/deepseek-v4.1-flash-free")
+    async with worker(env, queue):
+        result = await (await start_task(env.client, spec)).result()
+    assert result.status == "PR_OPEN"
+    assert result.review["reviewer"] == "opencode:opencode/deepseek-v4.1-flash-free"
+    assert receipt(state, "ocr")["entries"]["review"]["verdict"] == "APPROVE"
+
+
+@pytest.mark.parametrize("body,code", [("not json at all", 0), ('{"verdict": "MAYBE"}', 0),
+                                       ('{"verdict": "APPROVE"}', 1)])
+async def test_opencode_review_failure_blocks_never_approves(env, origin, dirs, queue, tmp_path,
+                                                             monkeypatch, body, code):
+    _, state = dirs
+    monkeypatch.setenv("FACTORY_OPENCODE_BIN", fake_opencode(tmp_path, body, code))
+    spec = make_spec(origin, queue, f"blk{code}{len(body)}", "src/a",
+                     [agent("write", "src/a/one.txt", "1")], reviewer="opencode")
     async with worker(env, queue):
         result = await (await start_task(env.client, spec)).result()
     assert result.status == "BLOCKED_REVIEW" and prs(state) == {}
+
+
+async def test_opencode_missing_binary_blocks(env, origin, dirs, queue, monkeypatch):
+    _, state = dirs
+    monkeypatch.setenv("FACTORY_OPENCODE_BIN", "/nonexistent/opencode")
+    spec = make_spec(origin, queue, "nobin", "src/a", [agent("write", "src/a/one.txt", "1")],
+                     reviewer="opencode")
+    async with worker(env, queue):
+        result = await (await start_task(env.client, spec)).result()
+    assert result.status == "BLOCKED_REVIEW" and prs(state) == {}
+
+
+@pytest.mark.skipif(not os.environ.get("FACTORY_LIVE_OPENCODE"),
+                    reason="live OpenCode call; set FACTORY_LIVE_OPENCODE=1")
+async def test_live_opencode_deepseek_review(env, origin, dirs, queue):
+    _, state = dirs
+    spec = make_spec(origin, queue, "live", "src/a", [agent("write", "src/a/one.txt", "hello")],
+                     reviewer="opencode", review_model=os.environ.get(
+                         "FACTORY_REVIEW_MODEL", "opencode/deepseek-v4.1-flash-free"))
+    async with worker(env, queue):
+        result = await (await start_task(env.client, spec)).result()
+    assert result.review["reviewer"].startswith("opencode:") and "deepseek" in result.review["reviewer"]
+    assert result.review["verdict"] in {"APPROVE", "CHANGES"}, result.review
+    assert result.status in {"PR_OPEN", "CHANGES_REQUESTED"}
 
 
 async def test_empty_change_requests_changes(env, origin, dirs, queue):

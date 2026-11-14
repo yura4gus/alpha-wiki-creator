@@ -1,16 +1,20 @@
 """Independent review adapters.
 
-`deepseek` talks to an OpenAI-compatible endpoint and sends the diff to it, so
-it runs only when a spec asks for it. Without credentials it returns BLOCKED:
-a review is never approved by default. `stub` is rule-based and labelled as
-such in every result; it does not replace the independent review.
+`opencode` runs any model through the OpenCode CLI (`opencode run -m provider/model`),
+using OpenCode's own stored authentication; no API key passes through this package.
+It sends the diff to that model's provider, so it runs only when a spec asks for it.
+Any failure or unparseable answer returns BLOCKED: a review is never approved by
+default. `stub` is rule-based and labelled as such; it does not replace the
+independent review.
 """
 
 from __future__ import annotations
 
 import json
 import os
-import urllib.request
+import re
+import subprocess
+import tempfile
 
 PROMPT = """You are an independent code reviewer. Judge the diff against the task contract.
 Reply with JSON only: {"verdict": "APPROVE" | "CHANGES", "findings": "<text>"}.
@@ -38,32 +42,34 @@ def stub_review(owned_paths: list[str], diff: str, tests_passed: bool, head_sha:
             "reviewer": "stub-rule-based", "head_sha": head_sha}
 
 
-def deepseek_review(context: str, tests_summary: str, diff: str, head_sha: str) -> dict:
-    key = os.environ.get("DEEPSEEK_API_KEY")
-    if not key:
-        return {"verdict": "BLOCKED", "findings": "DEEPSEEK_API_KEY is not set on the worker",
-                "reviewer": "deepseek", "head_sha": head_sha}
-    base = os.environ.get("FACTORY_REVIEW_BASE_URL", "https://api.deepseek.com")
-    model = os.environ.get("FACTORY_REVIEW_MODEL")
-    if not model:
-        return {"verdict": "BLOCKED", "findings": "FACTORY_REVIEW_MODEL is not set",
-                "reviewer": "deepseek", "head_sha": head_sha}
-    body = json.dumps({
-        "model": model, "temperature": 0,
-        "messages": [{"role": "user", "content": PROMPT % (context[:12000], tests_summary, diff)}],
-    }).encode()
-    request = urllib.request.Request(
-        f"{base}/chat/completions", data=body,
-        headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
+def _parse_verdict(text: str) -> dict:
+    text = re.sub(r"\x1b\[[0-9;]*m", "", text)  # strip terminal colour codes
+    match = re.search(r"\{.*\}", text, re.S)
+    if not match:
+        raise ValueError("no JSON object in reply")
+    parsed = json.loads(match.group(0))
+    if parsed.get("verdict") not in {"APPROVE", "CHANGES"}:
+        raise ValueError(f"bad verdict {parsed.get('verdict')!r}")
+    return parsed
+
+
+def opencode_review(model: str, context: str, tests_summary: str, diff: str, head_sha: str,
+                    timeout: int = 300) -> dict:
+    binary = os.environ.get("FACTORY_OPENCODE_BIN", "opencode")
+    prompt = PROMPT % (context[:12000], tests_summary, diff)
+    reviewer = f"opencode:{model}"
     try:
-        with urllib.request.urlopen(request, timeout=120) as response:
-            content = json.loads(response.read())["choices"][0]["message"]["content"]
-        parsed = json.loads(content)
-        verdict = parsed["verdict"]
-        if verdict not in {"APPROVE", "CHANGES"}:
-            raise ValueError(verdict)
-        return {"verdict": verdict, "findings": str(parsed.get("findings", "")),
-                "reviewer": f"deepseek:{model}", "head_sha": head_sha}
-    except Exception as exc:  # unparseable or failed review must never approve
-        return {"verdict": "BLOCKED", "findings": f"review failed: {type(exc).__name__}: {exc}",
-                "reviewer": "deepseek", "head_sha": head_sha}
+        # Empty scratch cwd and minimal env: the reviewer sees only the prompt, not the repo.
+        with tempfile.TemporaryDirectory(prefix="factory-review-") as cwd:
+            proc = subprocess.run(
+                [binary, "run", "-m", model, prompt], cwd=cwd, capture_output=True, text=True,
+                timeout=timeout,
+                env={k: os.environ[k] for k in ("PATH", "HOME", "LANG", "TMPDIR") if k in os.environ})
+        if proc.returncode != 0:
+            raise RuntimeError((proc.stdout + proc.stderr).strip()[-300:] or f"exit {proc.returncode}")
+        parsed = _parse_verdict(proc.stdout)
+        return {"verdict": parsed["verdict"], "findings": str(parsed.get("findings", "")),
+                "reviewer": reviewer, "head_sha": head_sha}
+    except Exception as exc:  # a failed or unparseable review must never approve
+        return {"verdict": "BLOCKED", "findings": f"review failed: {type(exc).__name__}: {exc}"[:400],
+                "reviewer": reviewer, "head_sha": head_sha}

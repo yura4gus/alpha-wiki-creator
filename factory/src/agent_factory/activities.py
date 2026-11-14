@@ -151,9 +151,9 @@ async def review(spec: TaskSpec, req: ReviewRequest) -> ReviewResult:
     cfg = Config.from_env()
     cache = await asyncio.to_thread(gitops.ensure_cache, cfg.work_root, spec.repo)
     diff = await asyncio.to_thread(gitops.diff_text, cache, req.base_sha, req.head_sha)
-    if spec.reviewer == "deepseek":
+    if spec.reviewer == "opencode":
         result = await asyncio.to_thread(
-            reviewer.deepseek_review, req.context_text,
+            reviewer.opencode_review, spec.review_model, req.context_text,
             f"passed={req.tests_passed}\n{req.tests_tail}", diff, req.head_sha)
     elif spec.reviewer == "stub":
         result = reviewer.stub_review(spec.owned_paths, diff, req.tests_passed, req.head_sha)

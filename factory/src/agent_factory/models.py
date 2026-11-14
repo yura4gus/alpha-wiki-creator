@@ -23,7 +23,8 @@ class TaskSpec:
     test_timeout_seconds: int = 600
     require_approval: bool = True
     approval_timeout_seconds: int = 86400
-    reviewer: str = "stub"  # stub | deepseek
+    reviewer: str = "stub"  # stub | opencode
+    review_model: str = "opencode/deepseek-v4.1-flash-free"  # provider/model for reviewer=opencode
     pr_backend: str = "local"  # local | gh
     pr_repo: Optional[str] = None  # owner/name, required for gh
     pr_title: str = ""

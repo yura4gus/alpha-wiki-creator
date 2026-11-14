@@ -35,3 +35,6 @@ Do not adopt the harness as the V1 executor. Keep Temporal Core plus the thin CL
 adapter. Revisit if the Factory runs its own LLM loop instead of vendor CLIs: its
 per-tool approvals, subagent turns and session manager would then be reusable.
 Open items: measure it live with credentials; confirm API stability across releases.
+
+Note: reviewer and executor models are reached through OpenCode, which further
+favours the CLI adapter over an SDK-bound harness loop.
