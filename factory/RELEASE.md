@@ -9,8 +9,8 @@ live-E2E verified**: three real OpenCode tasks ran through the coordinator with
 live review, durable approval, worker/session restart and no duplicate workflows.
 See [Harness coordination layer](#harness-coordination-layer).
 
-Verified code: base `56e421d` plus the Harness integration commits on
-`codex/agent-factory-v1`, based on `0e99fa8` (PR #5) and `fd73821`.
+Verified code: `c51e1a355f08a1a917711d93b8a64634f9a964f7` on
+`codex/agent-factory-v1`, based on `56e421d`, `0e99fa8` (PR #5) and `fd73821`.
 
 ## Scope
 
@@ -139,12 +139,12 @@ Optional harness stack: `uv sync --extra harness` once, then
 Violation check: the released wheel's base dependencies do not include
 `temporal-agent-harness`; it is an optional extra.
 
-Built from the Harness integration commit on `codex/agent-factory-v1` (PR #6):
+Built from the verified commit `c51e1a3`:
 
 - `agent_factory-0.1.0-py3-none-any.whl` SHA-256
   `0f66ba7f9e582f95e2e0dfcf63817df71d472eddbf6d238249dcbbd5c86db215`
 - `agent_factory-0.1.0.tar.gz` SHA-256
-  `bc9fb56cf37287658b52757c7224fc20f149a2d283ba01c6108c9ab454d5b1bb`
+  `dc2a4d7002c8a1b842eb0c16e040c57e4abfdee63a11af7cdefbbd509179b2a6`
 
 
 ## Merge path and blockers
