@@ -12,6 +12,13 @@ All notable Alpha-Wiki release changes are recorded here.
   transition planning read-only.
 - Add one-command local startup, workflow status, a factory CI job and the live
   CLI/review/launcher acceptance suites.
+- Add the optional Temporal Agent Harness 0.11.0 coordination layer:
+  `FactoryCoordinatorAgent` typed submit/status/approve/cancel, the native
+  Session Manager/API/Console, and `launcher up --harness`.
+- Prove three real OpenCode tasks through the Harness coordinator with live
+  review, durable approval, worker/session restart and no duplicate workflows.
+- Support Temporal Cloud through the SDK `TEMPORAL_*` profile and API key; local
+  loopback addresses stay plaintext even when a Cloud key is present.
 
 ## [0.8.2]
 

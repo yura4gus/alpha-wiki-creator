@@ -1639,3 +1639,70 @@ deploy, bypass protected checks, or write to xPlan. Next action: restore CI
 billing, merge #4 then #5, run the factory job, open the stacked factory PR,
 then handle PR #3 separately. Rollback is removal of the optional `factory/`
 package; no plugin manifest, hook, skill or wiki schema changes with it.
+
+<a id="temporal-agent-harness-v1"></a>
+
+## 31. Temporal Agent Harness Integration
+
+Date: 2026-11-16. Worktree `alpha-wiki-agent-factory-20261114`, branch
+`codex/agent-factory-v1`, base `56e421d` (PR #6 stacked on PR #5). This section
+owns the Harness delivery receipt; the package runbook is
+[factory/HARNESS.md](../factory/HARNESS.md) and the release record is
+[factory/RELEASE.md](../factory/RELEASE.md).
+
+The Harness is a coordination surface, not a second executor. The existing
+`TaskWorkflow` keeps pin → context → OpenCode steps → tests → review → approval
+→ PR → xPlan dry-run → receipt. Harness sessions carry typed messages and tool
+events; `TaskWorkflow.decide` remains the only approval authority. Every model
+call still runs through the OpenCode CLI.
+
+| ID | P | Status | Evidence |
+|---|---|---|---|
+| AH-01 | P0 | DONE | `temporal-agent-harness[ui]==0.11.0` is an optional extra with exact pin and regenerated `uv.lock`; base install imports no harness or pydantic. |
+| AH-02 | P0 | DONE | `FactoryCoordinatorAgent` tools use the existing `validate_batch` + `start_task` path; one `task-<id>` workflow, `REJECT_DUPLICATE` + `FAIL`. |
+| AH-03 | P0 | DONE | Typed `submit_task`, `get_status`, `approve_task`, `cancel_task`; approve reaches `TaskWorkflow.decide`, cancel reaches the workflow cancellation path. |
+| AH-04 | P0 | DONE | Native session manager/API/console; `/api/agents` ready, doctor all OK; `tests/test_harness_console_live.py` created a session, submitted, observed approval and read `PR_OPEN` over HTTP; browser UI is manual. |
+| AH-05 | P0 | DONE | Coordinator and factory workers stopped and recreated; same agent workflow id, new `AgentClient`, unchanged receipt digest; duplicate submit rejected. |
+| AH-06 | P0 | DONE | `launcher up --harness` starts Temporal, console/API, coordinator and factory worker, records `stack.json`, and stops process groups; `--task` optional. |
+| AH-07 | P0 | DONE | Three real OpenCode tasks through the coordinator in 31.2 s, three live reviews, three PRs, one approval by `harness-operator`, restart/reconnect, no duplicate commits or PRs. |
+| AH-08 | P1 | DEFERRED | cmux remains a manual operator view; no reliable automation CLI is assumed. |
+| AH-09 | P1 | DEFERRED | Cost telemetry is elapsed time only; OpenCode exposes no per-run token/cost value to this adapter. |
+| AH-10 | P1 | IN_REVIEW | Tests, runbook and factory CI job updated; PR #6 remains draft because hosted CI is billing-blocked and #4/#5 are unmerged. |
+
+### Verification
+
+- Offline suite with the harness extra: 80 passed, 15 skipped.
+- Full live run (CLI, review, launcher, harness, Cloud): 94 passed, 1 skipped.
+  The skip is the older live review test without its dedicated flag.
+- `tests/test_harness_integration.py`: 11.3 s; typed submit/status/approve/cancel,
+  no Harness approval events, coordinator restart, duplicate rejection.
+- `tests/test_harness_live.py`: 31.2 s; three real OpenCode tasks, three live
+  reviews, three PRs, approval by `harness-operator`, both workers restarted,
+  new `AgentClient` reconnected, receipt digests unchanged.
+- `FACTORY_LIVE_HARNESS_STACK=1`: console, coordinator and factory worker start
+  and stop cleanly; `/api/agents` and task-queue pollers ready.
+- Console API: `tests/test_harness_console_live.py` (5.5 s) created a real
+  session, submitted a task, observed `AWAITING_APPROVAL`, approved it through
+  the Console, and read `PR_OPEN` with a frozen receipt. The browser UI is
+  manual, not a separate automated test.
+- Cloud: `alpha-dev.n3kw9` fake-agent workflow `task-cloud-smoke-2b6483cc18`
+  reached `PR_OPEN`; receipt digest
+  `b949325b6835e7950aa380d5ff378e0cc9198c0ec5fdaed7ee95aa9fff894774`;
+  duplicate start rejected; no API key in receipt, PR registry or history.
+- Local loopback stays plaintext even when `TEMPORAL_API_KEY` is exported;
+  explicit local address wins over a Cloud profile. The Cloud test proves the
+  exception: a non-loopback target keeps namespace/key/TLS.
+
+### Boundaries and gaps
+
+- No Harness approval queue: Harness tool approvals are skipped, and the
+  Console's `approve_task` forwards to the existing workflow Update.
+- No model calls, provider SDK or credentials were added by the Harness layer.
+- The console is a loopback-only operator surface without authentication.
+- Harness 0.11.0 is pre-1.0; upstream releases are marked pre-release. Upgrade
+  by re-pinning, regenerating the schema and rerunning the DoD tests.
+- cmux, cost telemetry and a full browser submit/approve acceptance remain P1.
+
+Release state is unchanged: `RELEASE-READY / MERGE BLOCKED EXTERNALLY` because
+GitHub Actions is billing-blocked and PRs #4/#5 are unmerged. No production
+deployment, automatic merge or xPlan write was performed.

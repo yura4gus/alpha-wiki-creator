@@ -11,6 +11,7 @@ from dataclasses import asdict
 from temporalio.client import Client, WorkflowHandle
 from temporalio.common import WorkflowIDConflictPolicy, WorkflowIDReusePolicy
 
+from .connection import connect
 from .models import Decision, TaskSpec
 from .workflows import TaskWorkflow
 
@@ -71,7 +72,9 @@ def _spec(path: str) -> TaskSpec:
 
 async def _main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(prog="agent-factory")
-    parser.add_argument("--address", default="localhost:7233")
+    parser.add_argument("--address", default=None,
+                        help="Temporal address override (default: FACTORY_TEMPORAL_ADDRESS, "
+                             "TEMPORAL_* env config, then localhost:7233)")
     sub = parser.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("start")
     s.add_argument("spec", nargs="+")
@@ -83,7 +86,7 @@ async def _main(argv: list[str]) -> int:
     c = sub.add_parser("cancel")
     c.add_argument("task_id")
     args = parser.parse_args(argv)
-    client = await Client.connect(args.address)
+    client = await connect(args.address)
     if args.cmd == "start":
         for handle in await start_batch(client, [_spec(p) for p in args.spec]):
             print(handle.id)

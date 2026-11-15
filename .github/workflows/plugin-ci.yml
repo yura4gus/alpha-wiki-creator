@@ -51,5 +51,5 @@ jobs:
       - name: factory tests
         working-directory: factory
         run: |
-          uv sync --dev
+          uv sync --dev --extra harness
           uv run pytest -q

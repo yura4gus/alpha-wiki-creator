@@ -77,3 +77,11 @@
 ## [2026-11-15] document-update | Record Agent Factory V1 functional acceptance: real OpenCode CLI edits, checkpoint recovery, cancellation, idempotent retry, three concurrent isolated tasks, live paid-model review, read-only Harness²/OpenFlowKit evidence and xPlan dry-run; keep release blocked by hosted CI billing and stacked PR or | documents=`docs/roadmap-execution.md` | change=19d7d053e7c51d13c301
 
 ## [2026-11-15] document-update | Record the optional Agent Factory V1: real CLI execution and recovery, fail-closed paid review, read-only evidence receipts, one-command startup and CI/live acceptance | documents=`CHANGELOG.md` | change=7980dcbc37a738aed361
+
+## [2026-11-16] document-update | Record Temporal Agent Harness integration: pinned 0.11.0 coordinator, typed submit/status/approve/cancel, Console/API, one-command stack, worker/session restart, three real OpenCode tasks, and alpha-dev Temporal Cloud smoke; merge stays blocked by hosted CI billing | documents=`docs/roadmap-execution.md` | change=f1ac2296953da17e38f4
+
+## [2026-11-16] document-update | Record the optional Temporal Agent Harness coordination layer and Temporal Cloud connection support | documents=`CHANGELOG.md` | change=2ff10b8b8aa8c321bda7
+
+## [2026-11-16] document-update | Record the automated Harness Console HTTP acceptance: session submit, approval through TaskWorkflow.decide, frozen receipt and no duplicate workflow | documents=`docs/roadmap-execution.md` | change=cc0db91ece501c27f3b8
+
+## [2026-11-16] document-update | Finalize Harness acceptance counts after the Console HTTP test: 80 offline/15 skipped, 94 live/1 skipped; three real tasks 31.2 s | documents=`docs/roadmap-execution.md` | change=0226d1acd8049103b575

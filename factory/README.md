@@ -52,6 +52,47 @@ cmux is an optional operator view, not execution authority. Run the same `up`
 command inside a cmux workspace and keep `status`/`receipt` in a second pane. No
 cmux API or state is required, so a missing or busy cmux never blocks a task.
 
+## One command with the Agent Harness
+
+`--harness` adds the Temporal Agent Harness coordination layer to the same
+launcher. It is optional and starts only after Temporal is reachable:
+
+```bash
+cd factory
+uv sync --python 3.12
+uv run --extra harness python -m agent_factory.launcher up --harness
+# Console http://localhost:8000 · Temporal UI http://localhost:8233
+
+# follow factory tasks as well
+uv run --extra harness python -m agent_factory.launcher up --harness --task task.json
+```
+
+It starts the harness session manager/API/console
+(`uv run --extra harness temporal-agent-harness dev factory/harness/agents.toml`),
+the coordinator worker (`python -m agent_factory.harness.worker`) on
+`FACTORY_HARNESS_TASK_QUEUE` (default `factory-coordinator`), and keeps the
+existing factory `TaskWorkflow` worker in this process. `--harness-registry`
+defaults to `<factory>/harness/agents.toml`; `--harness-port` defaults to `8000`.
+Without `--task`, the stack waits for Ctrl-C; `--no-follow` also keeps it up.
+
+Authority does not move with the console:
+
+- `TaskWorkflow` remains the executor and the approval authority. Approval is the
+  `decide` Update on `task-<task_id>`; the console reaches it through the
+  coordinator's `approve_task` handler. Harness tool approvals are separate and do
+  not change factory task state.
+- The harness is a coordination/session surface only. It does not run factory
+  agent steps, tests, review or PR stages.
+- All model calls go through OpenCode. The harness adds no provider SDK, HTTP
+  client or credential to this package.
+- Ctrl-C stops the console, coordinator and a launcher-started Temporal dev
+  server as process groups. Receipts remain in `FACTORY_STATE_DIR`.
+
+Logs are written to `<state_dir>/harness/{harness,coordinator}.log`; the last
+stack record is `<state_dir>/harness/stack.json`. See [HARNESS.md](HARNESS.md)
+for start/stop, console and CLI operation, reconnect, restart, logs and
+troubleshooting.
+
 ## Recovery and idempotency
 
 - The worker filesystem is **ephemeral**; origin branch `factory/<task_id>` and the
@@ -107,13 +148,40 @@ No automatic transition or write path exists.
 `FACTORY_FAULTS` (test-only fault injection). `env_passthrough` lists variable
 **names**; values stay in the worker environment and never enter workflow history.
 
+The harness layer additionally reads `FACTORY_HARNESS_TASK_QUEUE` (default
+`factory-coordinator`) and the standard harness/Temporal connection settings:
+`TEMPORAL_ADDRESS` (set by the launcher to the same address as the factory),
+`TEMPORAL_NAMESPACE`, `TEMPORAL_TLS`, `TEMPORAL_API_KEY` (inherited when set).
+The factory worker still uses `FACTORY_TEMPORAL_ADDRESS`.
+
+### Temporal Cloud
+
+`connection.py` loads the SDK profile whenever `TEMPORAL_CONFIG_FILE`,
+`TEMPORAL_PROFILE`, `TEMPORAL_NAMESPACE` or `TEMPORAL_API_KEY` is present. For
+the dev namespace verified here:
+
+```bash
+set -a; . ~/.config/temporal-mcp/.env; set +a   # TEMPORAL_API_KEY, mode 600
+export TEMPORAL_ADDRESS=alpha-dev.n3kw9.tmprl.cloud:7233
+export TEMPORAL_NAMESPACE=alpha-dev.n3kw9
+export TEMPORAL_TLS=true
+uv run python -m agent_factory.launcher up --address "$TEMPORAL_ADDRESS" --task task.json
+```
+
+An explicit or `FACTORY_TEMPORAL_ADDRESS` loopback target stays plaintext even
+when a Cloud key is exported: local tests and dev servers are not converted to
+TLS. A non-loopback target keeps the Cloud namespace/key/TLS.
+
 ## Tests
 
 ```bash
-uv run pytest                                   # 41 offline tests; live tests skipped
+uv run --extra harness pytest                   # offline suite; live tests skipped
 FACTORY_LIVE_CLI=1 uv run pytest tests/test_live_cli.py
 FACTORY_LIVE_REVIEW=1 uv run pytest tests/test_review_live.py
 FACTORY_LIVE_LAUNCHER=1 uv run pytest tests/test_launcher_e2e.py
+FACTORY_LIVE_HARNESS_STACK=1 uv run pytest tests/test_launcher_e2e.py
+FACTORY_LIVE_HARNESS=1 uv run --extra harness pytest tests/test_harness_live.py
+FACTORY_LIVE_CLOUD=1 uv run pytest tests/test_cloud_connection.py
 ```
 
 The live CLI suite proves real OpenCode edits, tests, two checkpoint commits,
@@ -121,7 +189,14 @@ checkpoint recovery after a killed worker, cancellation with process-group kill,
 one-model-call reuse after a post-push failure, and three concurrent isolated tasks.
 The live review suite sends only synthetic diffs to the paid model and checks scope
 rejection plus receipt provenance. The launcher suite proves one-command startup,
-the approval update and receipt readback after the server stops.
+the approval update and receipt readback after the server stops. The harness
+stack test starts Temporal, the console and both workers, checks `/api/agents`
+and task-queue pollers, then stops the process groups; it skips with the exact
+preflight reason when the registry, extra or coordinator is absent. The harness
+live test submits three real OpenCode tasks through `FactoryCoordinatorAgent`,
+approves one through `TaskWorkflow.decide`, restarts both workers and reconnects
+with a new `AgentClient`. The Cloud test runs one fake-agent task on
+`alpha-dev.n3kw9` and checks the receipt/history contain no API key.
 
 Tests accept `FACTORY_TEMPORAL_BIN` when `temporal` is not on `PATH`.
 
@@ -131,5 +206,13 @@ Real `gh` PR creation against a sandbox repository (adapter written; local regis
 tested), live Codex implementation runs, cmux automation, xPlan writes, cost/token
 reporting from OpenCode (only elapsed time is measured), Continue-As-New for very
 long tasks, multi-host task queues, and 50–100 worker scale.
+
+For the harness layer: the coordinator, Console HTTP API, worker restart and a
+three-real-task run are verified. The Console API is covered end-to-end by
+`tests/test_harness_console_live.py` (session, submit, status, approval,
+receipt); the browser UI itself is not separately automated. Temporal Agent
+Harness remains pre-1.0 and pinned to 0.11.0, and the console is a local
+`127.0.0.1` operator surface with no hosted deployment or authentication layer.
+cmux remains manual.
 
 See [RELEASE.md](RELEASE.md) for the release candidate state, rollback and blockers.
