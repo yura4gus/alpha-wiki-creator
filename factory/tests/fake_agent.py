@@ -10,6 +10,18 @@ if cmd == "write":
     target = pathlib.Path(path)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text(text + "\n")
+elif cmd == "context":
+    target = pathlib.Path(rest[0])
+    source = os.environ.get("FACTORY_CONTEXT_FILE", "")
+    if not source or not pathlib.Path(source).is_file():
+        print("pinned context file is missing")
+        sys.exit(4)
+    text = pathlib.Path(source).read_text()
+    if "# Task " not in text:
+        print("pinned context file has no task header")
+        sys.exit(5)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text("context recovered\n")
 elif cmd == "slow-write":
     path, text, seconds = rest
     time.sleep(float(seconds))

@@ -155,7 +155,7 @@ async def test_crash_recovers_from_pushed_checkpoint(env, origin, dirs, queue, t
         return subprocess.Popen([sys.executable, "-m", "agent_factory.worker"], env=e)
 
     spec = make_spec(origin, queue, "crash", "src/a",
-                     [agent("write", "src/a/one.txt", "1"), agent("write", "src/a/two.txt", "2")],
+                     [agent("write", "src/a/one.txt", "1"), agent("context", "src/a/two.txt")],
                      max_attempts=3, heartbeat_timeout_seconds=3)
     w1 = spawn(tmp_path / "work1", "mid_step@1=crash")
     handle = await start_task(env.client, spec)
