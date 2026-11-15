@@ -4,6 +4,22 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+- Add the optional Temporal Agent Factory V1 with real OpenCode CLI execution,
+  checkpoint recovery, durable approval, frozen receipts and three-task isolation.
+- Route every model call through OpenCode, require a paid review model by default,
+  and fail closed on empty, malformed or failed reviews.
+- Read Harness² and OpenFlowKit receipts without running them and keep xPlan
+  transition planning read-only.
+- Add one-command local startup, workflow status, a factory CI job and the live
+  CLI/review/launcher acceptance suites.
+- Add the optional Temporal Agent Harness 0.11.0 coordination layer:
+  `FactoryCoordinatorAgent` typed submit/status/approve/cancel, the native
+  Session Manager/API/Console, and `launcher up --harness`.
+- Prove three real OpenCode tasks through the Harness coordinator with live
+  review, durable approval, worker/session restart and no duplicate workflows.
+- Support Temporal Cloud through the SDK `TEMPORAL_*` profile and API key; local
+  loopback addresses stay plaintext even when a Cloud key is present.
+
 ## [0.8.2]
 
 - Add the optional source-pinned OpenFlowKit discovery, Canvas and drift pilot.

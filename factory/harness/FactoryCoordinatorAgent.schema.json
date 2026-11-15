@@ -1,0 +1,422 @@
+{
+  "agent": "FactoryCoordinatorAgent",
+  "source": "agent_factory.harness.coordinator:FactoryCoordinatorAgent",
+  "init_data": null,
+  "handlers": {
+    "approve_task": {
+      "description": "Apply an operator approval or rejection to a task waiting in AWAITING_APPROVAL.\nThe decision goes through TaskWorkflow.decide, the factory's durable approval\nauthority, and is recorded in the receipt with the approver's name.",
+      "mid_turn": "enqueue",
+      "input": {
+        "$ref": "#/$defs/TaskApproval"
+      },
+      "output": {
+        "$ref": "#/$defs/TaskStatus"
+      }
+    },
+    "cancel_task": {
+      "description": "Cancel one running task through its TaskWorkflow, wait for it to close, and\nreturn the finalized CANCELED receipt status.",
+      "mid_turn": "enqueue",
+      "input": {
+        "$ref": "#/$defs/TaskCancellation"
+      },
+      "output": {
+        "$ref": "#/$defs/TaskStatus"
+      }
+    },
+    "get_status": {
+      "description": "Read one task's live workflow state and durable receipt (status, review verdict,\napproval, evidence, xPlan decision, checkpoint SHA). Read-only.",
+      "mid_turn": "enqueue",
+      "input": {
+        "$ref": "#/$defs/TaskStatusQuery"
+      },
+      "output": {
+        "$ref": "#/$defs/TaskStatus"
+      }
+    },
+    "submit_task": {
+      "description": "Start one Alpha-Wiki factory task (its own TaskWorkflow, id `task-<task_id>`).\nRe-submitting a task id that already exists fails with REJECT_DUPLICATE and returns\nthat task's status; it never starts a second run.",
+      "mid_turn": "enqueue",
+      "input": {
+        "$ref": "#/$defs/SubmitTask"
+      },
+      "output": {
+        "$ref": "#/$defs/TaskStatus"
+      }
+    }
+  },
+  "states": {},
+  "$defs": {
+    "FactoryTaskSpec": {
+      "description": "One factory task, field-for-field equal to `agent_factory.models.TaskSpec`.\n\nDefaults are copied from TaskSpec; `test_harness_units.py` asserts the two\ndefinitions stay in sync.",
+      "properties": {
+        "task_id": {
+          "description": "Task identity; the workflow id is `task-<task_id>`.",
+          "title": "Task Id",
+          "type": "string"
+        },
+        "repo": {
+          "description": "Git URL or path used as origin; checkpoints are pushed here.",
+          "title": "Repo",
+          "type": "string"
+        },
+        "agent_steps": {
+          "items": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "title": "Agent Steps",
+          "type": "array"
+        },
+        "test_command": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Test Command",
+          "type": "array"
+        },
+        "owned_paths": {
+          "description": "Repo-relative prefixes this task may change.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Owned Paths",
+          "type": "array"
+        },
+        "base_ref": {
+          "default": "main",
+          "title": "Base Ref",
+          "type": "string"
+        },
+        "context_files": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Context Files",
+          "type": "array"
+        },
+        "env_passthrough": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Env Passthrough",
+          "type": "array"
+        },
+        "task_queue": {
+          "default": "factory",
+          "title": "Task Queue",
+          "type": "string"
+        },
+        "max_step_seconds": {
+          "default": 900,
+          "title": "Max Step Seconds",
+          "type": "integer"
+        },
+        "max_attempts": {
+          "default": 2,
+          "title": "Max Attempts",
+          "type": "integer"
+        },
+        "heartbeat_timeout_seconds": {
+          "default": 30,
+          "title": "Heartbeat Timeout Seconds",
+          "type": "integer"
+        },
+        "test_timeout_seconds": {
+          "default": 600,
+          "title": "Test Timeout Seconds",
+          "type": "integer"
+        },
+        "require_approval": {
+          "default": true,
+          "title": "Require Approval",
+          "type": "boolean"
+        },
+        "approval_timeout_seconds": {
+          "default": 86400,
+          "title": "Approval Timeout Seconds",
+          "type": "integer"
+        },
+        "reviewer": {
+          "default": "stub",
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "review_model": {
+          "default": "opencode-go/deepseek-v4.1-flash",
+          "title": "Review Model",
+          "type": "string"
+        },
+        "allow_free_review": {
+          "default": false,
+          "title": "Allow Free Review",
+          "type": "boolean"
+        },
+        "pr_backend": {
+          "default": "local",
+          "title": "Pr Backend",
+          "type": "string"
+        },
+        "pr_repo": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pr Repo"
+        },
+        "pr_title": {
+          "default": "",
+          "title": "Pr Title",
+          "type": "string"
+        },
+        "xplan": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Xplan"
+        },
+        "plugin_root": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Plugin Root"
+        },
+        "harness2_evaluation": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Harness2 Evaluation"
+        },
+        "openflowkit_report": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Openflowkit Report"
+        }
+      },
+      "required": [
+        "task_id",
+        "repo",
+        "agent_steps",
+        "test_command",
+        "owned_paths"
+      ],
+      "title": "FactoryTaskSpec",
+      "type": "object"
+    },
+    "SubmitTask": {
+      "description": "Ask the coordinator to start one `TaskWorkflow` (`task-<task_id>`).",
+      "properties": {
+        "spec": {
+          "$ref": "#/$defs/FactoryTaskSpec"
+        }
+      },
+      "required": [
+        "spec"
+      ],
+      "title": "SubmitTask",
+      "type": "object"
+    },
+    "TaskApproval": {
+      "description": "Forward a human decision to `TaskWorkflow.decide`, the durable approval authority.",
+      "properties": {
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        },
+        "verdict": {
+          "enum": [
+            "approve",
+            "reject"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        },
+        "by": {
+          "description": "Identified approver, recorded in the receipt.",
+          "title": "By",
+          "type": "string"
+        },
+        "note": {
+          "default": "",
+          "title": "Note",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "verdict",
+        "by"
+      ],
+      "title": "TaskApproval",
+      "type": "object"
+    },
+    "TaskCancellation": {
+      "description": "Cancel a running factory task through the workflow's own cancellation path.",
+      "properties": {
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id"
+      ],
+      "title": "TaskCancellation",
+      "type": "object"
+    },
+    "TaskStatus": {
+      "description": "One task's Temporal state plus the durable receipt fields the factory records.\n\n`error` is set when the operation failed or the task is unknown; an empty `error`\nwith a state means the read succeeded. Nothing here is fabricated: absent receipt\nfields stay empty strings.",
+      "properties": {
+        "task_id": {
+          "title": "Task Id",
+          "type": "string"
+        },
+        "workflow_id": {
+          "title": "Workflow Id",
+          "type": "string"
+        },
+        "state": {
+          "default": "",
+          "description": "`TaskWorkflow.state` (PENDING..PR_OPEN), or the receipt's status.",
+          "title": "State",
+          "type": "string"
+        },
+        "temporal_status": {
+          "default": "",
+          "description": "Temporal execution status (RUNNING, COMPLETED, CANCELED, ...).",
+          "title": "Temporal Status",
+          "type": "string"
+        },
+        "receipt_status": {
+          "default": "",
+          "title": "Receipt Status",
+          "type": "string"
+        },
+        "receipt_digest": {
+          "default": "",
+          "title": "Receipt Digest",
+          "type": "string"
+        },
+        "head_sha": {
+          "default": "",
+          "description": "Last checkpoint SHA, else the pinned base SHA.",
+          "title": "Head Sha",
+          "type": "string"
+        },
+        "review_verdict": {
+          "default": "",
+          "title": "Review Verdict",
+          "type": "string"
+        },
+        "reviewer": {
+          "default": "",
+          "title": "Reviewer",
+          "type": "string"
+        },
+        "approval": {
+          "default": "",
+          "description": "Recorded decision as `<verdict> by <approver> (<note>)`.",
+          "title": "Approval",
+          "type": "string"
+        },
+        "evidence_status": {
+          "default": "",
+          "title": "Evidence Status",
+          "type": "string"
+        },
+        "xplan_decision": {
+          "default": "",
+          "title": "Xplan Decision",
+          "type": "string"
+        },
+        "error": {
+          "default": "",
+          "title": "Error",
+          "type": "string"
+        },
+        "metrics": {
+          "additionalProperties": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Metrics",
+          "type": "object"
+        },
+        "entries": {
+          "description": "Receipt entry keys in recorded order.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "task_id",
+        "workflow_id",
+        "state",
+        "temporal_status",
+        "receipt_status",
+        "receipt_digest",
+        "head_sha",
+        "review_verdict",
+        "reviewer",
+        "approval",
+        "evidence_status",
+        "xplan_decision",
+        "error",
+        "metrics",
+        "entries"
+      ],
+      "title": "TaskStatus",
+      "type": "object"
+    },
+    "TaskStatusQuery": {
+      "description": "Ask the coordinator for one task's live state and durable receipt.",
+      "properties": {
+        "task_id": {
+          "description": "Task identity; the workflow id is `task-<task_id>`.",
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id"
+      ],
+      "title": "TaskStatusQuery",
+      "type": "object"
+    }
+  }
+}
