@@ -1580,3 +1580,62 @@ candidate until PR review, applicable CI, and publication evidence are present.
 
 Hosted [PR #4 CI attempt 2](https://github.com/yura4gus/alpha-wiki-creator/actions/runs/42502281089/attempts/2)
 again stopped before either job ran. GitHub reported the account billing lock.
+
+<a id="agent-factory-v1"></a>
+
+## 30. Agent Factory V1 (Temporal)
+
+Date: 2026-11-15. Execution baseline `fd73821`; verified factory code
+`2f9a9dd023286df1fa8a5cb6e5181a8826f60b98` on local branch
+`codex/agent-factory-v1`. This section owns the delivery receipt; the package
+runbook is [factory/README.md](../factory/README.md) and the release/rollback
+record is [factory/RELEASE.md](../factory/RELEASE.md).
+
+The factory keeps the authorities from sections 28–29. Temporal owns durable
+execution; xPlan owns issue state (dry-run readback only); Alpha-Wiki supplies
+pinned context; OpenCode supplies every model call; Harness² and OpenFlowKit
+remain offline receipt producers; Git and the PR adapter supply delivery
+evidence. No worker writes wiki, xPlan, Harness² or OpenFlowKit state.
+
+| ID | P | Status | Owner | Scope and acceptance |
+|---|---|---|---|---|
+| FACT-001 | P0 | DONE | Runtime | One real `opencode run --auto` task on an auto-created local origin. Two steps edited a failing Python project, the real unittest command passed, both checkpoint commits were pushed, live DeepSeek review returned `APPROVE`, and the workflow ended `PR_OPEN`. |
+| FACT-002 | P0 | DONE | Runtime | Recovery on the real CLI. A worker killed during step 1 (`exit 137`) was replaced by a fresh work root; step 0 was reused from origin, step 1 ran once, no duplicate commit appeared, and Temporal `Replayer` accepted the history. Cancellation killed the CLI process group and froze a `CANCELED` receipt. A post-push failure retried without a second model call. |
+| FACT-003 | P0 | DONE | Reviewer | Live independent review through OpenCode `opencode-go/deepseek-v4.1-flash` (paid): clean diff approved, scope creep rejected, receipt stores `diff_sha256` and `prompt_sha256`. Nonzero exit, malformed JSON, empty findings, empty diff or failed tests never approve. |
+| FACT-004 | P0 | DONE | Integration | Receipts from the existing Harness² replay and OpenFlowKit pilot are read, hash-pinned and passed to review/xPlan without running either tool. A live run recorded Harness² `PASS` (3/3 holdouts) and OpenFlowKit `PASS` on `d34c302040c86e0c72780f12d97052a70c76557b`, then xPlan returned `NO_CHANGE` with five evidence refs. |
+| FACT-005 | P0 | DONE | Runtime | `agent_factory.launcher up` starts Temporal when absent, runs the worker, admits tasks, applies an explicit `--approve-by` decision and reports state, review, receipt and measured step/test/wall time. The dev server stops with the command; the receipt remains readable. cmux stays a manual view with no execution authority. |
+| FACT-006 | P0 | BLOCKED | Release | Factory CI job is defined in `.github/workflows/plugin-ci.yml`. Hosted PRs #3/#4/#5 still fail in about 2 s before steps because of the account billing lock. Merge order (#4 → #5 → factory → #3) is unmet; no check was bypassed. |
+| FACT-007 | P1 | DEFERRED | Integration | xPlan write-back needs a conflict-safe conditional write. Keep dry-run until a conditional revision/`If-Match` path is proven. |
+| FACT-008 | P1 | DEFERRED | Skills | Versioned GitLab skills registry. Not part of V1; no parallel delivery path was added. |
+| FACT-009 | P2 | DEFERRED | Operations | 50–100 workers after load tests. V1 covers three concurrent isolated tasks only. |
+
+### Verification
+
+- Offline factory suite: 41 passed, 11 live tests skipped.
+- Live CLI suite: 5 passed in about 130–138 s (success, crash, cancel, retry
+  reuse, three concurrent tasks). Concurrency measured 15.8 s for three real
+  tasks; each branch changed only its owned directory and each PR number/head
+  was distinct.
+- Live review suite: 4 passed. Synthetic diffs only; the paid model rejected a
+  `deploy/` file outside the owned `app/` path.
+- Launcher suite: one command started Temporal, completed an approval, and
+  `status` read the frozen receipt after the server stopped.
+- Integration run: `PR_OPEN`; receipt `evidence` status `PASS`; step/test
+  metrics present; xPlan dry-run `NO_CHANGE`. No duplicate commits, PRs or
+  branches were observed and no repository corruption was reported.
+- Measured time is stored per step/test and as workflow wall time. OpenCode CLI
+  exposes no token/cost figure to this adapter, so none is claimed.
+- Real evidence hashes from the integration run: Harness² evaluation
+  `b4e66b1fbc2ab96cddf425546a16b2370ef94b4e09bb1d39c53ce27dfaec1908`;
+  OpenFlowKit report
+  `af7d7084570104ec0accb0e950812e0a02e677598a635bbeb9264bd756345310`.
+
+### Release state
+
+`RELEASE-READY / MERGE BLOCKED EXTERNALLY`. Functional acceptance passed
+locally; delivery is blocked by hosted CI billing, draft upstream PRs and the
+absence of an authorized sandbox GitHub repository for a real `gh` PR. Do not
+deploy, bypass protected checks, or write to xPlan. Next action: restore CI
+billing, merge #4 then #5, run the factory job, open the stacked factory PR,
+then handle PR #3 separately. Rollback is removal of the optional `factory/`
+package; no plugin manifest, hook, skill or wiki schema changes with it.
