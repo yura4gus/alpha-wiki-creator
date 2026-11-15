@@ -57,6 +57,14 @@ uv run python -m agent_factory.launcher up --task task.json
 Requires Python 3.12+, Git, Temporal CLI, OpenCode with an authenticated paid model,
 and an origin repository the worker may push `factory/<task_id>` to.
 
+Built from the verified code (`2f9a9dd`):
+
+- `agent_factory-0.1.0-py3-none-any.whl` SHA-256
+  `b4f3e8bff3d9844ab23433a3f65dd08dfd1f0c86011da7231f034a8f442974e5`
+- `agent_factory-0.1.0.tar.gz` SHA-256
+  `9c79401895ade450eff4cb5a5883a2efb04224282299030e14c06bcf725db916`
+
+
 ## Merge path and blockers
 
 Required order: PR #4 (OpenFlowKit/Harness²) → PR #5 (document contracts) → Factory
