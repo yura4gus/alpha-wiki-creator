@@ -10,6 +10,7 @@ independent review.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import re
@@ -31,15 +32,21 @@ Request CHANGES for any defect, scope creep, missing tests, or contract violatio
 """
 
 
+def _sha(text: str) -> str:
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
 def stub_review(owned_paths: list[str], diff: str, tests_passed: bool, head_sha: str) -> dict:
+    diff_sha = _sha(diff)
     if not diff.strip():
         return {"verdict": "CHANGES", "findings": "empty diff", "reviewer": "stub-rule-based",
-                "head_sha": head_sha}
+                "head_sha": head_sha, "diff_sha256": diff_sha, "prompt_sha256": ""}
     if not tests_passed:
         return {"verdict": "CHANGES", "findings": "tests did not pass", "reviewer": "stub-rule-based",
-                "head_sha": head_sha}
+                "head_sha": head_sha, "diff_sha256": diff_sha, "prompt_sha256": ""}
     return {"verdict": "APPROVE", "findings": "rule-based: non-empty diff, tests passed",
-            "reviewer": "stub-rule-based", "head_sha": head_sha}
+            "reviewer": "stub-rule-based", "head_sha": head_sha, "diff_sha256": diff_sha,
+            "prompt_sha256": ""}
 
 
 def _parse_verdict(text: str) -> dict:
@@ -58,6 +65,13 @@ def opencode_review(model: str, context: str, tests_summary: str, diff: str, hea
     binary = os.environ.get("FACTORY_OPENCODE_BIN", "opencode")
     prompt = PROMPT % (context[:12000], tests_summary, diff)
     reviewer = f"opencode:{model}"
+    diff_sha, prompt_sha = _sha(diff), _sha(prompt)
+    blocked = {"verdict": "BLOCKED", "reviewer": reviewer, "head_sha": head_sha,
+               "diff_sha256": diff_sha, "prompt_sha256": prompt_sha}
+    if "passed=True" not in tests_summary:
+        return {**blocked, "verdict": "CHANGES", "findings": "tests did not pass"}
+    if not diff.strip():
+        return {**blocked, "verdict": "CHANGES", "findings": "empty diff"}
     try:
         # Empty scratch cwd and minimal env: the reviewer sees only the prompt, not the repo.
         with tempfile.TemporaryDirectory(prefix="factory-review-") as cwd:
@@ -68,8 +82,11 @@ def opencode_review(model: str, context: str, tests_summary: str, diff: str, hea
         if proc.returncode != 0:
             raise RuntimeError((proc.stdout + proc.stderr).strip()[-300:] or f"exit {proc.returncode}")
         parsed = _parse_verdict(proc.stdout)
-        return {"verdict": parsed["verdict"], "findings": str(parsed.get("findings", "")),
-                "reviewer": reviewer, "head_sha": head_sha}
+        findings = str(parsed.get("findings", "")).strip()
+        if parsed["verdict"] == "APPROVE" and not findings:
+            raise ValueError("APPROVE without findings")
+        return {"verdict": parsed["verdict"], "findings": findings,
+                "reviewer": reviewer, "head_sha": head_sha, "diff_sha256": diff_sha,
+                "prompt_sha256": prompt_sha}
     except Exception as exc:  # a failed or unparseable review must never approve
-        return {"verdict": "BLOCKED", "findings": f"review failed: {type(exc).__name__}: {exc}"[:400],
-                "reviewer": reviewer, "head_sha": head_sha}
+        return {**blocked, "findings": f"review failed: {type(exc).__name__}: {exc}"[:400]}

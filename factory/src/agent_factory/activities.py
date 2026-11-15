@@ -20,9 +20,9 @@ from pathlib import Path
 from temporalio import activity
 from temporalio.exceptions import ApplicationError
 
-from . import faults, gitops, receipts, reviewer
+from . import faults, gitops, integrations, receipts, reviewer
 from .config import Config
-from .models import (ContextResult, PRRequest, ReviewRequest, ReviewResult,
+from .models import (ContextResult, EvidenceResult, PRRequest, ReviewRequest, ReviewResult,
                      StepResult, TaskSpec, TestResult)
 from .prs import adapter_for
 
@@ -97,7 +97,14 @@ async def build_context(spec: TaskSpec, base_sha: str) -> ContextResult:
 
 
 @activity.defn
-async def agent_step(spec: TaskSpec, index: int, checkpoint: str) -> StepResult:
+async def collect_evidence(spec: TaskSpec) -> EvidenceResult:
+    """Read Harness²/OpenFlowKit receipts without running either tool."""
+    return await asyncio.to_thread(integrations.read_evidence, spec)
+
+
+@activity.defn
+async def agent_step(spec: TaskSpec, index: int, checkpoint: str,
+                     context_text: str = "") -> StepResult:
     """Run one agent CLI step and end it as one pushed checkpoint commit."""
     cfg = Config.from_env()
     started = time.monotonic()
@@ -109,6 +116,9 @@ async def agent_step(spec: TaskSpec, index: int, checkpoint: str) -> StepResult:
     wt = await asyncio.to_thread(gitops.ensure_worktree, cfg.work_root, spec.repo, spec.task_id, checkpoint)
     activity.heartbeat({"step": index, "phase": "ready"})
     context_file = cfg.work_root / spec.task_id / "context.md"
+    if context_text:  # the worker filesystem is ephemeral: rebuild the pinned context
+        context_file.parent.mkdir(parents=True, exist_ok=True)
+        context_file.write_text(context_text)
     beats = {"n": 0}
 
     def on_beat(proc):
@@ -202,7 +212,10 @@ async def reconcile_dry_run(spec: TaskSpec, kind: str, git_sha: str, evidence: l
     if proc.returncode != 0:
         return {"decision": "INVALID", "reason": err.decode(errors="replace").strip()[-300:],
                 "mode": "dry_run"}
-    return json.loads(out)
+    try:
+        return json.loads(out)
+    except json.JSONDecodeError as exc:
+        return {"decision": "INVALID", "reason": f"non-JSON planner output: {exc}", "mode": "dry_run"}
 
 
 @activity.defn
@@ -222,6 +235,10 @@ async def finalize_receipt(status: str) -> dict:
     info = activity.info()
     task_id = info.workflow_id.removeprefix("task-")
     doc = await asyncio.to_thread(receipts.finalize, cfg.state_dir, info.workflow_id, task_id, status)
+    problems = receipts.validate(doc)
+    if problems:
+        raise ApplicationError(f"invalid receipt: {problems}", type="ReceiptInvalid",
+                               non_retryable=True)
     return {"path": str(receipts.receipt_path(cfg.state_dir, info.workflow_id)),
             "digest": doc["digest"], "status": doc["status"]}
 
@@ -232,5 +249,5 @@ async def cleanup_worktree(spec: TaskSpec) -> bool:
     return await asyncio.to_thread(gitops.remove_worktree, cfg.work_root, spec.repo, spec.task_id)
 
 
-ALL = [pin_snapshot, build_context, agent_step, run_tests, review, open_pr,
+ALL = [pin_snapshot, build_context, collect_evidence, agent_step, run_tests, review, open_pr,
        reconcile_dry_run, record_step, finalize_receipt, cleanup_worktree]

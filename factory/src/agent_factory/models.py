@@ -24,12 +24,17 @@ class TaskSpec:
     require_approval: bool = True
     approval_timeout_seconds: int = 86400
     reviewer: str = "stub"  # stub | opencode
-    review_model: str = "opencode/deepseek-v4.1-flash-free"  # provider/model for reviewer=opencode
+    review_model: str = "opencode-go/deepseek-v4.1-flash"  # provider/model; paid default
+    allow_free_review: bool = False  # explicit authorization for free models on private code
     pr_backend: str = "local"  # local | gh
     pr_repo: Optional[str] = None  # owner/name, required for gh
     pr_title: str = ""
     xplan: Optional[dict] = None  # {"binding": ..., "observed": ...}; dry-run only
     plugin_root: Optional[str] = None  # checkout holding tools/xplan_dry_run.py
+    # Read-only evidence produced by the existing offline tools. The factory reads
+    # their receipts; it never runs Harness² or OpenFlowKit itself.
+    harness2_evaluation: Optional[str] = None  # path to scripts/harness2_alpha_wiki.py output
+    openflowkit_report: Optional[str] = None  # path to scripts/openflowkit_pilot.py report.json
 
 
 @dataclass
@@ -77,6 +82,20 @@ class ReviewResult:
     findings: str
     reviewer: str
     head_sha: str
+    diff_sha256: str = ""
+    prompt_sha256: str = ""
+
+    def __post_init__(self) -> None:
+        if self.verdict not in {"APPROVE", "CHANGES", "BLOCKED"}:
+            raise ValueError(f"invalid review verdict {self.verdict!r}")
+
+
+@dataclass
+class EvidenceResult:
+    status: str  # PASS | DRIFT | UNKNOWN | MISSING | INVALID
+    refs: list[str]
+    sources: list[dict]
+    note: str = ""
 
 
 @dataclass

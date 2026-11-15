@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+import shutil
 import subprocess
 import sys
 import uuid
@@ -14,7 +16,8 @@ from agent_factory.activities import ALL
 from agent_factory.models import TaskSpec
 from agent_factory.workflows import TaskWorkflow
 
-TEMPORAL = "/opt/homebrew/bin/temporal"
+TEMPORAL = (os.environ.get("FACTORY_TEMPORAL_BIN") or shutil.which("temporal")
+            or "/opt/homebrew/bin/temporal")
 FAKE = str(Path(__file__).parent / "fake_agent.py")
 PLUGIN_ROOT = str(Path(__file__).resolve().parents[2])
 

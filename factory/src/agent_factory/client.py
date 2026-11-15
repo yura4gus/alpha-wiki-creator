@@ -25,6 +25,12 @@ def validate_batch(specs: list[TaskSpec]) -> None:
     for spec in specs:
         if not (spec.agent_steps and spec.test_command and spec.owned_paths):
             raise ValueError(f"{spec.task_id}: agent_steps, test_command and owned_paths are required")
+        if spec.reviewer not in {"stub", "opencode"}:
+            raise ValueError(f"{spec.task_id}: unknown reviewer {spec.reviewer!r}")
+        if spec.review_model.endswith("-free") and not spec.allow_free_review:
+            raise ValueError(f"{spec.task_id}: free review model needs allow_free_review=true")
+        if spec.pr_backend == "gh" and spec.reviewer != "opencode":
+            raise ValueError(f"{spec.task_id}: a real PR needs the independent OpenCode reviewer")
         if any(p.startswith("/") or ".." in p.split("/") for p in spec.owned_paths):
             raise ValueError(f"{spec.task_id}: owned_paths must be repo-relative")
         if spec.task_id in seen:

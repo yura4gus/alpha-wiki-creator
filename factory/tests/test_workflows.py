@@ -47,12 +47,35 @@ async def test_success_task_to_pr(env, origin, dirs, queue):
     assert result.review["verdict"] == "APPROVE" and result.review["reviewer"] == "stub-rule-based"
     doc = receipt(state, "ok")
     assert receipts.validate(doc) == [] and doc["digest"] == result.receipt_digest
-    assert {"pinned", "context", "step-0", "step-1", "tests", "review", "pr", "xplan_dry_run"} <= set(doc["entries"])
+    assert {"pinned", "context", "step-0", "step-1", "tests", "evidence", "review", "pr",
+            "xplan_dry_run"} <= set(doc["entries"])
+    assert {s["path"] for s in doc["entries"]["context"]["sources"]} == {
+        "AGENTS.md", "wiki/graph/context_brief.md"}
+    assert doc["entries"]["evidence"]["status"] == "MISSING"
     assert doc["entries"]["xplan_dry_run"]["mode"] == "dry_run"
     assert doc["entries"]["xplan_dry_run"]["decision"] == "NO_CHANGE"  # delivery gate not met
     assert step_commits(origin, "factory/ok", "ok", 0) == 1 and step_commits(origin, "factory/ok", "ok", 1) == 1
     assert len(prs(state)) == 1
     assert not (dirs[0] / "ok" / "wt").exists()  # worktree cleaned; work lives on the pushed branch
+
+
+async def test_external_evidence_receipts_are_read_and_recorded(env, origin, dirs, queue, tmp_path):
+    _, state = dirs
+    h2, ofk = tmp_path / "h2.json", tmp_path / "ofk.json"
+    h2.write_text(json.dumps({"profile": "alpha-wiki", "executor": "deterministic",
+                              "result": "PASS", "cases": {"train": {"candidate_pass": True}}}))
+    ofk.write_text(json.dumps({"kind": "repo-observed", "result": "PASS",
+                               "source": {"sha": "a" * 40}, "model_sha256": "b" * 64,
+                               "tool": "openflowkit 0.3.0"}))
+    spec = make_spec(origin, queue, "ev", "src/a", [agent("write", "src/a/one.txt", "1")],
+                     harness2_evaluation=str(h2), openflowkit_report=str(ofk))
+    async with worker(env, queue):
+        result = await (await start_task(env.client, spec)).result()
+    assert result.status == "PR_OPEN"
+    entry = receipt(state, "ev")["entries"]["evidence"]
+    assert entry["status"] == "PASS" and len(entry["sources"]) == 2
+    assert {s["kind"] for s in entry["sources"]} == {"harness2", "openflowkit"}
+    assert all(len(s["sha256"]) == 64 for s in entry["sources"])
 
 
 async def test_approval_pauses_without_worker_and_resumes(env, origin, dirs, queue):
@@ -250,15 +273,16 @@ async def test_opencode_review_approves_and_is_recorded(env, origin, dirs, queue
     monkeypatch.setenv("FACTORY_OPENCODE_BIN", fake_opencode(
         tmp_path, '\x1b[1mreview\x1b[0m {"verdict": "APPROVE", "findings": "scoped and tested"}'))
     spec = make_spec(origin, queue, "ocr", "src/a", [agent("write", "src/a/one.txt", "1")],
-                     reviewer="opencode", review_model="opencode/deepseek-v4.1-flash-free")
+                     reviewer="opencode", review_model="opencode-go/deepseek-v4.1-flash")
     async with worker(env, queue):
         result = await (await start_task(env.client, spec)).result()
     assert result.status == "PR_OPEN"
-    assert result.review["reviewer"] == "opencode:opencode/deepseek-v4.1-flash-free"
+    assert result.review["reviewer"] == "opencode:opencode-go/deepseek-v4.1-flash"
     assert receipt(state, "ocr")["entries"]["review"]["verdict"] == "APPROVE"
 
 
 @pytest.mark.parametrize("body,code", [("not json at all", 0), ('{"verdict": "MAYBE"}', 0),
+                                       ('{"verdict": "APPROVE"}', 0),
                                        ('{"verdict": "APPROVE"}', 1)])
 async def test_opencode_review_failure_blocks_never_approves(env, origin, dirs, queue, tmp_path,
                                                              monkeypatch, body, code):
@@ -287,7 +311,7 @@ async def test_live_opencode_deepseek_review(env, origin, dirs, queue):
     _, state = dirs
     spec = make_spec(origin, queue, "live", "src/a", [agent("write", "src/a/one.txt", "hello")],
                      reviewer="opencode", review_model=os.environ.get(
-                         "FACTORY_REVIEW_MODEL", "opencode/deepseek-v4.1-flash-free"))
+                         "FACTORY_REVIEW_MODEL", "opencode-go/deepseek-v4.1-flash"))
     async with worker(env, queue):
         result = await (await start_task(env.client, spec)).result()
     assert result.review["reviewer"].startswith("opencode:") and "deepseek" in result.review["reviewer"]

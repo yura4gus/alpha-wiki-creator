@@ -2,9 +2,9 @@ import json
 
 import pytest
 
-from agent_factory import gitops, receipts
+from agent_factory import gitops, receipts, reviewer
 from agent_factory.client import validate_batch
-from agent_factory.models import TaskSpec
+from agent_factory.models import ReviewResult, TaskSpec
 from conftest import agent, sh
 
 
@@ -41,6 +41,32 @@ def test_overlapping_ownership_is_rejected():
         validate_batch([spec("a", ["x"]), spec("a", ["y"])])
     with pytest.raises(ValueError, match="repo-relative"):
         validate_batch([spec("a", ["../x"])])
+
+
+def test_review_policy_rejects_free_models_and_stub_gh_prs():
+    free = spec("a", ["x"])
+    free.review_model = "opencode/deepseek-v4.1-flash-free"
+    with pytest.raises(ValueError, match="allow_free_review"):
+        validate_batch([free])
+    free.allow_free_review = True
+    validate_batch([free])
+    real = spec("b", ["y"])
+    real.pr_backend, real.pr_repo, real.reviewer = "gh", "owner/name", "stub"
+    with pytest.raises(ValueError, match="independent"):
+        validate_batch([real])
+
+
+def test_review_result_refuses_unknown_verdict():
+    with pytest.raises(ValueError, match="invalid review verdict"):
+        ReviewResult("MAYBE", "x", "stub", "a" * 40)
+
+
+def test_reviewer_fails_closed_on_empty_diff_or_failed_tests(monkeypatch):
+    empty = reviewer.opencode_review("m", "ctx", "passed=True", "\n\n", "a" * 40)
+    failed = reviewer.opencode_review("m", "ctx", "passed=False", "diff", "a" * 40)
+    assert empty["verdict"] == failed["verdict"] == "CHANGES"
+    assert empty["diff_sha256"] and empty["prompt_sha256"]
+    assert not empty["reviewer"].endswith("-free") or empty["reviewer"].startswith("opencode:")
 
 
 def test_checkpoint_commit_is_deterministic_across_worktrees(origin, tmp_path):

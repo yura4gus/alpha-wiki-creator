@@ -94,7 +94,7 @@ class TaskWorkflow:
         for index in range(len(spec.agent_steps)):
             self._state = f"AGENT_STEP_{index}"
             step = await workflow.execute_activity(
-                act.agent_step, args=[spec, index, checkpoint],
+                act.agent_step, args=[spec, index, checkpoint, ctx.text],
                 start_to_close_timeout=timedelta(seconds=spec.max_step_seconds),
                 heartbeat_timeout=timedelta(seconds=spec.heartbeat_timeout_seconds),
                 retry_policy=RetryPolicy(
@@ -103,7 +103,8 @@ class TaskWorkflow:
                 cancellation_type=workflow.ActivityCancellationType.WAIT_CANCELLATION_COMPLETED)
             checkpoint = step.sha
             await self._rec(f"step-{index}", {"sha": step.sha, "changed": step.changed},
-                            {"seconds": round(step.seconds, 2), "reused": step.reused})
+                            {"seconds": round(step.seconds, 2), "reused": step.reused,
+                             "exit_code": step.exit_code})
         result.head_sha = checkpoint
 
         self._state = "TESTING"
@@ -119,22 +120,37 @@ class TaskWorkflow:
             return await self._finish(spec, "FAILED_TESTS", result)
 
         self._state = "REVIEW"
+        evidence = await workflow.execute_activity(act.collect_evidence, spec, **SHORT)
+        await self._rec("evidence", {"status": evidence.status, "sources": evidence.sources,
+                                     "note": evidence.note})
+        context_text = ctx.text
+        if evidence.refs:
+            context_text += "\n\n## External evidence (read-only)\n" + "\n".join(
+                f"- {ref}" for ref in evidence.refs)
         verdict = await workflow.execute_activity(
-            act.review, args=[spec, ReviewRequest(base, checkpoint, ctx.text, tests.passed, tests.log_tail)],
+            act.review, args=[spec, ReviewRequest(base, checkpoint, context_text, tests.passed,
+                                                  tests.log_tail)],
             start_to_close_timeout=timedelta(minutes=5),
             retry_policy=RetryPolicy(maximum_attempts=3))
         result.review = asdict(verdict)
         await self._rec("review", asdict(verdict))
-        evidence = [f"receipt:{workflow.info().workflow_id}"]
+        evidence_refs = [f"receipt:{workflow.info().workflow_id}", f"commit:{checkpoint}",
+                         *evidence.refs]
+        if verdict.diff_sha256:
+            evidence_refs.append(f"diff:sha256:{verdict.diff_sha256}")
         if verdict.verdict == "BLOCKED":
             result.error = verdict.findings
             return await self._finish(spec, "BLOCKED_REVIEW", result)
         if verdict.verdict == "CHANGES":
             plan = await workflow.execute_activity(
-                act.reconcile_dry_run, args=[spec, "rework", checkpoint, evidence, verdict.findings], **SHORT)
+                act.reconcile_dry_run, args=[spec, "rework", checkpoint, evidence_refs,
+                                             verdict.findings], **SHORT)
             await self._rec("xplan_dry_run", plan)
             result.error = verdict.findings
             return await self._finish(spec, "CHANGES_REQUESTED", result)
+        if verdict.verdict != "APPROVE":
+            result.error = f"unknown review verdict {verdict.verdict!r}; refusing to ship"
+            return await self._finish(spec, "BLOCKED_REVIEW", result)
 
         if spec.require_approval:
             self._state = "AWAITING_APPROVAL"
@@ -158,6 +174,6 @@ class TaskWorkflow:
         await self._rec("pr", {"head": pr["head"], "head_sha": checkpoint}, {"number": pr.get("number")})
 
         plan = await workflow.execute_activity(
-            act.reconcile_dry_run, args=[spec, "worker_finished", checkpoint, evidence, ""], **SHORT)
+            act.reconcile_dry_run, args=[spec, "worker_finished", checkpoint, evidence_refs, ""], **SHORT)
         await self._rec("xplan_dry_run", plan)
         return await self._finish(spec, "PR_OPEN", result)
