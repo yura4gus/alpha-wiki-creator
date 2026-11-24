@@ -1737,18 +1737,18 @@ in this repository.
 | `RAILWAY_OPENCODE_READY` | PASS | OpenCode 2.3.0, paid `opencode-go/deepseek-v4.1-flash`, `HOME=/data/home`, private loopback/serve; no competing compute-host server. |
 | `TEMPORAL_POLLERS_ACTIVE` | PASS | Exactly one workflow+activity poller each on `factory-code` and `factory-coordinator`; one external `bsc-batch` poller. |
 | `ITSPLAN_TASK_BINDING_PASS` | BLOCKED | `plan-api.value8.dev` returns 401 and the ITSPlan Railway project is not visible to the authorized account. Adapter is snapshot-fed and read-only; no write path. |
-| `REMOTE_CODING_E2E_PASS` | PASS | Railway task `task-railway-sprint-20261124T223144Z`: paid model, tests pass, independent review `APPROVE`, approval by `railway-operator`, `PR_OPEN`, receipt digest `b121f138…791327`. |
+| `REMOTE_CODING_E2E_PASS` | PASS | Railway task `task-railway-final-20261124T225707Z` on deployment `4a7d018`: paid model, tests pass, independent review `APPROVE`, approval by `railway-operator`, `PR_OPEN`, receipt digest `7eaf596a…8f4e`. |
 | `EXTERNAL_BATCH_WORKER_PASS` | PASS | `bsc-batch` poller on external compute; A2 `BatchWorkflow` completed. |
-| `RESTART_RECOVERY_PASS` | PASS | Remote batch worker restarted during a slow unit; workflow `batch-acc-restart-20261124T223613Z-b05727`, receipt `183186b6…f1700`, effects `u0,u1`, no duplicate. |
+| `RESTART_RECOVERY_PASS` | PASS | Remote batch worker restarted during a slow unit; workflow `batch-acc-restart-20261124T223613Z-b05727`, receipt `ee27bc29…dca5a`, effects `u0,u1`, no duplicate. |
 | `MAC_INDEPENDENCE_PASS` | PASS | Remote runs completed with zero local factory/temporal worker processes; Mac only submitted and read back. |
 | `REMOTE_FACTORY_READY` | PASS | Railway services healthy, private API, durable state, tested restart/rollback. |
 | `REMOTE_OPENCODE_PASS` | PASS | Paid DeepSeek coding and independent review on the Railway runtime. |
 | `DETERMINISTIC_BATCH_PASS` | PASS | A2 workflow tests plus real BSC job; no model in batch/recovery. |
-| `BSC_0029_CANARY_PASS` | PASS (read-only) | Smallest approved job `JOB-0029-01` through A2: 25/25 DQ checks, outputs read back, receipt `6e7c0cf3…7234`. Full canary #2 remains BLOCKED on MISSING-1..6. |
+| `BSC_0029_CANARY_PASS` | PASS (read-only) | Smallest approved job `JOB-0029-01` through A2: 25/25 DQ checks, outputs read back, receipt `70c8b091…baaa`. Full canary #2 remains BLOCKED on MISSING-1..6. |
 | `CHECKPOINT_RESUME_PASS` | PASS | A2 crash/resume test reuses only fenced completed units; remote restart kept `u0` checkpoint and completed `u1` once. |
 | `DQ_READBACK_PASS` | PASS | DQ report hash and all declared outputs read back; 25 checks, 0 fail, `READY`. |
 | `ZERO_DUPLICATE_EFFECTS` | PASS | Duplicate BSC submit rejected, one `Factory-Step`/PR per coding task, restart effects exactly `u0,u1`. |
-| `TELEMETRY_VERIFIED` | PASS | Task receipt step telemetry 38,322 tokens and review telemetry 14,927 tokens; cost reported `0.0`; missing fields `UNAVAILABLE`. |
+| `TELEMETRY_VERIFIED` | PASS | Final task receipt step telemetry 37,355 tokens and review telemetry 22,755 tokens; cost reported `0.0`; missing fields `UNAVAILABLE`. |
 
 ### BSC status
 
