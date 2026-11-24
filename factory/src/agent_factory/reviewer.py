@@ -16,6 +16,9 @@ import os
 import re
 import subprocess
 import tempfile
+import time
+
+from . import telemetry
 
 PROMPT = """You are an independent code reviewer. Judge the diff against the task contract.
 Reply with JSON only: {"verdict": "APPROVE" | "CHANGES", "findings": "<text>"}.
@@ -61,7 +64,13 @@ def _parse_verdict(text: str) -> dict:
 
 
 def opencode_review(model: str, context: str, tests_summary: str, diff: str, head_sha: str,
-                    timeout: int = 300) -> dict:
+                    timeout: int = 300, telemetry_out: dict | None = None) -> dict:
+    """Run the reviewer through OpenCode.
+
+    `telemetry_out`, when supplied, switches the CLI to `--format json`, parses
+    token/cost fields with `telemetry`, and fills the dict. It does not change
+    the verdict contract: the same fail-closed rules apply.
+    """
     binary = os.environ.get("FACTORY_OPENCODE_BIN", "opencode")
     prompt = PROMPT % (context[:12000], tests_summary, diff)
     reviewer = f"opencode:{model}"
@@ -73,15 +82,31 @@ def opencode_review(model: str, context: str, tests_summary: str, diff: str, hea
     if not diff.strip():
         return {**blocked, "verdict": "CHANGES", "findings": "empty diff"}
     try:
+        argv = [binary, "run", "-m", model]
+        if telemetry_out is not None:
+            argv.extend(["--format", "json"])
+        argv.append(prompt)
+        started = time.monotonic()
         # Empty scratch cwd and minimal env: the reviewer sees only the prompt, not the repo.
         with tempfile.TemporaryDirectory(prefix="factory-review-") as cwd:
+            review_env = {k: os.environ[k]
+                          for k in ("PATH", "HOME", "LANG", "TMPDIR") if k in os.environ}
+            # OpenCode resolves its session directory from PWD, so point it at the
+            # scratch dir instead of the worker's directory.
+            review_env["PWD"] = cwd
             proc = subprocess.run(
-                [binary, "run", "-m", model, prompt], cwd=cwd, capture_output=True, text=True,
-                timeout=timeout,
-                env={k: os.environ[k] for k in ("PATH", "HOME", "LANG", "TMPDIR") if k in os.environ})
+                argv, cwd=cwd, capture_output=True, text=True, timeout=timeout,
+                env=review_env)
+        elapsed = time.monotonic() - started
+        if telemetry_out is not None:
+            telemetry_out.update(telemetry.parse_run(
+                proc.stdout, model=model, wall_seconds=elapsed, exit_code=proc.returncode,
+                stage="review"))
         if proc.returncode != 0:
             raise RuntimeError((proc.stdout + proc.stderr).strip()[-300:] or f"exit {proc.returncode}")
-        parsed = _parse_verdict(proc.stdout)
+        reply = (telemetry.final_text(proc.stdout) or telemetry.extract_text(proc.stdout)
+                 or proc.stdout)
+        parsed = _parse_verdict(reply)
         findings = str(parsed.get("findings", "")).strip()
         if parsed["verdict"] == "APPROVE" and not findings:
             raise ValueError("APPROVE without findings")
