@@ -85,3 +85,7 @@
 ## [2026-11-16] document-update | Record the automated Harness Console HTTP acceptance: session submit, approval through TaskWorkflow.decide, frozen receipt and no duplicate workflow | documents=`docs/roadmap-execution.md` | change=cc0db91ece501c27f3b8
 
 ## [2026-11-16] document-update | Finalize Harness acceptance counts after the Console HTTP test: 80 offline/15 skipped, 94 live/1 skipped; three real tasks 31.2 s | documents=`docs/roadmap-execution.md` | change=0226d1acd8049103b575
+
+## [2026-11-24] document-update | Close v0.8.2 delivery: PRs #4/#5/#6/#3 merged with green hosted CI, factory CI and Harness acceptance complete, release published, and remaining P1/P2 recorded | documents=`docs/roadmap-execution.md` | change=1e36c8fc6e87f619d930
+
+## [2026-11-24] document-update | Publish v0.8.2 changelog with Agent Factory V1, Temporal Agent Harness, OpenFlowKit/Harness² and Claude hook fixes | documents=`CHANGELOG.md` | change=a0a2f5a3f6d79b4ac486

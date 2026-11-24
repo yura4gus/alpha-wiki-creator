@@ -1604,7 +1604,7 @@ evidence. No worker writes wiki, xPlan, Harness² or OpenFlowKit state.
 | FACT-003 | P0 | DONE | Reviewer | Live independent review through OpenCode `opencode-go/deepseek-v4.1-flash` (paid): clean diff approved, scope creep rejected, receipt stores `diff_sha256` and `prompt_sha256`. Nonzero exit, malformed JSON, empty findings, empty diff or failed tests never approve. |
 | FACT-004 | P0 | DONE | Integration | Receipts from the existing Harness² replay and OpenFlowKit pilot are read, hash-pinned and passed to review/xPlan without running either tool. A live run recorded Harness² `PASS` (3/3 holdouts) and OpenFlowKit `PASS` on `d34c302040c86e0c72780f12d97052a70c76557b`, then xPlan returned `NO_CHANGE` with five evidence refs. |
 | FACT-005 | P0 | DONE | Runtime | `agent_factory.launcher up` starts Temporal when absent, runs the worker, admits tasks, applies an explicit `--approve-by` decision and reports state, review, receipt and measured step/test/wall time. The dev server stops with the command; the receipt remains readable. cmux stays a manual view with no execution authority. |
-| FACT-006 | P0 | BLOCKED | Release | Factory CI job is defined in `.github/workflows/plugin-ci.yml`. Hosted PRs #3/#4/#5 still fail in about 2 s before steps because of the account billing lock. Merge order (#4 → #5 → factory → #3) is unmet; no check was bypassed. |
+| FACT-006 | P0 | DONE | Release | Factory CI job installs the `harness` extra and passed on Ubuntu with the Temporal CLI. PRs #4/#5/#6/#3 merged in order with `test`, `openflowkit` and `factory` green; v0.8.2 is published. |
 | FACT-007 | P1 | DEFERRED | Integration | xPlan write-back needs a conflict-safe conditional write. Keep dry-run until a conditional revision/`If-Match` path is proven. |
 | FACT-008 | P1 | DEFERRED | Skills | Versioned GitLab skills registry. Not part of V1; no parallel delivery path was added. |
 | FACT-009 | P2 | DEFERRED | Operations | 50–100 workers after load tests. V1 covers three concurrent isolated tasks only. |
@@ -1632,13 +1632,13 @@ evidence. No worker writes wiki, xPlan, Harness² or OpenFlowKit state.
 
 ### Release state
 
-`RELEASE-READY / MERGE BLOCKED EXTERNALLY`. Functional acceptance passed
-locally; delivery is blocked by hosted CI billing, draft upstream PRs and the
-absence of an authorized sandbox GitHub repository for a real `gh` PR. Do not
-deploy, bypass protected checks, or write to xPlan. Next action: restore CI
-billing, merge #4 then #5, run the factory job, open the stacked factory PR,
-then handle PR #3 separately. Rollback is removal of the optional `factory/`
-package; no plugin manifest, hook, skill or wiki schema changes with it.
+`RELEASED IN v0.8.2`. PRs #4, #5, #6 and #3 merged with green hosted checks;
+the factory wheel/sdist ship with the v0.8.2 Release. Temporal Cloud
+`alpha-dev.n3kw9` carried one dev smoke workflow; the API key stays outside the
+repository. No production deployment, automatic merge or xPlan write was
+performed. Remaining P1/P2 work is listed in section 31. Rollback is removal of
+the optional `factory/` package; no plugin manifest, hook, skill or wiki schema
+changes with it.
 
 <a id="temporal-agent-harness-v1"></a>
 
@@ -1667,7 +1667,7 @@ call still runs through the OpenCode CLI.
 | AH-07 | P0 | DONE | Three real OpenCode tasks through the coordinator in 31.2 s, three live reviews, three PRs, one approval by `harness-operator`, restart/reconnect, no duplicate commits or PRs. |
 | AH-08 | P1 | DEFERRED | cmux remains a manual operator view; no reliable automation CLI is assumed. |
 | AH-09 | P1 | DEFERRED | Cost telemetry is elapsed time only; OpenCode exposes no per-run token/cost value to this adapter. |
-| AH-10 | P1 | IN_REVIEW | Tests, runbook and factory CI job updated; PR #6 remains draft because hosted CI is billing-blocked and #4/#5 are unmerged. |
+| AH-10 | P1 | DONE | Tests, runbook and factory CI job updated; PR #6 merged after #4/#5 with `factory`, `test` and `openflowkit` green; artifacts ship with v0.8.2. |
 
 ### Verification
 
@@ -1703,6 +1703,8 @@ call still runs through the OpenCode CLI.
   by re-pinning, regenerating the schema and rerunning the DoD tests.
 - cmux, cost telemetry and a full browser submit/approve acceptance remain P1.
 
-Release state is unchanged: `RELEASE-READY / MERGE BLOCKED EXTERNALLY` because
-GitHub Actions is billing-blocked and PRs #4/#5 are unmerged. No production
-deployment, automatic merge or xPlan write was performed.
+Release state: `RELEASED IN v0.8.2`. Hosted CI passed for #4, #5, #6 and #3; the
+factory wheel/sdist are attached to the v0.8.2 Release. No production
+deployment, automatic merge or xPlan write was performed. Remaining P1/P2:
+cmux automation, cost/token telemetry, full browser UI automation, xPlan
+write-back, GitLab skills registry and 50–100 worker scale.
