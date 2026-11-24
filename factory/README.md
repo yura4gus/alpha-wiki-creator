@@ -91,7 +91,8 @@ Authority does not move with the console:
 Logs are written to `<state_dir>/harness/{harness,coordinator}.log`; the last
 stack record is `<state_dir>/harness/stack.json`. See [HARNESS.md](HARNESS.md)
 for start/stop, console and CLI operation, reconnect, restart, logs and
-troubleshooting.
+troubleshooting. For the persistent Railway control plane (private console,
+volume, queue routing and redeploy), see [RAILWAY.md](RAILWAY.md).
 
 ## Hosted deployment
 
