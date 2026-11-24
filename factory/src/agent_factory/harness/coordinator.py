@@ -27,8 +27,8 @@ with workflow.unsafe.imports_passed_through():
     from temporal_agent_harness.harness.agent_workflow import AgentWorkflowRunner
 
     from . import tools
-    from .models import (SubmitTask, TaskApproval, TaskCancellation, TaskStatus,
-                         TaskStatusQuery)
+    from .models import (BatchCancellation, BatchStatus, BatchStatusQuery, SubmitBatch, SubmitTask,
+                         TaskApproval, TaskCancellation, TaskStatus, TaskStatusQuery)
 
 
 @agent.defn(name="FactoryCoordinatorAgent")
@@ -80,3 +80,21 @@ class FactoryCoordinatorAgent:
         """Cancel one running task through its TaskWorkflow, wait for it to close, and
         return the finalized CANCELED receipt status."""
         return await self._dispatch(tools.cancel_task, request)
+
+    @agent.accepts(mid_turn=MidTurn.ENQUEUE, model_callable=False)
+    async def submit_batch(self, request: SubmitBatch) -> BatchStatus:
+        """Validate a frozen batch manifest and start `batch-<job_id>`; duplicate job ids
+        are rejected and never start a second run. Batch jobs skip coding review and PRs."""
+        return await self._dispatch(tools.submit_batch, request)
+
+    @agent.accepts(mid_turn=MidTurn.ENQUEUE, model_callable=False)
+    async def get_batch_status(self, request: BatchStatusQuery) -> BatchStatus:
+        """Read one batch job's live state, unit checkpoints and DQ status from its
+        durable receipt. Read-only; no model and no execution."""
+        return await self._dispatch(tools.get_batch_status, request)
+
+    @agent.accepts(mid_turn=MidTurn.ENQUEUE, model_callable=False)
+    async def cancel_batch(self, request: BatchCancellation) -> BatchStatus:
+        """Cancel one batch job through its BatchWorkflow, kill its process group, and
+        return the finalized BATCH_CANCELED receipt status."""
+        return await self._dispatch(tools.cancel_batch, request)

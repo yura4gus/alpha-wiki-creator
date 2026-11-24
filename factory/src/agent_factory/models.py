@@ -57,6 +57,7 @@ class StepResult:
     exit_code: int
     log_tail: str
     seconds: float
+    usage: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -84,6 +85,7 @@ class ReviewResult:
     head_sha: str
     diff_sha256: str = ""
     prompt_sha256: str = ""
+    telemetry: dict = field(default_factory=dict)
 
     def __post_init__(self) -> None:
         if self.verdict not in {"APPROVE", "CHANGES", "BLOCKED"}:

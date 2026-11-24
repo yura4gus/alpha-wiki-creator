@@ -183,3 +183,14 @@ The package is optional and creates no service. To roll back:
    plugin manifest, hook, skill or wiki migration has to be undone.
 4. Close any factory PR whose branch is no longer wanted; branches are
    `factory/<task_id>` and are never force-pushed by the factory.
+
+## Remote pilot (2026-11-25)
+
+Railway hosts the lightweight control plane (`agent-factory-runtime` and
+`agent-factory-harness`, private, no public domains); the external compute host
+polls only `bsc-batch`. Temporal Cloud `alpha-dev.n3kw9` remains the execution
+backend. The pilot passed paid remote coding with independent review, telemetry,
+a real BSC 0029 read-only batch, worker restart and Mac-independent execution.
+ITSPlan binding is blocked by API authorization (401); full BSC canary #2 is
+blocked on owner/dependency items. Private IDs and credentials are not in this
+repository. See roadmap §32 and [HANDOFF.md](HANDOFF.md).

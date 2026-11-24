@@ -1708,3 +1708,66 @@ factory wheel/sdist are attached to the v0.8.2 Release. No production
 deployment, automatic merge or xPlan write was performed. Remaining P1/P2:
 cmux automation, cost/token telemetry, full browser UI automation, xPlan
 write-back, GitLab skills registry and 50–100 worker scale.
+
+<a id="remote-factory-sprint-20261125"></a>
+
+## 32. Remote Agent Factory Execution Sprint
+
+Date: 2026-11-25. Baseline release `v0.8.2` (`dc9f768`). Railway is the
+lightweight control plane; dedicated servers provide external compute; Temporal
+Cloud `alpha-dev.n3kw9` is the durable execution backend. Private project,
+service, volume and credential identifiers stay in the operator record
+`~/.config/alpha-wiki-factory/railway-agent-factory-control-20261124.md`, not
+in this repository.
+
+| Component | Placement |
+|---|---|
+| ITSPlan / xPlan | Existing Railway deployment (read-only binding) |
+| Harness coordinator, API/Console | Railway, private, no public domain |
+| Coding worker | Railway, `factory-code` |
+| Batch worker | External compute, `bsc-batch` |
+| OpenCode | Pinned v2.3.0 inside the Railway runtime, paid model |
+| Temporal | Existing Cloud namespace `alpha-dev.n3kw9` |
+
+### Gates
+
+| Gate | Status | Evidence |
+|---|---|---|
+| `RAILWAY_FACTORY_DEPLOYED` | PASS | Two pilot services, one replica each, persistent `/data` volume, restart `ALWAYS`; no public domains. |
+| `RAILWAY_OPENCODE_READY` | PASS | OpenCode 2.3.0, paid `opencode-go/deepseek-v4.1-flash`, `HOME=/data/home`, private loopback/serve; no competing compute-host server. |
+| `TEMPORAL_POLLERS_ACTIVE` | PASS | Exactly one workflow+activity poller each on `factory-code` and `factory-coordinator`; one external `bsc-batch` poller. |
+| `ITSPLAN_TASK_BINDING_PASS` | BLOCKED | `plan-api.value8.dev` returns 401 and the ITSPlan Railway project is not visible to the authorized account. Adapter is snapshot-fed and read-only; no write path. |
+| `REMOTE_CODING_E2E_PASS` | PASS | Railway task `task-railway-sprint-20261124T223144Z`: paid model, tests pass, independent review `APPROVE`, approval by `railway-operator`, `PR_OPEN`, receipt digest `b121f138…791327`. |
+| `EXTERNAL_BATCH_WORKER_PASS` | PASS | `bsc-batch` poller on external compute; A2 `BatchWorkflow` completed. |
+| `RESTART_RECOVERY_PASS` | PASS | Remote batch worker restarted during a slow unit; workflow `batch-acc-restart-20261124T223613Z-b05727`, receipt `183186b6…f1700`, effects `u0,u1`, no duplicate. |
+| `MAC_INDEPENDENCE_PASS` | PASS | Remote runs completed with zero local factory/temporal worker processes; Mac only submitted and read back. |
+| `REMOTE_FACTORY_READY` | PASS | Railway services healthy, private API, durable state, tested restart/rollback. |
+| `REMOTE_OPENCODE_PASS` | PASS | Paid DeepSeek coding and independent review on the Railway runtime. |
+| `DETERMINISTIC_BATCH_PASS` | PASS | A2 workflow tests plus real BSC job; no model in batch/recovery. |
+| `BSC_0029_CANARY_PASS` | PASS (read-only) | Smallest approved job `JOB-0029-01` through A2: 25/25 DQ checks, outputs read back, receipt `6e7c0cf3…7234`. Full canary #2 remains BLOCKED on MISSING-1..6. |
+| `CHECKPOINT_RESUME_PASS` | PASS | A2 crash/resume test reuses only fenced completed units; remote restart kept `u0` checkpoint and completed `u1` once. |
+| `DQ_READBACK_PASS` | PASS | DQ report hash and all declared outputs read back; 25 checks, 0 fail, `READY`. |
+| `ZERO_DUPLICATE_EFFECTS` | PASS | Duplicate BSC submit rejected, one `Factory-Step`/PR per coding task, restart effects exactly `u0,u1`. |
+| `TELEMETRY_VERIFIED` | PASS | Task receipt step telemetry 38,322 tokens and review telemetry 14,927 tokens; cost reported `0.0`; missing fields `UNAVAILABLE`. |
+
+### BSC status
+
+- A3 certification matrix: 55 cells, 0 certificate PASS, G1–G21 coverage/DQ
+  gaps, revised gap envelope 4,476,880; FINAL-RECOVERY scope 19,715,703.
+- A-04 orphan inventory: 25 unreferenced attempt objects, bytes
+  `UNKNOWN_NOT_ZERO`; 49 CH UNKNOWN-role rows are named public tables;
+  no deletions.
+- Canary #2 is `BLOCKED_BY_VERIFIED_DEPENDENCY`: owner GO, executor identity,
+  multi-file COW writer, key-sort fix, DQ NULL confirmation and immutable pack
+  provenance remain missing. `BSC_V1 = NO`.
+
+### Gaps
+
+- ITSPlan API authorization and project visibility are the only binding blocker.
+- Full BSC canary/write path remains blocked; read-only 0029 pack is proven.
+- Console is private, no public authentication layer by design.
+- Railway offers no hard cgroup limit in the pilot; one replica and
+  `FACTORY_MAX_ACTIVITIES=4` bound execution.
+- macOS cannot enforce `RLIMIT_AS`; Linux external compute enforces it.
+- No new tag was created for this pilot; the accepted candidate is the merged
+  main SHA and the recorded Railway deployment.

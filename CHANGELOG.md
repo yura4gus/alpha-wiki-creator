@@ -4,6 +4,16 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+- Add deterministic `BatchWorkflow` execution for allowlisted Python/Bash/Rust
+  units with frozen manifests, durable checkpoints, DQ and duplicate protection.
+- Add OpenCode JSON token/cost telemetry to step and review metrics.
+- Deploy the optional factory control plane on Railway with a private Harness
+  API/Console and external `bsc-batch` compute.
+- Add remote acceptance gates and a read-only ITSPlan binding adapter.
+- Deploy the pilot control plane on Railway and prove paid remote coding,
+  BSC 0029 read-only batch, restart recovery and token/cost telemetry.
+
+
 ## [0.8.2] - 2026-11-24
 
 ### Agent Factory V1

@@ -28,13 +28,18 @@ from temporal_agent_harness.harness import agent
 from temporalio.workflow import ActivityConfig
 
 from .. import receipts
+from ..batch.client import cancel_batch as cancel_batch_workflow
+from ..batch.client import start_batch
+from ..batch.manifest import load_job_spec
+from ..batch.models import workflow_id as batch_workflow_id
+from ..batch.status import batch_status as batch_status_view
 from ..client import decide, start_task, validate_batch, workflow_id
 from ..config import Config
 from ..connection import resolve_connect_config
 from ..models import TaskSpec
 from ..workflows import TaskWorkflow
-from .models import (FactoryTaskSpec, SubmitTask, TaskApproval, TaskCancellation, TaskStatus,
-                     TaskStatusQuery)
+from .models import (BatchCancellation, BatchStatus, BatchStatusQuery, FactoryTaskSpec, SubmitBatch,
+                     SubmitTask, TaskApproval, TaskCancellation, TaskStatus, TaskStatusQuery)
 
 # One attempt + one retry: transient RPC failures retry once, but a handled failure returns
 # TaskStatus.error and Temporal never retries it. Kept short: these tools only start, query,
@@ -254,6 +259,66 @@ async def cancel_task(request: TaskCancellation) -> TaskStatus:
     return status
 
 
-ALL_TOOLS = [submit_task, get_status, approve_task, cancel_task]
+def _batch_failed(job_id: str, exc: BaseException) -> BatchStatus:
+    return BatchStatus(job_id=job_id, workflow_id=batch_workflow_id(job_id),
+                       error=_error_message(exc))
 
-__all__ = ["ALL_TOOLS", "approve_task", "cancel_task", "get_status", "submit_task"]
+
+@agent.activity_tool_defn(activity_config=TOOL_ACTIVITY)
+async def submit_batch(request: SubmitBatch) -> BatchStatus:
+    """Validate one frozen batch manifest and start `batch-<job_id>`.
+
+    The manifest is read and verified on this host: `manifest_hash`, `script_sha`,
+    workspace paths, env and args. A duplicate job id is rejected by Temporal
+    (REJECT_DUPLICATE + FAIL) and returns that job's status; it never starts a
+    second run. Batch jobs do not enter coding review or a PR path.
+    """
+    job_id = ""
+    try:
+        spec = await asyncio.to_thread(load_job_spec, request.manifest_path)
+        job_id = spec.job_id
+        client = await _temporal_client()
+        await start_batch(client, spec)
+    except WorkflowAlreadyStartedError as exc:
+        try:
+            view = await batch_status_view(await _temporal_client(), job_id)
+            view["error"] = _error_message(exc)
+            return BatchStatus.model_validate(view)
+        except Exception:  # noqa: BLE001
+            return _batch_failed(job_id, exc)
+    except Exception as exc:  # noqa: BLE001 - reported, never faked as success
+        return _batch_failed(job_id, exc)
+    return BatchStatus.model_validate(await batch_status_view(client, job_id))
+
+
+@agent.activity_tool_defn(activity_config=TOOL_ACTIVITY)
+async def get_batch_status(request: BatchStatusQuery) -> BatchStatus:
+    """Read one batch job's workflow state and durable receipt. Read-only; starts nothing."""
+    try:
+        return BatchStatus.model_validate(
+            await batch_status_view(await _temporal_client(), request.job_id))
+    except Exception as exc:  # noqa: BLE001
+        return _batch_failed(request.job_id, exc)
+
+
+@agent.activity_tool_defn(activity_config=TOOL_ACTIVITY)
+async def cancel_batch(request: BatchCancellation) -> BatchStatus:
+    """Cancel one batch job through its workflow and return the frozen receipt status."""
+    try:
+        client = await _temporal_client()
+        return BatchStatus.model_validate(
+            await cancel_batch_workflow(client, request.job_id))
+    except Exception as exc:  # noqa: BLE001
+        try:
+            view = await batch_status_view(await _temporal_client(), request.job_id)
+            view["error"] = _error_message(exc)
+            return BatchStatus.model_validate(view)
+        except Exception:  # noqa: BLE001
+            return _batch_failed(request.job_id, exc)
+
+
+ALL_TOOLS = [submit_task, get_status, approve_task, cancel_task, submit_batch,
+             get_batch_status, cancel_batch]
+
+__all__ = ["ALL_TOOLS", "approve_task", "cancel_batch", "cancel_task", "get_batch_status",
+           "get_status", "submit_batch", "submit_task"]

@@ -105,3 +105,61 @@ class TaskStatus(BaseModel):
     metrics: dict[str, dict[str, Any]] = Field(default_factory=dict)
     entries: list[str] = Field(
         default_factory=list, description="Receipt entry keys in recorded order.")
+
+
+class SubmitBatch(BaseModel):
+    """Ask the coordinator to start one frozen batch manifest (`batch-<job_id>`).
+
+    Only the manifest path crosses the wire. The coordinator reads and verifies
+    `manifest_hash`, `script_sha`, paths, env and args itself; it never executes
+    values supplied by a console message.
+    """
+
+    manifest_path: str = Field(
+        description="Absolute path to the frozen batch JSON manifest on the worker host.")
+
+
+class BatchStatusQuery(BaseModel):
+    """Ask the coordinator for one batch job's live state and durable receipt."""
+
+    job_id: str = Field(description="Batch job identity; the workflow id is `batch-<job_id>`.")
+
+
+class BatchCancellation(BaseModel):
+    """Cancel a batch job through its own workflow cancellation path."""
+
+    job_id: str
+
+
+class BatchUnitStatus(BaseModel):
+    """One receipt-projected unit: completed or reused from a verified checkpoint."""
+
+    unit_id: str
+    status: str = ""
+    outputs: dict[str, str] = Field(default_factory=dict)
+    checkpoint: str = ""
+    checkpoint_reason: str = ""
+
+
+class BatchStatus(BaseModel):
+    """One batch job's Temporal state plus the durable batch receipt.
+
+    `error` is set when the operation failed or the job is unknown. Absent receipt
+    data stays empty; no unit, DQ result or digest is invented.
+    """
+
+    job_id: str
+    workflow_id: str
+    state: str = Field(
+        default="", description="`BatchWorkflow.state`, or the receipt's terminal status.")
+    temporal_status: str = Field(default="", description="Temporal execution status.")
+    receipt_status: str = ""
+    receipt_digest: str = ""
+    manifest_hash: str = ""
+    script_sha: str = ""
+    units: list[BatchUnitStatus] = Field(default_factory=list)
+    dq_status: str = Field(
+        default="", description="SKIPPED / PASS / FAIL / MISSING / INVALID / ERROR.")
+    error: str = ""
+    metrics: dict[str, dict[str, Any]] = Field(default_factory=dict)
+    entries: list[str] = Field(default_factory=list)

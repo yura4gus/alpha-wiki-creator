@@ -1,37 +1,57 @@
-# Factory V1 handoff
+# Factory handoff — remote pilot (2026-11-25)
 
-- **From:** Claude Super Master (factory integration session, 2026-11-24)
-- **To:** Next factory owner / operator
-- **Context:** v0.8.2 source release. `TaskWorkflow` remains the executor and
-  approval authority; Temporal Agent Harness 0.11.0 is the coordination surface;
-  every model call still runs through the OpenCode CLI. PRs #4, #5, #6 and #3
-  merged after hosted CI was restored.
-- **Completed:** Factory V1 and Harness integration; typed
-  submit/status/approve/cancel; native Console/API; one-command stack; worker
-  restart/reconnect; three real OpenCode tasks with live review; Temporal Cloud
-  dev smoke; factory CI job; release artifacts and runbooks.
-- **Unfinished (P1/P2):**
-  - cmux automation is manual; no reliable CLI contract.
-  - Cost/token telemetry is elapsed time only; OpenCode does not expose per-run
-    cost to the adapter.
-  - Browser UI is covered through the Console HTTP API, not a browser test.
-  - xPlan write-back needs a conditional, conflict-safe write.
-  - GitLab skills registry delivery and 50–100 worker scale remain deferred.
-- **Files:** `factory/README.md`, `factory/HARNESS.md`, `factory/RELEASE.md`,
-  `factory/harness/agents.toml`, `factory/src/agent_factory/{connection,launcher}.py`,
-  `factory/src/agent_factory/harness/`, `docs/roadmap-execution.md` §§30–31.
+- **From:** Claude Super Master (remote factory sprint)
+- **To:** Next factory operator / owner
+- **Context:** AlphaWiki v0.8.2 source, Railway control plane, Temporal Cloud
+  `alpha-dev.n3kw9`, external compute worker for `bsc-batch`. Private Railway
+  IDs and credentials live in the operator record under
+  `~/.config/alpha-wiki-factory/`, not in this repository.
+- **Completed:**
+  - Railway pilot: private `agent-factory-runtime` (factory worker +
+    coordinator) and `agent-factory-harness` (session manager/API/console), no
+    public domains, persistent `/data` volume, restart `ALWAYS`.
+  - Temporal pollers: one workflow+activity pair each on `factory-code` and
+    `factory-coordinator`; external `bsc-batch` worker on dedicated compute.
+  - Batch runtime: frozen manifests, allowlisted Python/Bash/Rust units,
+    checkpoints, DQ, duplicate/cancel/crash-resume and receipt.
+  - OpenCode: pinned v2.3.0, paid `opencode-go/deepseek-v4.1-flash`, independent
+    review and JSON token/cost telemetry in receipt metrics.
+  - Remote coding: Railway task `task-railway-sprint-20261124T223144Z` reached
+    `PR_OPEN` with tests, `APPROVE`, approval and telemetry.
+  - Remote BSC read-only: A2 job through `bsc-batch`, 25/25 DQ checks, outputs
+    read back; restart test preserved progress and no duplicate effects.
+  - ITSPlan adapter: snapshot-fed, read-only, delegates to
+    `tools/xplan_dry_run`; no automatic writes.
+- **Unfinished / blockers:**
+  - ITSPlan API returns 401 and the ITSPlan Railway project is not visible to
+    the authorized account; issue binding and real readback pending.
+  - Full BSC canary #2 remains `BLOCKED_BY_VERIFIED_DEPENDENCY` (MISSING-1..6);
+    `BSC_V1 = NO`.
+  - No public Console authentication; keep it private.
+  - Railway pilot has no hard cgroup limit; one replica plus bounded activities.
+  - Real `gh` PR path still needs an authorized sandbox repository.
+  - cmux remains manual.
+- **Files:** `factory/README.md`, `factory/HARNESS.md`, `factory/RAILWAY.md`,
+  `factory/TELEMETRY.md`, `factory/REMOTE-ACCEPTANCE.md`,
+  `factory/deploy/`, `factory/src/agent_factory/batch/`,
+  `factory/src/agent_factory/{telemetry,xplan,connection}.py`,
+  roadmap §32.
 - **Contracts:**
-  - one task = one `TaskWorkflow` = one worktree = one file owner;
-  - `TaskWorkflow.decide` is the only approval authority;
-  - Harness tools must not become a second approval queue;
-  - xPlan stays dry-run;
-  - no direct provider HTTP client or provider credential in this package;
-  - local loopback stays plaintext even when `TEMPORAL_API_KEY` is exported.
-- **Risks:** Harness 0.11.0 is pre-1.0 and upgrades need schema regeneration;
-  the Console is loopback-only with no authentication; the Cloud API key lives
-  outside the repository and expires; GitHub checks must stay green.
-- **Decisions:** Keep Temporal Core plus the thin CLI adapter rather than adopt
-  the Harness SDK loop. Keep the factory package optional so plugin users are
-  unaffected. Do not bypass checks or write to xPlan.
-- **Next action:** add token/cost telemetry from OpenCode JSON output without
-  introducing a provider client, then rerun the Harness live suite.
+  - TaskWorkflow owns coding execution/approval/PR; BatchWorkflow owns
+    deterministic data units and never calls a model.
+  - xPlan stays read-only; no automatic transition.
+  - One task = one worktree; one unit = one checkpoint fence.
+  - No provider HTTP client; all models through OpenCode.
+  - No private host/IP/credential in the public repository.
+- **Risks:** Harness 0.11.0 is pre-1.0; Railway has no hard CPU/RAM cgroup in
+  the pilot; old Temporal pollers linger for ~5 minutes after redeploy; the
+  Cloud API key expires and must be rotated via the private env file; macOS
+  cannot enforce `RLIMIT_AS` (Linux external compute does).
+- **Decisions:** Railway is the lightweight control plane; dedicated servers
+  are compute only. Deploy from the merged main SHA on a new release only after
+  CI; do not reopen v0.8.2. Keep ITSPlan writes disabled until conditional
+  authorization is proven.
+- **Next action:** obtain an authorized ITSPlan API token for a read-only issue
+  snapshot, run `xplan.bind_issue` + `xplan.task_spec`, submit that issue
+  through the coordinator, and read back the dry-run transition; then request
+  owner GO for BSC canary #2 MISSING-1..6.

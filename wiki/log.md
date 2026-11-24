@@ -89,3 +89,7 @@
 ## [2026-11-24] document-update | Close v0.8.2 delivery: PRs #4/#5/#6/#3 merged with green hosted CI, factory CI and Harness acceptance complete, release published, and remaining P1/P2 recorded | documents=`docs/roadmap-execution.md` | change=1e36c8fc6e87f619d930
 
 ## [2026-11-24] document-update | Publish v0.8.2 changelog with Agent Factory V1, Temporal Agent Harness, OpenFlowKit/Harness² and Claude hook fixes | documents=`CHANGELOG.md` | change=a0a2f5a3f6d79b4ac486
+
+## [2026-11-25] document-update | Record remote Agent Factory sprint: Railway control plane, paid remote OpenCode, BSC 0029 read-only batch, restart/telemetry gates, with ITSPlan API authorization and full canary as blockers | documents=`docs/roadmap-execution.md` | change=63693c4546011d85f5dc
+
+## [2026-11-25] document-update | Record the remote factory sprint: Railway control plane, paid remote coding, BSC 0029 read-only batch, restart recovery and telemetry | documents=`CHANGELOG.md` | change=9eaa21b5dc47662264db

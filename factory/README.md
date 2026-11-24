@@ -91,7 +91,42 @@ Authority does not move with the console:
 Logs are written to `<state_dir>/harness/{harness,coordinator}.log`; the last
 stack record is `<state_dir>/harness/stack.json`. See [HARNESS.md](HARNESS.md)
 for start/stop, console and CLI operation, reconnect, restart, logs and
-troubleshooting.
+troubleshooting. For the persistent Railway control plane (private console,
+volume, queue routing and redeploy), see [RAILWAY.md](RAILWAY.md).
+
+## Hosted deployment
+
+Control plane (Harness coordinator, Console/API, lightweight coding workers) is
+hosted on Railway. The external compute host is dedicated to the `bsc-batch`
+queue only; see [deploy/README.md](deploy/README.md) for the systemd unit,
+limits, state paths and the A2 dependency on `agent_factory.batch_worker`.
+`the external compute host` must not run the Console, coordinator, `factory-code` worker or an
+OpenCode server.
+
+## Remote batch and telemetry
+
+Deterministic data jobs use `BatchWorkflow` (`batch-<job_id>`), not coding review
+or PR stages:
+
+```bash
+uv run python -m agent_factory.batch submit job.json
+uv run python -m agent_factory.batch status <job_id>
+uv run python -m agent_factory.batch cancel <job_id>
+uv run python -m agent_factory.batch_worker   # queue bsc-batch
+```
+
+A manifest pins `manifest_hash` and `script_sha`, declares allowlisted Python,
+Bash or Rust units, inputs/outputs, resource limits, retry policy and an optional
+DQ contract. Checkpoints live under `FACTORY_STATE_DIR/checkpoints/`; duplicate
+submission is rejected and completed units are reused only after checkpoint,
+input and output hash verification. No model is called in batch or recovery.
+
+OpenCode `run --format json` step/review logs are parsed into receipt metrics:
+input/output/reasoning/cache tokens, reported cost, steps, duration and missing
+fields as `UNAVAILABLE`. The parser is in `telemetry.py`; there is no provider
+client or pricing table. Railway control-plane operation and the external
+compute worker are documented in [RAILWAY.md](RAILWAY.md),
+[HARNESS.md](HARNESS.md) and [deploy/README.md](deploy/README.md).
 
 ## Recovery and idempotency
 
@@ -211,8 +246,7 @@ For the harness layer: the coordinator, Console HTTP API, worker restart and a
 three-real-task run are verified. The Console API is covered end-to-end by
 `tests/test_harness_console_live.py` (session, submit, status, approval,
 receipt); the browser UI itself is not separately automated. Temporal Agent
-Harness remains pre-1.0 and pinned to 0.11.0, and the console is a local
-`127.0.0.1` operator surface with no hosted deployment or authentication layer.
-cmux remains manual.
+Harness remains pre-1.0 and pinned to 0.11.0, and the console has no built-in
+authentication layer. cmux remains manual.
 
 See [RELEASE.md](RELEASE.md) for the release candidate state, rollback and blockers.
