@@ -3,6 +3,11 @@
 Status: **WAVE 1 PREPARED**. No production merge, deploy or v0.8.2 change has
 been made. Base is `v0.8.2` / `dc9f768`.
 
+This is the A5 execution note for the acceptance runner and its Wave 1
+blockers. It is not a second cross-track gate definition; when a parallel
+`factory/ACCEPTANCE-PR-PLAN.md` is present, that file owns the canonical
+sixteen-gate release decision.
+
 ## Tracks and ownership
 
 | Track | Branch | Scope | A5 boundary |
