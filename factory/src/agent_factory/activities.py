@@ -20,7 +20,7 @@ from pathlib import Path
 from temporalio import activity
 from temporalio.exceptions import ApplicationError
 
-from . import faults, gitops, integrations, receipts, reviewer
+from . import faults, gitops, integrations, receipts, reviewer, telemetry
 from .config import Config
 from .models import (ContextResult, EvidenceResult, PRRequest, ReviewRequest, ReviewResult,
                      StepResult, TaskSpec, TestResult)
@@ -149,7 +149,9 @@ async def agent_step(spec: TaskSpec, index: int, checkpoint: str,
         raise ApplicationError(str(exc), type="OwnershipViolation", non_retryable=True)
     if faults.hit(cfg.state_dir, "after_push", index) == "error":
         raise RuntimeError("injected failure after push")  # retry must not duplicate the commit
-    return StepResult(index, sha, changed, False, code, _tail(log), time.monotonic() - started)
+    usage = telemetry.parse_opencode_log(log)
+    return StepResult(index, sha, changed, False, code, _tail(log),
+                      time.monotonic() - started, usage)
 
 
 @activity.defn
@@ -172,9 +174,12 @@ async def review(spec: TaskSpec, req: ReviewRequest) -> ReviewResult:
     cache = await asyncio.to_thread(gitops.ensure_cache, cfg.work_root, spec.repo)
     diff = await asyncio.to_thread(gitops.diff_text, cache, req.base_sha, req.head_sha)
     if spec.reviewer == "opencode":
+        usage: dict = {}
         result = await asyncio.to_thread(
             reviewer.opencode_review, spec.review_model, req.context_text,
-            f"passed={req.tests_passed}\n{req.tests_tail}", diff, req.head_sha)
+            f"passed={req.tests_passed}\n{req.tests_tail}", diff, req.head_sha,
+            telemetry_out=usage)
+        result["telemetry"] = usage
     elif spec.reviewer == "stub":
         result = reviewer.stub_review(spec.owned_paths, diff, req.tests_passed, req.head_sha)
     else:

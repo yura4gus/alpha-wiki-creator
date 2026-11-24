@@ -104,7 +104,7 @@ class TaskWorkflow:
             checkpoint = step.sha
             await self._rec(f"step-{index}", {"sha": step.sha, "changed": step.changed},
                             {"seconds": round(step.seconds, 2), "reused": step.reused,
-                             "exit_code": step.exit_code})
+                             "exit_code": step.exit_code, "telemetry": step.usage})
         result.head_sha = checkpoint
 
         self._state = "TESTING"
@@ -133,7 +133,11 @@ class TaskWorkflow:
             start_to_close_timeout=timedelta(minutes=5),
             retry_policy=RetryPolicy(maximum_attempts=3))
         result.review = asdict(verdict)
-        await self._rec("review", asdict(verdict))
+        review_data = dict(result.review)
+        review_usage = review_data.pop("telemetry", {})
+        result.review.pop("telemetry", None)
+        await self._rec("review", review_data,
+                        {"telemetry": review_usage} if review_usage else None)
         evidence_refs = [f"receipt:{workflow.info().workflow_id}", f"commit:{checkpoint}",
                          *evidence.refs]
         if verdict.diff_sha256:
