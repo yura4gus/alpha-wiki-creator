@@ -138,8 +138,8 @@ async def agent_step(spec: TaskSpec, index: int, checkpoint: str,
             os._exit(137)  # simulate a worker killed mid-step
 
     log = cfg.work_root / spec.task_id / "logs" / f"step-{index}.log"
-    code = await run_command(spec.agent_steps[index], wt, _env(spec, cfg, index, context_file, wt),
-                             log, on_beat)
+    code = await run_command(spec.agent_steps[index], wt,
+                             _env(spec, cfg, index, context_file, wt), log, on_beat)
     if code != 0:
         raise ApplicationError(f"agent step {index} exited {code}: {_tail(log)}", type="AgentFailed")
     try:

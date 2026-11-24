@@ -125,6 +125,7 @@ async def load_checkpoint(plan: BatchJobSpec, unit: BatchUnit) -> CheckpointStat
             raise exc
         return checkpoints.read_checkpoint(Config.from_env().state_dir, plan, unit)
 
+    activity.heartbeat({"unit_id": unit.unit_id, "phase": "checkpoint-start"})
     try:
         state = await asyncio.to_thread(read)
     except manifest.BatchManifestError as exc:
@@ -205,6 +206,7 @@ async def run_unit(plan: BatchJobSpec, unit: BatchUnit) -> BatchUnitResult:
     def checkpoint() -> Checkpoint:
         return checkpoints.write_checkpoint(state_dir, plan, unit)
 
+    activity.heartbeat({"unit_id": unit.unit_id, "phase": "checkpointing"})
     try:
         written = await asyncio.to_thread(checkpoint)
     except checkpoints.CheckpointError as exc:
