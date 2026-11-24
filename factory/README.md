@@ -95,10 +95,12 @@ troubleshooting.
 
 ## Hosted deployment
 
-For a single-host systemd pilot (immutable release checkout, external venv,
-root-only environment file, loopback Console), see
-[deploy/README.md](deploy/README.md). The Console stays on `127.0.0.1`; use an
-SSH tunnel and never open its port publicly.
+Control plane (Harness coordinator, Console/API, lightweight coding workers) is
+hosted on Railway. The `rx-back` host is external compute for the `bsc-batch`
+queue only; see [deploy/README.md](deploy/README.md) for the systemd unit,
+limits, state paths and the A2 dependency on `agent_factory.batch_worker`.
+`rx-back` must not run the Console, coordinator, `factory-code` worker or an
+OpenCode server.
 
 ## Recovery and idempotency
 
@@ -218,8 +220,7 @@ For the harness layer: the coordinator, Console HTTP API, worker restart and a
 three-real-task run are verified. The Console API is covered end-to-end by
 `tests/test_harness_console_live.py` (session, submit, status, approval,
 receipt); the browser UI itself is not separately automated. Temporal Agent
-Harness remains pre-1.0 and pinned to 0.11.0, and the console is a local
-`127.0.0.1` operator surface with no hosted deployment or authentication layer.
-cmux remains manual.
+Harness remains pre-1.0 and pinned to 0.11.0, and the console has no built-in
+authentication layer. cmux remains manual.
 
 See [RELEASE.md](RELEASE.md) for the release candidate state, rollback and blockers.
