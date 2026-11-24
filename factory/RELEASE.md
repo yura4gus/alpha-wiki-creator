@@ -186,7 +186,7 @@ The package is optional and creates no service. To roll back:
 
 ## Remote pilot (2026-11-25)
 
-Railway hosts the lightweight control plane (`agent-factory-runtime` and
+Deployment source for the pilot is `4a7d018`. Railway hosts the lightweight control plane (`agent-factory-runtime` and
 `agent-factory-harness`, private, no public domains); the external compute host
 polls only `bsc-batch`. Temporal Cloud `alpha-dev.n3kw9` remains the execution
 backend. The pilot passed paid remote coding with independent review, telemetry,

@@ -16,7 +16,7 @@
     checkpoints, DQ, duplicate/cancel/crash-resume and receipt.
   - OpenCode: pinned v2.3.0, paid `opencode-go/deepseek-v4.1-flash`, independent
     review and JSON token/cost telemetry in receipt metrics.
-  - Remote coding: Railway task `task-railway-sprint-20261124T223144Z` reached
+  - Remote coding: Railway task `task-railway-final-20261124T225707Z` reached
     `PR_OPEN` with tests, `APPROVE`, approval and telemetry.
   - Remote BSC read-only: A2 job through `bsc-batch`, 25/25 DQ checks, outputs
     read back; restart test preserved progress and no duplicate effects.

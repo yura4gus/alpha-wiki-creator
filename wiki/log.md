@@ -93,3 +93,5 @@
 ## [2026-11-25] document-update | Record remote Agent Factory sprint: Railway control plane, paid remote OpenCode, BSC 0029 read-only batch, restart/telemetry gates, with ITSPlan API authorization and full canary as blockers | documents=`docs/roadmap-execution.md` | change=63693c4546011d85f5dc
 
 ## [2026-11-25] document-update | Record the remote factory sprint: Railway control plane, paid remote coding, BSC 0029 read-only batch, restart recovery and telemetry | documents=`CHANGELOG.md` | change=9eaa21b5dc47662264db
+
+## [2026-11-25] document-update | Record final remote deployment 4a7d018 and final Railway coding/BSC/restart/telemetry receipts | documents=`docs/roadmap-execution.md` | change=7f5ab4f7e82e37585d95
