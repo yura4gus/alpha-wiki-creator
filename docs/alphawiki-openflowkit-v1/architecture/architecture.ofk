@@ -1,0 +1,51 @@
+%% ofk 1
+architecture
+title: AlphaWiki Engineering Stack - Target Architecture
+
+// TARGET REFERENCE ARCHITECTURE, NOT PROOF OF LIVE INTEGRATION.
+// Ownership: xPlan tasks; AlphaWiki accepted context; Git/CI source evidence.
+// OpenFlowKit visualizes: it does not own task or system-of-record data.
+model {
+  operator = person "Engineering operator" [desc: "Reviews plans, evidence, findings, release gates"]
+
+  engineering = system "RateXAI Engineering Control" {
+    control = container "Task binding & quality gate" [tech: "Local Python", desc: "Proposed thin integration; issue/run/source pinned; safe xPlan transitions"]
+    wiki = container "AlphaWiki" [tech: "Python + Markdown", desc: "Accepted specs, ADRs, evidence references, graphs and lifecycle tools"]
+    canvas = container "OpenFlowKit" [tech: "CLI 0.3 + MCP", desc: "Static repo discovery, editable C4/flow views, drift and exports"]
+    reviewer = container "OpenCode DeepSeek Flash reviewer" [tech: "OpenCode Go", desc: "Independent read-only review of approved evidence"]
+    optimizer = container "Harness2 laboratory" [tech: "Python", desc: "Isolated baseline-probe-holdout and reviewed skill promotion"]
+    terminal = container "cmux console" [tech: "macOS CLI", desc: "Operator terminal, status, notifications; non-durable"]
+  }
+
+  xplan = external "xPlan" [desc: "Operational issues, owners, dependencies and status"]
+  git = external "GitLab and GitHub" [desc: "Code, branches, merge requests, pinned revisions"]
+  ci = external "CI and runtime evidence" [desc: "Tests, build, deploy and observed behavior"]
+  codex = external "Codex CLI" [desc: "Owned implementation worktree"]
+  claude = external "Claude Code" [desc: "Owned implementation worktree"]
+  contracts = external "API and data contracts" [desc: "OpenAPI, events, schemas, job definitions, manifests"]
+
+  operator -> engineering.terminal : observes
+  operator -> xplan : sets task and ownership
+  engineering.terminal -> engineering.control : displays results
+  xplan -> engineering.control : issue state and revision [tech: "read-only first"]
+  engineering.control -> xplan : approved status proposal [tech: "guarded write"]
+  engineering.wiki -> engineering.control : accepted requirements
+  engineering.control -> codex : scoped task
+  engineering.control -> claude : scoped task
+  codex -> git : branch and changes
+  claude -> git : branch and changes
+  git -> ci : checks
+  ci -> engineering.control : test and delivery evidence
+  git -> engineering.canvas : local checkout discovery
+  contracts -> engineering.canvas : reviewed overlays
+  engineering.wiki -> engineering.canvas : Mermaid, graph and ADR references
+  engineering.canvas -> engineering.control : model and drift receipt
+  engineering.control -> engineering.reviewer : pinned evidence bundle
+  engineering.reviewer -> engineering.control : grounded findings
+  engineering.optimizer -> engineering.control : candidate skill evaluation
+  engineering.control -> engineering.wiki : accepted context maintenance
+}
+views {
+  view context of engineering
+  view container of engineering
+}

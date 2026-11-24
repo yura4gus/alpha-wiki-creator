@@ -24,3 +24,14 @@ jobs:
           else
             echo "Initial repository commit: document governance starts after bootstrap."
           fi
+  openflowkit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: bash scripts/openflowkit_smoke.sh "$RUNNER_TEMP/openflowkit"

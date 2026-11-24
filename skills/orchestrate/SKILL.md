@@ -25,6 +25,24 @@ wave. It does not mean autonomous scheduling or background execution.
   `$alpha-wiki:spawn-agent`.
 - Do not use this workflow for one small task or one tightly coupled change.
 
+## Existing project tracker
+
+When the project already runs work in xPlan or another tracker, use its existing
+issue IDs for ownership, dependencies, and status. Link the pinned repository
+snapshot and acceptance evidence. Keep durable decisions and reviewed context
+in Alpha-Wiki. Associate optional AgentOps records with the existing issue
+instead of creating a second execution backlog. The controller reconciles
+the accepted result with the tracker and records partial or failed steps with
+their next action. Preserve concurrent manual tracker changes. Keep automated
+status updates in dry-run until the integration can enforce conflict-safe
+writes. A hook, worker exit code, or harness replay alone cannot close the task.
+
+For the xPlan pilot, `tools.xplan_dry_run` compares the pinned and observed
+issue revision and column. Pass a JSON file with the binding, the observed
+issue, and a lifecycle event. The output is a proposal receipt. Record review
+against the verified Git SHA. Keep the input snapshot and proposal receipt
+together, and separate live evidence from replay fixtures.
+
 ## Workflow
 
 Lead with the result and decisive evidence in the user's language. Preserve
@@ -61,7 +79,7 @@ python3 .alpha-wiki/run.py -m tools.orchestrate init \
 3. Split only independent work into tracks.
 4. Assign one owner and one agent role per track.
 5. Persist tracks with `tools.orchestrate add-track`.
-6. Add executable backlog items with `$alpha-wiki:backlog`.
+6. Reuse existing tracker issues. For projects using the optional Markdown backlog as the tracker, add executable items with `$alpha-wiki:backlog`.
 7. Present the proposed wave before implementation when it changes scope or
    shared contracts.
 

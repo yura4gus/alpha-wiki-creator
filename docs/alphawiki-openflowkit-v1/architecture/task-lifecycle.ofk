@@ -1,0 +1,38 @@
+%% ofk 1
+flowchart right
+title: xPlan and AlphaWiki - Evidence Gated Delivery
+
+"Task intake" [blue, rounded]
+"Scope and owner" [blue]
+"Task ready?" [diamond, orange]
+"Needs owner" [orange]
+"Execute in owned worktree" [blue]
+"Tests and contracts" [teal]
+"Evidence sufficient?" [diamond, orange]
+"Collect evidence" [orange]
+"Independent review" [violet]
+"Review accepted?" [diamond, orange]
+"Rework" [orange]
+"Merge/deploy as authorized" [blue]
+"Delivery level proven?" [diamond, orange]
+"Remain open" [orange]
+"Safe xPlan readback and DONE" [green, rounded]
+
+"Task intake" -> "Scope and owner"
+"Scope and owner" -> "Task ready?"
+"Task ready?" -> "Needs owner" : no
+"Needs owner" -> "Scope and owner" : decision
+"Task ready?" -> "Execute in owned worktree" : yes
+"Execute in owned worktree" -> "Tests and contracts"
+"Tests and contracts" -> "Evidence sufficient?"
+"Evidence sufficient?" -> "Collect evidence" : no
+"Collect evidence" -> "Tests and contracts"
+"Evidence sufficient?" -> "Independent review" : yes
+"Independent review" -> "Review accepted?"
+"Review accepted?" -> "Rework" : no
+"Rework" -> "Execute in owned worktree"
+"Review accepted?" -> "Merge/deploy as authorized" : yes
+"Merge/deploy as authorized" -> "Delivery level proven?"
+"Delivery level proven?" -> "Remain open" : no
+"Remain open" -> "Merge/deploy as authorized" : required actions
+"Delivery level proven?" -> "Safe xPlan readback and DONE" : yes

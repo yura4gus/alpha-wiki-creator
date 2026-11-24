@@ -4,6 +4,13 @@ All notable Alpha-Wiki release changes are recorded here.
 
 ## [Unreleased]
 
+## [0.8.2]
+
+- Add the optional source-pinned OpenFlowKit discovery, Canvas and drift pilot.
+- Add an isolated Alpha-Wiki Harness² evidence replay with challenge and holdout cases.
+- Add xPlan dry-run transition planning, revision conflict detection and stale review checks.
+- Exercise the published OpenFlowKit parser and a real topology drift fixture in plugin CI.
+
 ## [0.8.1] - 2026-10-29
 
 ### Codex Hook Repair
