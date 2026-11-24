@@ -2,6 +2,9 @@
 source_files:
 - references/hooks-design.md
 - docs/alphawiki-openflowkit-v1/SPEC.md
+- docs/alphawiki-openflowkit-v1/architecture/document-maintenance-contract.ofk
+- docs/quickstart.md
+- tools/document_maintenance.py
 - scripts/openflowkit_pilot.py
 - scripts/harness2_alpha_wiki.py
 - references/agentops-control-layer.md
@@ -1550,8 +1553,20 @@ cmux stays optional as an operator view.
 | CAN-003 | P0 | IN_REVIEW | Alpha-Wiki maintainer | The curated AgentOps state view binds accepted ADR-007 and the observed path resolver to the pinned source. Existing graph and supplied cross-system views have distinct scopes. |
 | CAN-004 | P1 | IN_REVIEW | Reviewer | A real OpenFlowKit MCP call passed in an isolated native Claude session with a local model fixture. A separate live Claude reviewer flagged the injected xPlan write edge and cited the exact ADR and code. The preferred OpenCode Go reviewer is pending: V4 Flash returned `provider.no-route` and V4.1 Flash returned HTTP 429 `Go usage limit exceeded`. |
 | CAN-005 | P1 | IN_REVIEW | Integration owner | Read-only H2REC-34 overlay pins issue revision, view hash and Git SHA. The live readback returned `NO_CHANGE`; the manual-edit fixture returned `SKIP_CONFLICT`. The local overlay has no xPlan write path. |
-| CAN-006 | P1 | CANDIDATE | Engineering | After accepting the first scope, exercise a second architecture class with an explicit data or API contract and measure missing topology and drift coverage. |
+| CAN-006 | P1 | IN_REVIEW | Engineering | Exercised the source-bound document maintenance data contract on pinned `7e867e2`. Validated and reopened the curated view. Static discovery reports manifest units. Source hashes detect document drift independently of topology. |
 | CAN-007 | P2 | DEFERRED | Operations | Optional cmux result and internal view after pilot acceptance. Keep the projection local and task authority in xPlan. |
+
+The CAN-006 [document maintenance view](alphawiki-openflowkit-v1/architecture/document-maintenance-contract.ofk)
+grounds nine data flows in the quickstart contract and the maintenance worker.
+On `7e867e2`, discovery found two manifest units and zero service relations.
+The repository map resolved 92 imports across 43 files. A single bound
+Markdown source edit in a detached fixture left static drift at `PASS`.
+The worker rejected the old hash without writing. A fresh plan applied one
+edit and one journal record. The identical replay returned `unchanged` and
+the next plan returned zero jobs. A reviewed no-change input updated only the
+checkpoint. Independent Claude review rejected the injected stale-checkpoint
+claim. Follow-up review confirmed all nine flows. The view separates
+conditional writes from the checkpoint.
 
 The pinned Alpha-Wiki Harness² replay passed one injected unsupported edge
 and two independent holdouts using the real engine and deterministic executor.
@@ -1562,3 +1577,6 @@ retain separate acceptance under H2-002.
 Release candidate 0.8.2 adds a separate CI job for strict validation, offline
 render, and a deliberate drift fixture. The package version describes a
 candidate until PR review, applicable CI, and publication evidence are present.
+
+Hosted [PR #4 CI attempt 2](https://github.com/yura4gus/alpha-wiki-creator/actions/runs/42502281089/attempts/2)
+again stopped before either job ran. GitHub reported the account billing lock.

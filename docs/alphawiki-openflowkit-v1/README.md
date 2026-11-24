@@ -41,6 +41,20 @@ fixture and is part of plugin CI:
 uv run --no-project --python 3.12 bash scripts/openflowkit_smoke.sh /path/to/new-output
 ```
 
+## Document maintenance contract view
+
+Open `document-maintenance-contract.openflow.json` or the SVG to inspect the
+source-bound document workflow. The [Document Maintenance contract](../quickstart.md#document-maintenance)
+defines the plan and apply behavior. The diagram cites the corresponding
+implementation at its pinned SHA.
+
+In the isolated CAN-006 fixture, a Markdown source edit left the repository
+topology unchanged. The document worker detected the stale source hash and
+rejected the old plan before writing. A fresh plan applied the reviewed edit,
+appended one journal record, and checkpointed it. Repeating that apply left
+the outputs unchanged. A separate reviewed no-change input advanced the
+checkpoint with the document, journal, and graph byte-for-byte identical.
+
 ## Alpha-Wiki Harness² profile
 
 Run the optional evidence replay with the pinned

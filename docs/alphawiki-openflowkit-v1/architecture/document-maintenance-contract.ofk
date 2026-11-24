@@ -1,0 +1,33 @@
+%% ofk 1
+flowchart right
+title: Alpha-Wiki Source-Bound Document Maintenance
+
+// Source: 7e867e24590670e3ec7ced85e84d3f177f5fd11d
+// DECLARED docs/quickstart.md:332-347 and :372-377
+// OBSERVED tools/document_maintenance.py:250-260, :394-437 and :443-477
+group "Pinned inputs" {
+  "Bound source files" [blue]
+  "Canonical Markdown before edit" [blue]
+  "Document governance configuration" [blue]
+}
+group "Maintenance" {
+  "Hash-pinned plan" [teal]
+  "Reviewed Markdown edit JSON" [violet]
+  "Apply transaction" [teal]
+}
+group "Apply outputs" {
+  "Updated canonical Markdown" [green]
+  "Project journal" [green]
+  "Derived wiki graph and context" [green]
+  "Local checkpoint" [green]
+}
+
+"Bound source files" -> "Hash-pinned plan" : source SHA-256
+"Canonical Markdown before edit" -> "Hash-pinned plan" : document SHA-256
+"Document governance configuration" -> "Hash-pinned plan" : configuration SHA-256
+"Hash-pinned plan" -> "Apply transaction" : verify pinned inputs before writes
+"Reviewed Markdown edit JSON" -> "Apply transaction" : apply the reviewed scope
+"Apply transaction" -> "Updated canonical Markdown" : write if changed
+"Apply transaction" -> "Project journal" : append one record for actual edits
+"Apply transaction" -> "Derived wiki graph and context" : rebuild edges, context and questions after edits
+"Apply transaction" -> "Local checkpoint" : checkpoint verified input and output hashes
