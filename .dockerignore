@@ -1,0 +1,20 @@
+# Keep the Railway build context small and reproducible.
+.git
+.github
+assets
+commands
+docs
+raw
+references
+skills
+tests
+wiki
+.factory-work
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/*.pyc
+**/*.egg-info
+**/.DS_Store
+factory/tests
+factory/spikes

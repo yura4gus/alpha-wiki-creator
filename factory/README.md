@@ -96,10 +96,10 @@ troubleshooting.
 ## Hosted deployment
 
 Control plane (Harness coordinator, Console/API, lightweight coding workers) is
-hosted on Railway. The `rx-back` host is external compute for the `bsc-batch`
+hosted on Railway. The `the external compute host` host is external compute for the `bsc-batch`
 queue only; see [deploy/README.md](deploy/README.md) for the systemd unit,
 limits, state paths and the A2 dependency on `agent_factory.batch_worker`.
-`rx-back` must not run the Console, coordinator, `factory-code` worker or an
+`the external compute host` must not run the Console, coordinator, `factory-code` worker or an
 OpenCode server.
 
 ## Recovery and idempotency
