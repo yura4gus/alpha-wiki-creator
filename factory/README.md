@@ -97,11 +97,36 @@ volume, queue routing and redeploy), see [RAILWAY.md](RAILWAY.md).
 ## Hosted deployment
 
 Control plane (Harness coordinator, Console/API, lightweight coding workers) is
-hosted on Railway. The `the external compute host` host is external compute for the `bsc-batch`
+hosted on Railway. The external compute host is dedicated to the `bsc-batch`
 queue only; see [deploy/README.md](deploy/README.md) for the systemd unit,
 limits, state paths and the A2 dependency on `agent_factory.batch_worker`.
 `the external compute host` must not run the Console, coordinator, `factory-code` worker or an
 OpenCode server.
+
+## Remote batch and telemetry
+
+Deterministic data jobs use `BatchWorkflow` (`batch-<job_id>`), not coding review
+or PR stages:
+
+```bash
+uv run python -m agent_factory.batch submit job.json
+uv run python -m agent_factory.batch status <job_id>
+uv run python -m agent_factory.batch cancel <job_id>
+uv run python -m agent_factory.batch_worker   # queue bsc-batch
+```
+
+A manifest pins `manifest_hash` and `script_sha`, declares allowlisted Python,
+Bash or Rust units, inputs/outputs, resource limits, retry policy and an optional
+DQ contract. Checkpoints live under `FACTORY_STATE_DIR/checkpoints/`; duplicate
+submission is rejected and completed units are reused only after checkpoint,
+input and output hash verification. No model is called in batch or recovery.
+
+OpenCode `run --format json` step/review logs are parsed into receipt metrics:
+input/output/reasoning/cache tokens, reported cost, steps, duration and missing
+fields as `UNAVAILABLE`. The parser is in `telemetry.py`; there is no provider
+client or pricing table. Railway control-plane operation and the external
+compute worker are documented in [RAILWAY.md](RAILWAY.md),
+[HARNESS.md](HARNESS.md) and [deploy/README.md](deploy/README.md).
 
 ## Recovery and idempotency
 

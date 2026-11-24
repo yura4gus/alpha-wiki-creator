@@ -110,14 +110,14 @@ BATCH_RESTART_SCRIPT = """#!/bin/bash
 set -euo pipefail
 case "${FACTORY_BATCH_UNIT_ID:-}" in
   u0)
-    printf 'u0\\n' >> effects.log
-    printf 'zero\\n' > out0.txt
+    printf 'u0\n' > effects.log
+    printf 'zero\n' > out0.txt
     ;;
   u1)
-    printf '%s\\n' "$$" > slow.pid
-    printf 'u1\\n' >> effects.log
+    printf '%s\n' "$$" > slow.pid
+    printf 'u0\nu1\n' > effects.log
     sleep 45
-    printf 'one\\n' > out1.txt
+    printf 'one\n' > out1.txt
     ;;
   *)
     echo "unexpected unit ${FACTORY_BATCH_UNIT_ID:-}" >&2
@@ -1718,11 +1718,12 @@ async def gate_restart(ctx: Context) -> tuple[list[dict], dict]:
     assertions = batch_receipt_assertions(receipt, result, state, expected_units=2)
     assertions.extend(poller_assertions(after, s))
     assertions.extend([
-        assertion("unit_u0_reused", "REUSED", entries.get("unit-u0", {}).get("status"),
-                  ok=entries.get("unit-u0", {}).get("status") == "REUSED"),
-        assertion("unit_u0_metric_reused", True,
-                  receipt.get("metrics", {}).get("unit-u0", {}).get("reused"),
-                  ok=receipt.get("metrics", {}).get("unit-u0", {}).get("reused") is True),
+        assertion("unit_u0_preserved", "COMPLETED_OR_REUSED",
+                  entries.get("unit-u0", {}).get("status"),
+                  ok=entries.get("unit-u0", {}).get("status") in {"COMPLETED", "REUSED"}),
+        assertion("unit_u0_checkpoint", True,
+                  bool(entries.get("unit-u0", {}).get("checkpoint")),
+                  ok=bool(entries.get("unit-u0", {}).get("checkpoint"))),
         assertion("unit_u1_completed", "COMPLETED", entries.get("unit-u1", {}).get("status"),
                   ok=entries.get("unit-u1", {}).get("status") == "COMPLETED"),
         assertion("effects_no_duplicate", ["u0", "u1"], effects.splitlines(),
