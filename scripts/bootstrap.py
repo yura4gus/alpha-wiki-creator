@@ -361,24 +361,23 @@ def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: b
         (ASSETS / "runtime/run.py", target / ".alpha-wiki/run.py"),
         (ASSETS / "runtime/pyproject.toml", target / ".alpha-wiki/runtime/pyproject.toml"),
     ])
-    hooks = _missing_configured_hooks(target, report, refresh_hooks=refresh_hooks)
-    previous_hooks = {destination: destination.read_bytes() for _, destination in hooks
-                      if destination.is_file()}
+    hooks = _missing_configured_hooks(target, report, config, refresh_hooks=refresh_hooks)
     writes = [(destination, source.read_bytes()) for source, destination in copies]
     writes.append((target / ".alpha-wiki/runtime/.gitignore", b".venv/\nuv.lock\n"))
     writes = [(path, content) for path, content in writes
               if not path.is_file() or path.read_bytes() != content]
     writes.extend((destination, _render_runtime_asset(source.read_text(), config).encode())
-                  for source, destination in hooks)
+                  for source, destination, _ in hooks)
     report.planned = [str(path) for path, _ in writes]
     if dry_run:
         return report
-    hook_paths = {destination for _, destination in hooks}
+    previous_hooks = {destination: previous for _, destination, previous in hooks}
     for destination, content in writes:
         destination.parent.mkdir(parents=True, exist_ok=True)
-        if destination in hook_paths:
-            if destination in previous_hooks:
-                if destination.is_symlink() or destination.read_bytes() != previous_hooks[destination]:
+        if destination in previous_hooks:
+            previous = previous_hooks[destination]
+            if previous is not None:
+                if destination.is_symlink() or not destination.is_file() or destination.read_bytes() != previous:
                     report.skipped.append(BootstrapConflict(str(destination), "hook changed after planning; preserved"))
                     continue
                 destination.write_bytes(content)
@@ -398,8 +397,8 @@ def upgrade_runtime_assets(target: Path, wiki_dir: str | None = None, dry_run: b
     return report
 
 
-def _missing_configured_hooks(target: Path, report: BootstrapReport,
-                              *, refresh_hooks: bool = False) -> list[tuple[Path, Path]]:
+def _missing_configured_hooks(target: Path, report: BootstrapReport, config: InterviewConfig,
+                              *, refresh_hooks: bool = False) -> list[tuple[Path, Path, bytes | None]]:
     """Read project routing as data, never execute or expand a configured command."""
     configured: set[Path] = set()
     for relative in (".claude/settings.json", ".claude/settings.local.json", ".codex/hooks.json"):
@@ -432,14 +431,28 @@ def _missing_configured_hooks(target: Path, report: BootstrapReport,
         elif not path.exists():
             source = (ASSETS / "hooks" / path.name if path.suffix == ".sh"
                       else ASSETS / "codex-hooks/alpha_wiki_hook.py")
-            missing.append((source, path))
+            missing.append((source, path, None))
+        elif refresh_hooks and path.name == "post-tool-use.sh":
+            source = ASSETS / "hooks" / path.name
+            current = path.read_bytes()
+            if current == _render_runtime_asset(source.read_text(), config).encode():
+                continue
+            # The legacy generator substituted only the default wiki directory.
+            rendered_default = _render_runtime_asset('WIKI_DIR="${WIKI_DIR:-wiki}"', config)
+            normalized = current.replace(rendered_default.encode(), b'WIKI_DIR="${WIKI_DIR:-wiki}"', 1)
+            legacy_sha256 = "3700d6da1417fb91cd323e1de29aa5cfc4a8c80a33a6dbadc03fbe5f8530eff6"
+            if hashlib.sha256(normalized).hexdigest() == legacy_sha256:
+                missing.append((source, path, current))
+            else:
+                report.skipped.append(BootstrapConflict(str(path), "custom or unknown Claude hook; review/merge explicitly"))
         elif refresh_hooks and path.name == "alpha_wiki_hook.py":
             source = ASSETS / "codex-hooks/alpha_wiki_hook.py"
-            if path.read_bytes() == source.read_bytes():
+            current = path.read_bytes()
+            if current == source.read_bytes():
                 continue
             known = json.loads((ASSETS / "codex-hooks/legacy-sha256.json").read_text())
-            if hashlib.sha256(path.read_bytes()).hexdigest() in known:
-                missing.append((source, path))
+            if hashlib.sha256(current).hexdigest() in known:
+                missing.append((source, path, current))
             else:
                 report.skipped.append(BootstrapConflict(str(path), "custom or unknown Codex hook; review/merge explicitly"))
     return missing

@@ -18,7 +18,7 @@ Give the operator and AI one reliable command that answers: "Is this Alpha-Wiki 
 If an existing wiki predates the isolated launcher, report the missing runtime
 and the upgrade command below. Run it only as part of an authorized init/upgrade:
 `UV_PROJECT_ENVIRONMENT="<runtime_root>/.venv" uv run --project <runtime_root> --directory <runtime_root> --no-dev python -m scripts.bootstrap_cli --target <absolute-project> --runtime-only`.
-It preserves schema, contracts, wiki, CI settings, and hook routing. To repair a stale configured Codex adapter, add `--refresh-hooks`: only exact known legacy checksums are replaced; custom scripts and routing are preserved. Preview with `--dry-run` first. A read-only
+It preserves schema, contracts, wiki, CI settings, and hook routing. To repair a known stale configured Codex adapter or Claude post-write script, add `--refresh-hooks`. The upgrade checks known legacy checksums and preserves custom scripts and routing. Preview with `--dry-run` first. A read-only
 health check can use the installed plugin environment with `--project-dir`
 pointing at the target. Run it with `--directory <runtime_root>` too, so the target's stale `tools` cannot shadow the installed backend. Do not replace product dependencies to make the old
 invocation work.
@@ -57,6 +57,12 @@ uncertainty or sources. Keep required schema; link shared context.
    - Missing optional hooks/CI: report the limitation. Install them only when
      chosen or required for the operation being checked.
    - Missing/stale Codex plugin or skills: run `python3 scripts/install_codex.py --upgrade --remove-legacy --remove-standalone` from the Alpha-Wiki repo, then start a new Codex task.
+   - Claude hooks present but unreliable: reproduce the configured event with
+     Claude's debug log or the exact configured command and payload. Separate
+     startup context, source-write refresh, and shutdown. Check quoted paths,
+     `SessionEnd` timeout, and rapid repeated edits. Follow
+     `references/hooks-design.md` for recovery. A settings presence check does
+     not prove that Claude dispatched the hook.
    - Missing Codex project contract/hooks: rerun init with session hooks enabled, merge the Alpha-Wiki section into an existing `AGENTS.md`, and review hooks with `/hooks`.
    - Existing `CLAUDE.md` and occupied `.claude/CLAUDE.md` are user-owned instructions. Preserve them. When needed, propose an explicit Alpha-Wiki section/import merge; never prescribe automatic deletion. Verify Claude's import through `/context` from the project root.
 

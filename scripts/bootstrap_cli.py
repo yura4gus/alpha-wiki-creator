@@ -62,7 +62,7 @@ def cli() -> None:
     parser.add_argument("--upgrade", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--runtime-only", action="store_true", help="Update managed runtime/tools and restore missing configured hooks; preserve existing hooks, schema, contracts, wiki, and routing.")
-    parser.add_argument("--refresh-hooks", action="store_true", help="With --runtime-only, refresh configured Codex adapters with a known legacy checksum; preserve custom hooks and routing.")
+    parser.add_argument("--refresh-hooks", action="store_true", help="With --runtime-only, refresh configured hook scripts with a known legacy checksum; preserve custom hooks and routing.")
     args = parser.parse_args()
     if args.refresh_hooks and not args.runtime_only:
         parser.error("--refresh-hooks requires --runtime-only")

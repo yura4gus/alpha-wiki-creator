@@ -39,6 +39,7 @@ def test_custom_wiki_dir_is_rendered_into_hooks_and_workflows(tmp_path: Path):
     assert settings_data["hooks"]["PostToolUse"][0]["matcher"] == "Write|Edit|MultiEdit"
     assert "$CLAUDE_PROJECT_DIR/.claude/hooks/pre-tool-use.sh" in settings
     assert "path_glob" not in settings
+    assert settings_data["hooks"]["SessionEnd"][0]["hooks"][0]["timeout"] == 10
 
     lint_workflow = (tmp_path / ".github" / "workflows" / "wiki-lint.yml").read_text()
     assert "--wiki-dir .wiki --config .alpha-wiki/config.yaml --dry-run" in lint_workflow
@@ -85,8 +86,7 @@ def test_post_tool_hook_rebuilds_full_graph(tmp_path: Path):
 
     hook = (tmp_path / ".claude" / "hooks" / "post-tool-use.sh").read_text()
     assert 'WIKI_DIR="${WIKI_DIR:-.wiki}"' in hook
-    assert "-m tools.wiki_engine rebuild-edges --wiki-dir \"$WIKI_DIR\"" in hook
-    assert "-m tools.wiki_engine rebuild-context-brief --wiki-dir \"$WIKI_DIR\"" in hook
-    assert "-m tools.wiki_engine rebuild-open-questions --wiki-dir \"$WIKI_DIR\"" in hook
+    assert "-m tools.wiki_engine rebuild-graph" in hook
+    assert '--wiki-dir "$WIKI_DIR"' in hook
     assert "tool_input" in hook
     assert 'python3 "$PROJECT_DIR/.alpha-wiki/run.py"' in hook
