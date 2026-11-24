@@ -13,6 +13,8 @@ description = """
 Typed, durable operator surface for Alpha-Wiki Agent Factory tasks. Submit a task spec to
 start the existing TaskWorkflow (checkpointed agent steps, tests, independent review, durable
 approval, PR, xPlan dry-run, receipt); poll its state and receipt; approve or reject at the
-TaskWorkflow approval boundary; or cancel it. No model is called here: the coordinator only
-starts, reads and decides factory workflows.
+TaskWorkflow approval boundary; or cancel it. Submit a frozen batch manifest to start the
+deterministic BatchWorkflow (allowlisted runner, per-unit checkpoints, optional DQ) without
+coding review or a PR; poll or cancel it by job id. No model is called here: the coordinator
+only starts, reads, decides and cancels factory workflows.
 """

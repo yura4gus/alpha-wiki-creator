@@ -1,9 +1,10 @@
-# rx-back compute worker (systemd)
+# External compute worker (systemd)
 
-`rx-back` is external compute for the `bsc-batch` task queue only. The control
-plane — Harness coordinator, Console/API, Session Manager and lightweight coding
-workers — runs on Railway (A6). This host must not run a coordinator, Console,
-OpenCode Server, `factory-code` worker or any other control service.
+The designated compute host is external compute for the `bsc-batch` task queue
+only. The control plane — Harness coordinator, Console/API, Session Manager and
+lightweight coding workers — runs on Railway. The compute host must not run a
+coordinator, Console, OpenCode Server, `factory-code` worker or any other
+control service.
 
 Current state (2026-11-24T21:08Z): the batch unit is installed and **disabled**.
 It cannot start until A2 delivers `agent_factory.batch_worker`. `bsc-batch` has
@@ -83,7 +84,7 @@ Exact unit contract:
 | Command | `/opt/alpha-wiki-factory/current-venv/bin/python -m agent_factory.batch_worker` |
 | Queue | `bsc-batch` (`Environment=FACTORY_TASK_QUEUE=bsc-batch`) |
 | Restart | `Restart=always`, `RestartSec=10`, `TimeoutStopSec=30` |
-| Limits | `CPUQuota=200%` (2 of 64 vCPU), `MemoryMax=4G`, `Nice=10`, `IOWeight=100`, `LimitNOFILE=65536` |
+| Limits | `CPUQuota=200%` (2 vCPU), `MemoryMax=4G`, `Nice=10`, `IOWeight=100`, `LimitNOFILE=65536` |
 | Isolation | `User=root`, `UMask=0077`, `NoNewPrivileges=true`, `PrivateTmp=true`, `ProtectSystem=strict`, `ProtectHome=true`, `RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6` |
 | Writable | `/var/lib/alpha-wiki-factory/{state,work,home}` only |
 | Logging | journald, `SyslogIdentifier=alpha-wiki-batch-worker` |
@@ -100,21 +101,17 @@ temporal task-queue describe --task-queue bsc-batch
 
 Expected before A2: statistics at 0 and an empty poller list. Expected after
 enable: pollers for the task types the batch module registers, with identity
-`<pid>@rx-back`. Never print `TEMPORAL_API_KEY`; the env file is mode 0600
+`<pid>@<host>`. Never print `TEMPORAL_API_KEY`; the env file is mode 0600
 root:root.
 
-Recorded on 2026-11-24T21:08Z: the Cloud endpoint is reachable from `rx-back`
+Recorded on 2026-11-24T21:08Z: the Cloud endpoint is reachable from `the compute host`
 over TLS with this env file, `bsc-batch` describes successfully with 0 pollers,
 and the CLI version is 1.10.1.
 
 ## Capacity
 
-Measured 2026-11-24T21:00Z on `rx-back` (ASUS KRPA-U16, Ubuntu 24.04, kernel
 6.8.0-147):
 
-- 64 vCPU, 125 GiB RAM, 31 GiB swap, 537 GiB free on `/dev/md2`.
-- Load average 1.35 / 1.23 / 1.08; 24 GiB used, 101 GiB available.
-- Existing BSC, PostgreSQL, Redis, r53 and Docker workloads stay untouched.
 
 A 2-vCPU / 4 GiB batch worker fits without pressure. Raise `CPUQuota` or add a
 second unit only after observing `bsc-batch` backlog and queue latency; the
@@ -128,7 +125,7 @@ systemctl disable --now alpha-wiki-batch-worker.service
 
 This stops queue consumption. It does not delete receipts or state. The control
 plane on Railway is unaffected. Do not remove units or state that belong to
-other `rx-back` workloads.
+other `the compute host` workloads.
 
 ## Known gaps
 

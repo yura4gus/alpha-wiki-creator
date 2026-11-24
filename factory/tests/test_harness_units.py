@@ -30,16 +30,23 @@ from temporalio import workflow
 
 from agent_factory.harness import (
     ALL_TOOLS,
+    BatchCancellation,
+    BatchStatus,
+    BatchStatusQuery,
     FactoryCoordinatorAgent,
     FactoryTaskSpec,
+    SubmitBatch,
     SubmitTask,
     TaskApproval,
     TaskCancellation,
     TaskStatus,
     TaskStatusQuery,
     approve_task,
+    cancel_batch,
     cancel_task,
+    get_batch_status,
     get_status,
+    submit_batch,
     submit_task,
 )
 from agent_factory.models import TaskSpec
@@ -131,19 +138,41 @@ def test_registry_and_schema_are_present_and_consistent():
     # The file is what a Console/client reads; fail if the models moved and it didn't.
     assert document == agent_schema(FactoryCoordinatorAgent)
     assert document["agent"] == "FactoryCoordinatorAgent"
-    assert sorted(document["handlers"]) == ["approve_task", "cancel_task", "get_status",
+    assert sorted(document["handlers"]) == ["approve_task", "cancel_batch", "cancel_task",
+                                           "get_batch_status", "get_status", "submit_batch",
                                            "submit_task"]
     assert document["init_data"] is None
     assert set(document["$defs"]["TaskStatus"]["properties"]) == set(TaskStatus.model_fields)
+    assert set(document["$defs"]["BatchStatus"]["properties"]) == set(BatchStatus.model_fields)
     assert set(document["$defs"]["FactoryTaskSpec"]["properties"]) == set(
         FactoryTaskSpec.model_fields)
 
 
-def test_four_tools_are_registered_activity_tools():
-    tools = [submit_task, get_status, approve_task, cancel_task]
+def test_batch_messages_roundtrip_and_do_not_carry_execution_fields():
+    submit = SubmitBatch(manifest_path="/tmp/job.json")
+    assert SubmitBatch.model_validate_json(submit.model_dump_json()) == submit
+    status = BatchStatus(
+        job_id="j1", workflow_id="batch-j1", state="BATCH_SUCCESS",
+        temporal_status="COMPLETED", receipt_status="BATCH_SUCCESS", receipt_digest="d" * 64,
+        manifest_hash="a" * 64, script_sha="b" * 64,
+        units=[{"unit_id": "u1", "status": "REUSED", "outputs": {"out/u1.json": "c" * 64},
+                "checkpoint": "/state/checkpoints/j1/u1.json"}],
+        dq_status="PASS", entries=["manifest", "unit-u1", "dq"],
+        metrics={"unit-u1": {"reused": True}})
+    assert BatchStatus.model_validate_json(status.model_dump_json()) == status
+    assert BatchStatusQuery(job_id="j1").job_id == "j1"
+    assert BatchCancellation(job_id="j1").job_id == "j1"
+    # The console only sends a manifest path; it cannot inject argv/env/limits.
+    assert set(SubmitBatch.model_fields) == {"manifest_path"}
+
+
+def test_seven_tools_are_registered_activity_tools():
+    tools = [submit_task, get_status, approve_task, cancel_task, submit_batch,
+             get_batch_status, cancel_batch]
     assert ALL_TOOLS == tools
     assert [tool.__name__ for tool in tools] == ["submit_task", "get_status", "approve_task",
-                                                 "cancel_task"]
+                                                 "cancel_task", "submit_batch",
+                                                 "get_batch_status", "cancel_batch"]
     names = set()
     for tool in tools:
         assert getattr(tool, "__agent_activity_tool__", False) is True
@@ -151,30 +180,38 @@ def test_four_tools_are_registered_activity_tools():
         name = activity.__temporal_activity_definition.name
         assert name == tool.__name__  # the Console event and activity share one name
         names.add(name)
-    assert len(names) == 4
+    assert len(names) == 7
     # The tool inputs are the accepted messages, so the two contracts cannot drift.
     # Read them off the registered activity: the dispatcher's annotations stay stringized
     # (its __module__ is rewritten, its __globals__ are the harness's), while the activity
     # body carries the resolved hints.
     for tool, model in [(submit_task, SubmitTask), (get_status, TaskStatusQuery),
-                        (approve_task, TaskApproval), (cancel_task, TaskCancellation)]:
+                        (approve_task, TaskApproval), (cancel_task, TaskCancellation),
+                        (submit_batch, SubmitBatch), (get_batch_status, BatchStatusQuery),
+                        (cancel_batch, BatchCancellation)]:
         hints = tool_activity(tool).__annotations__
         assert hints["request"] is model
-        assert hints["return"] is TaskStatus
+        assert hints["return"] is (BatchStatus if tool in {submit_batch, get_batch_status,
+                                                           cancel_batch} else TaskStatus)
 
 
-def test_coordinator_exposes_four_enqueue_handlers():
+def test_coordinator_exposes_seven_enqueue_handlers():
     definition = workflow._Definition.from_class(FactoryCoordinatorAgent)
     assert definition.name == "FactoryCoordinatorAgent"
     assert agent_init_data(FactoryCoordinatorAgent) is None
 
     handlers = agent_handlers(FactoryCoordinatorAgent)
-    assert sorted(handlers) == ["approve_task", "cancel_task", "get_status", "submit_task"]
+    assert sorted(handlers) == ["approve_task", "cancel_batch", "cancel_task",
+                                "get_batch_status", "get_status", "submit_batch",
+                                "submit_task"]
     expected = {"submit_task": SubmitTask, "get_status": TaskStatusQuery,
-                "approve_task": TaskApproval, "cancel_task": TaskCancellation}
+                "approve_task": TaskApproval, "cancel_task": TaskCancellation,
+                "submit_batch": SubmitBatch, "get_batch_status": BatchStatusQuery,
+                "cancel_batch": BatchCancellation}
     for name, handler in handlers.items():
         assert handler.input_type is expected[name]
-        assert handler.output_type is TaskStatus
+        assert handler.output_type is (BatchStatus if name in {
+            "submit_batch", "get_batch_status", "cancel_batch"} else TaskStatus)
         assert handler.mid_turn is MidTurn.ENQUEUE
         assert handler.model_callable is False  # an operator surface, not a subagent tool
         assert handler.description.strip()

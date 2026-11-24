@@ -23,6 +23,17 @@ IDENTITY = {
     "GIT_COMMITTER_NAME": "Alpha-Wiki Agent Factory",
     "GIT_COMMITTER_EMAIL": "agent-factory@localhost",
 }
+# Generated caches are never authored delivery. Excluding only these known
+# paths keeps every other untracked file subject to ownership review.
+GENERATED_CACHE_DIRS = frozenset({"__pycache__", ".pytest_cache", ".mypy_cache",
+                                  ".ruff_cache"})
+GENERATED_CACHE_SUFFIXES = (".pyc",)
+
+
+def is_generated_cache(path: str) -> bool:
+    parts = path.split("/")
+    return any(part in GENERATED_CACHE_DIRS for part in parts) or path.endswith(
+        GENERATED_CACHE_SUFFIXES)
 
 
 class GitError(RuntimeError):
@@ -144,7 +155,13 @@ def commit_and_push(wt: Path, task_id: str, index: int, checkpoint: str,
     touched files outside `owned_paths`.
     """
     git(["add", "-A"], cwd=wt)
-    names = [n for n in git(["diff", "--cached", "--name-only", "-z"], cwd=wt).split("\0") if n]
+    staged = [n for n in git(["diff", "--cached", "--name-only", "-z"], cwd=wt).split("\0") if n]
+    generated = [n for n in staged if is_generated_cache(n)]
+    if generated:
+        # Unstage caches; leave the files in the worktree so the agent's own
+        # test run can keep using them. They are ephemeral and never delivered.
+        git(["reset", "-q", "--", *generated], cwd=wt)
+    names = [n for n in staged if n not in generated]
     if not names:
         return checkpoint, False
     outside = [n for n in names if not _owned(n, owned_paths)]

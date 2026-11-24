@@ -22,6 +22,29 @@ elif cmd == "context":
         sys.exit(5)
     target.parent.mkdir(parents=True, exist_ok=True)
     target.write_text("context recovered\n")
+elif cmd == "write-with-cache":
+    path, text = rest
+    target = pathlib.Path(path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(text + "\n")
+    for rel in ("tests/__pycache__/test_calc.cpython-312.pyc",
+                "stray.pyc",
+                ".pytest_cache/v/cache/nodeids",
+                ".mypy_cache/3.12/cache.json",
+                ".ruff_cache/content"):
+        cache = pathlib.Path(rel)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text("generated\n")
+elif cmd == "cache-only":
+    for rel in ("tests/__pycache__/test_calc.cpython-312.pyc",
+                ".pytest_cache/v/cache/nodeids"):
+        cache = pathlib.Path(rel)
+        cache.parent.mkdir(parents=True, exist_ok=True)
+        cache.write_text("generated\n")
+elif cmd == "record-pwd":
+    target = pathlib.Path(rest[0])
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(os.environ.get("PWD", "") + "\n")
 elif cmd == "slow-write":
     path, text, seconds = rest
     time.sleep(float(seconds))
