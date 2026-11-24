@@ -1,0 +1,47 @@
+# Alpha-Wiki Agent Factory — Agent Harness coordinator worker.
+# Coordination only: it starts/reads/decides TaskWorkflows and calls no model.
+# Install to /etc/systemd/system/, then: systemctl daemon-reload
+# Requires: /etc/alpha-wiki/factory.env (0600, root), harness extra installed.
+
+[Unit]
+Description=Alpha-Wiki Agent Harness coordinator (task queue factory-coordinator)
+Documentation=file:///opt/alpha-wiki-factory/current/factory/HARNESS.md
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/alpha-wiki-factory/current/factory
+EnvironmentFile=/etc/alpha-wiki/factory.env
+Environment=HOME=/var/lib/alpha-wiki-factory/home
+ExecStart=/opt/alpha-wiki-factory/current-venv/bin/python -m agent_factory.harness.worker
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+StateDirectory=alpha-wiki-factory
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/alpha-wiki-factory/state /var/lib/alpha-wiki-factory/home
+CPUQuota=200%
+MemoryMax=4G
+Nice=10
+IOWeight=100
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=alpha-wiki-harness-coordinator
+
+[Install]
+WantedBy=multi-user.target

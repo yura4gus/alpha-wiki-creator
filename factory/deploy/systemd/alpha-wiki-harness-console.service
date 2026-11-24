@@ -1,0 +1,49 @@
+# Alpha-Wiki Agent Factory — Agent Harness Console/API.
+# Loopback only: --host 127.0.0.1. No authentication layer; never expose publicly.
+# Remote access: ssh -L 8000:127.0.0.1:8000 <host>
+# Install to /etc/systemd/system/, then: systemctl daemon-reload
+# Requires: /etc/alpha-wiki/factory.env (0600, root), harness extra installed.
+
+[Unit]
+Description=Alpha-Wiki Agent Harness Console/API (loopback 127.0.0.1:8000)
+Documentation=file:///opt/alpha-wiki-factory/current/factory/HARNESS.md
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/alpha-wiki-factory/current/factory
+EnvironmentFile=/etc/alpha-wiki/factory.env
+Environment=HOME=/var/lib/alpha-wiki-factory/home
+Environment=UV_CACHE_DIR=/var/lib/alpha-wiki-factory/cache/uv
+ExecStart=/usr/local/bin/uv run --frozen --extra harness temporal-agent-harness dev harness/agents.toml --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+StateDirectory=alpha-wiki-factory
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/alpha-wiki-factory/home /var/lib/alpha-wiki-factory/cache
+CPUQuota=200%
+MemoryMax=4G
+Nice=10
+IOWeight=100
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=alpha-wiki-harness-console
+
+[Install]
+WantedBy=multi-user.target

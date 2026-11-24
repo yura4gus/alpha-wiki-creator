@@ -1,0 +1,50 @@
+# Alpha-Wiki Agent Factory — batch worker (task queue bsc-batch).
+# PREPARED ONLY / NOT ENABLED: `agent_factory.batch_worker` is delivered by A2.
+# Until that module exists, this unit exits with "No module named
+# agent_factory.batch_worker"; it is intentionally not enabled.
+# Exact command: python -m agent_factory.batch_worker
+# Install to /etc/systemd/system/, then: systemctl daemon-reload
+
+[Unit]
+Description=Alpha-Wiki Agent Factory batch worker (task queue bsc-batch, pending A2)
+Documentation=file:///opt/alpha-wiki-factory/current/factory/README.md
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/alpha-wiki-factory/current/factory
+EnvironmentFile=/etc/alpha-wiki/factory.env
+Environment=HOME=/var/lib/alpha-wiki-factory/home
+Environment=FACTORY_TASK_QUEUE=bsc-batch
+ExecStart=/opt/alpha-wiki-factory/current-venv/bin/python -m agent_factory.batch_worker
+Restart=always
+RestartSec=10
+TimeoutStopSec=30
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+StateDirectory=alpha-wiki-factory
+StateDirectoryMode=0700
+ReadWritePaths=/var/lib/alpha-wiki-factory/state /var/lib/alpha-wiki-factory/work /var/lib/alpha-wiki-factory/home
+CPUQuota=200%
+MemoryMax=4G
+Nice=10
+IOWeight=100
+LimitNOFILE=65536
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=alpha-wiki-batch-worker
+
+[Install]
+WantedBy=multi-user.target

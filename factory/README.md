@@ -93,6 +93,13 @@ stack record is `<state_dir>/harness/stack.json`. See [HARNESS.md](HARNESS.md)
 for start/stop, console and CLI operation, reconnect, restart, logs and
 troubleshooting.
 
+## Hosted deployment
+
+For a single-host systemd pilot (immutable release checkout, external venv,
+root-only environment file, loopback Console), see
+[deploy/README.md](deploy/README.md). The Console stays on `127.0.0.1`; use an
+SSH tunnel and never open its port publicly.
+
 ## Recovery and idempotency
 
 - The worker filesystem is **ephemeral**; origin branch `factory/<task_id>` and the
