@@ -156,21 +156,21 @@ come from the private evidence bundle evaluated by
 | Canonical gate | Owner | Satisfied by |
 |---|---|---|
 | `RAILWAY_FACTORY_DEPLOYED` | A6 | Private bundle: project/environment/service IDs, deployment SHA equal to the tested commit, healthy deployment, private access |
-| `RAILWAY_OPENCODE_READY` | A6 | Private bundle: one remote OpenCode instance, authenticated, private endpoint, no public domain |
+| `RAILWAY_OPENCODE_READY` | A6/A4 | Private bundle: one remote OpenCode instance, authenticated, private endpoint, no public domain |
 | `TEMPORAL_POLLERS_ACTIVE` | A6/A2 | `preflight` + `services`: workflow and activity pollers on `factory-code`, `factory-coordinator`, `bsc-batch` |
-| `ITSPLAN_TASK_BINDING_PASS` | ITSPLAN | Private bundle: bound issue readback, dry-run planner output, zero attempted/applied mutations, identical replay |
-| `REMOTE_CODING_E2E_PASS` | remote-coding | `task` + `readback`: real OpenCode task, tests, independent review, receipt, one PR |
-| `EXTERNAL_BATCH_WORKER_PASS` | A2/A3/A1 | `bsc` plus bundle: `bsc-batch` worker on external compute, no Railway batch service, <= 1 MiB Railway data |
+| `ITSPLAN_TASK_BINDING_PASS` | A4 | Private bundle: bound issue readback, dry-run planner output, zero attempted/applied mutations, identical replay |
+| `REMOTE_CODING_E2E_PASS` | A4 | `task` + `readback`: real OpenCode task, tests, independent review, receipt, one PR |
+| `EXTERNAL_BATCH_WORKER_PASS` | A2/A1 | `bsc` plus bundle: `bsc-batch` worker on external compute, no Railway batch service, <= 1 MiB Railway data |
 | `RESTART_RECOVERY_PASS` | A6/A2 | `restart`: Railway service and external worker restart, replay passes, checkpoint reused, no duplicate effects |
-| `MAC_INDEPENDENCE_PASS` | A6/A5 | `independence`: local processes/ports stopped, remote history advances after detach |
+| `MAC_INDEPENDENCE_PASS` | A6/QA | `independence`: local processes/ports stopped, remote history advances after detach |
 | `REMOTE_FACTORY_READY` | A6 | `services` + `resources` + bundle: factory worker, coordinator and private console online, durable state |
-| `REMOTE_OPENCODE_PASS` | A6 | `task` or bundle: one real remote OpenCode call, paid model, private access |
+| `REMOTE_OPENCODE_PASS` | A4 | `task` or bundle: one real remote OpenCode call, paid model, private access |
 | `DETERMINISTIC_BATCH_PASS` | A2 | `bsc` repeated over the same manifest: identical checkpoint digest and outputs |
-| `BSC_0029_CANARY_PASS` | A3/A2 | `bsc` with job id `bsc-0029`, `BATCH_SUCCESS`, DQ `PASS`, external compute |
+| `BSC_0029_CANARY_PASS` | A2 | `bsc` with job id `bsc-0029`, `BATCH_SUCCESS`, DQ `PASS`, external compute |
 | `CHECKPOINT_RESUME_PASS` | A2 | `restart`: killed unit, one execution, checkpoint reused, outputs match |
-| `DQ_READBACK_PASS` | A3/A2 | `bsc`: DQ `PASS`, report hash read back, expected JSON equals reported JSON |
-| `ZERO_DUPLICATE_EFFECTS` | A5 | `readback` + `restart` counters plus bundle: zero duplicate commits, PRs, branches, units, reports, receipts, notifications |
-| `TELEMETRY_VERIFIED` | A4 | `readback` with `FACTORY_ACCEPTANCE_REQUIRE_TELEMETRY=1` plus bundle: agent and review runs have numeric cost, input/output tokens and measured duration |
+| `DQ_READBACK_PASS` | A2 | `bsc`: DQ `PASS`, report hash read back, expected JSON equals reported JSON |
+| `ZERO_DUPLICATE_EFFECTS` | QA | `readback` + `restart` counters plus bundle: zero duplicate commits, PRs, branches, units, reports, receipts, notifications |
+| `TELEMETRY_VERIFIED` | A3 | `readback` with `FACTORY_ACCEPTANCE_REQUIRE_TELEMETRY=1` plus bundle: agent and review runs have numeric cost, input/output tokens and measured duration |
 
 The canonical evaluator exits `0` only when all sixteen gates are `PASS`; a
 missing observation is `BLOCKED`, and a contradiction is `FAIL`:
