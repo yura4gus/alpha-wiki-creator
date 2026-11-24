@@ -1,16 +1,13 @@
-# Agent Factory V1 — release candidate
+# Agent Factory V1 — release record
 
-Status: **RELEASE-READY, MERGE BLOCKED EXTERNALLY** for factory V1. Functional
-acceptance is local and passed. Hosted checks and the stacked PR merge order are
-not satisfied; nothing was deployed and no protected check was bypassed.
+Status: **RELEASED IN v0.8.2**. PRs #4, #5, #6 and #3 are merged; hosted CI is
+green. The optional Harness layer is live-E2E verified: three real OpenCode tasks
+ran through the coordinator with live review, durable approval, worker/session
+restart and no duplicate workflows. See
+[Harness coordination layer](#harness-coordination-layer).
 
-The optional Temporal Agent Harness coordination layer is **implemented and
-live-E2E verified**: three real OpenCode tasks ran through the coordinator with
-live review, durable approval, worker/session restart and no duplicate workflows.
-See [Harness coordination layer](#harness-coordination-layer).
-
-Verified code: `c51e1a355f08a1a917711d93b8a64634f9a964f7` on
-`codex/agent-factory-v1`, based on `56e421d`, `0e99fa8` (PR #5) and `fd73821`.
+Factory code: `c51e1a355f08a1a917711d93b8a64634f9a964f7` (PR #6). Release
+source: the `v0.8.2` tag on `main`.
 
 ## Scope
 
@@ -147,30 +144,32 @@ Built from the verified commit `c51e1a3`:
   `dc2a4d7002c8a1b842eb0c16e040c57e4abfdee63a11af7cdefbbd509179b2a6`
 
 
-## Merge path and blockers
+## Release record
 
-Required order: PR #4 (OpenFlowKit/Harness²) → PR #5 (document contracts) → PR #6
-(Factory V1 + Harness) → PR #3 (Claude hooks, separate acceptance).
+Merged in the required order; no check was bypassed:
 
-Observed blockers on 2026-11-16:
+| PR | Scope | Merge commit |
+|---|---|---|
+| #4 | OpenFlowKit / Harness² | `1382139dba080ef9fc32742ebc22796b8bd3c651` |
+| #5 | Document maintenance contract | `269868329e638dad7e75dd178d982dd56b89ec0d` |
+| #6 | Factory V1 + Temporal Agent Harness | `54d238fcf5fb96f13136d941efa0d4a058ae91ac` |
+| #3 | Claude hooks, separate acceptance | `3443f2f8deded47b7b58ade17b495d265dcc5ee4` |
 
-1. GitHub Actions jobs for PRs #3, #4, #5 and #6 fail in 1–3 s before running
-   steps; the jobs have no runner and no steps. The account billing lock reported
-   in the roadmap is still present. Checks were not bypassed; all four PRs remain
-   draft/unmerged.
-2. PRs #4 and #5 are draft and unmerged, so Factory V1 stays stacked on
-   `codex/openflowkit-document-contract` (`0e99fa8`) at PR #6.
-3. No authorized sandbox GitHub repository is configured, so `pr_backend: "gh"` was
-   not exercised. The adapter is written and the local registry is tested.
-4. cmux exposes no reliable automation CLI here; it remains a manual operator view.
-5. The Temporal Cloud namespace `alpha-dev.n3kw9` was exercised with a short-lived
-   user API key stored outside the repository. It is a dev target, not a production
-   deployment.
+Hosted checks passed for every PR after the billing restoration: `test`,
+`openflowkit` and `factory`. The factory job installs the `harness` extra and
+runs the offline suite on Ubuntu with the Temporal CLI.
 
-Next actions: restore GitHub Actions billing, run the factory job in
-`.github/workflows/plugin-ci.yml`, mark #4/#5 ready, merge in order, then mark #6
-ready with the receipt and this document attached. A real `gh` PR requires a
-sandbox repository and explicit owner approval.
+Release artifacts are attached to the `v0.8.2` GitHub Release with
+`SHA256SUMS.txt`. The factory wheel was built from the PR #6 code; it does not
+include the Harness extra or a model provider dependency.
+
+Temporal Cloud `alpha-dev.n3kw9` was used for one dev smoke workflow. The API key
+stays outside the repository; no production deployment was performed. A real
+`gh` PR still requires an authorized sandbox repository.
+
+Remaining P1/P2 items: cmux automation, cost/token telemetry beyond elapsed
+time, full browser UI automation, xPlan write-back, GitLab skills registry and
+50–100 worker scale. None blocks the 0.8.2 source release.
 
 ## Rollback
 
