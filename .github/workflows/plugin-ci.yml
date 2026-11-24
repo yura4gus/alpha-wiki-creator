@@ -35,3 +35,21 @@ jobs:
         with:
           node-version: '22'
       - run: bash scripts/openflowkit_smoke.sh "$RUNNER_TEMP/openflowkit"
+  factory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install uv
+      - name: install Temporal CLI
+        run: |
+          curl -sSf https://temporal.download/cli.sh | sh
+          echo "$HOME/.temporalio/bin" >> "$GITHUB_PATH"
+      - name: factory tests
+        working-directory: factory
+        run: |
+          uv sync --dev --extra harness
+          uv run pytest -q
